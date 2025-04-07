@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
@@ -10,55 +11,49 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="rootPane"
-    maxHeight="-Infinity"
-    maxWidth="-Infinity"
-    minHeight="-Infinity"
-    minWidth="-Infinity"
-    prefHeight="400.0" prefWidth="600.0"
-    xmlns="http://javafx.com/javafx/23.0.1"
-    xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="com.pjava.controllers.MainController">
-    <right>
-        <ListView fx:id="itemList" prefHeight="200.0" prefWidth="200.0"
-            BorderPane.alignment="TOP_LEFT" />
-    </right>
+<fx:root fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" type="BorderPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <center>
-        <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
-            <children>
-                <ChoiceBox maxWidth="1.7976931348623157E308" prefWidth="150.0" VBox.vgrow="ALWAYS" />
-                <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-                    <children>
-                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
-                            <children>
-                                <CheckBox alignment="TOP_CENTER" mnemonicParsing="false"
-                                    text="Urgent" HBox.hgrow="ALWAYS" />
-                                <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0"
-                                    spacing="10.0" HBox.hgrow="ALWAYS">
-                                    <children>
-                                        <Label text="Volume colis" />
-                                        <TextField promptText="1" text="1" />
-                                    </children>
-                                </HBox>
-                            </children>
-                        </HBox>
-                        <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0"
-                            spacing="10.0">
-                            <children>
-                                <Label text="Capacité sac: 100. Volume sac:" />
-                                <TextField disable="true" editable="false" text="1" />
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
-                <HBox alignment="BOTTOM_CENTER">
-                    <children>
-                        <Button mnemonicParsing="false" text="Ajouter" HBox.hgrow="ALWAYS" />
-                        <Button mnemonicParsing="false" text="Affranchir" HBox.hgrow="ALWAYS" />
-                        <Button mnemonicParsing="false" text="Quitter" HBox.hgrow="ALWAYS" />
-                    </children>
-                </HBox>
-            </children>
-        </VBox>
+        <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+            <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" HBox.hgrow="ALWAYS">
+                <children>
+                    <ChoiceBox maxWidth="1.7976931348623157E308" prefWidth="150.0" VBox.vgrow="ALWAYS" />
+                    <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+                        <children>
+                            <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                                <children>
+                                    <CheckBox alignment="TOP_CENTER" mnemonicParsing="false" text="Urgent" HBox.hgrow="ALWAYS" />
+                                    <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                                        <children>
+                                            <Label text="Volume colis" />
+                                            <TextField promptText="1" text="1" />
+                                        </children>
+                                    </HBox>
+                                </children>
+                            </HBox>
+                            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                                <children>
+                                    <Label text="Capacité sac: 100. Volume sac:" />
+                                    <TextField disable="true" editable="false" text="1" />
+                                </children>
+                            </HBox>
+                        </children>
+                  <VBox.margin>
+                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                  </VBox.margin>
+                    </VBox>
+                    <HBox alignment="BOTTOM_CENTER">
+                        <children>
+                            <Button mnemonicParsing="false" text="Ajouter" HBox.hgrow="ALWAYS" />
+                            <Button mnemonicParsing="false" text="Affranchir" HBox.hgrow="ALWAYS" />
+                            <Button mnemonicParsing="false" text="Quitter" HBox.hgrow="ALWAYS" />
+                        </children>
+                  <VBox.margin>
+                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                  </VBox.margin>
+                    </HBox>
+                </children>
+            </VBox>
+            <ListView fx:id="itemList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="TOP_LEFT" HBox.hgrow="NEVER" />
+        </HBox>
     </center>
-</BorderPane>
+</fx:root>
