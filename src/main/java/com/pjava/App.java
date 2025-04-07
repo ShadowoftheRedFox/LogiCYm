@@ -1,14 +1,20 @@
-package org.openjfx.src;
+package com.pjava;
 
 import java.io.IOException;
 
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class Main {
-    public Main(Stage stage) throws IOException {
+/**
+ * JavaFX App
+ */
+public class App extends Application {
+
+    @Override
+    public void start(Stage stage) throws IOException {
         String fxmlFile = "/fxml/Main.fxml";
         FXMLLoader loader = new FXMLLoader();
         Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(fxmlFile));
@@ -20,4 +26,9 @@ public class Main {
         stage.setScene(scene);
         stage.show();
     }
+
+    public static void main(String[] args) {
+        launch();
+    }
+
 }
