@@ -37,23 +37,23 @@
                                 </children>
                             </HBox>
                         </children>
-                  <VBox.margin>
-                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                  </VBox.margin>
+                        <VBox.margin>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        </VBox.margin>
                     </VBox>
-                    <HBox alignment="BOTTOM_CENTER">
+                    <HBox alignment="BOTTOM_CENTER" spacing="10.0">
                         <children>
                             <Button mnemonicParsing="false" text="Ajouter" HBox.hgrow="ALWAYS" />
                             <Button mnemonicParsing="false" text="Affranchir" HBox.hgrow="ALWAYS" />
                             <Button mnemonicParsing="false" text="Quitter" HBox.hgrow="ALWAYS" />
                         </children>
-                  <VBox.margin>
-                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                  </VBox.margin>
+                        <VBox.margin>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        </VBox.margin>
                     </HBox>
                 </children>
             </VBox>
-            <ListView fx:id="itemList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="TOP_LEFT" HBox.hgrow="NEVER" />
+            <ListView fx:id="itemList" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="TOP_LEFT" HBox.hgrow="SOMETIMES" />
         </HBox>
     </center>
 </fx:root>

@@ -24,7 +24,7 @@ public class App extends Application {
 
         this.manager = new SceneManager(scene);
 
-        scene.getStylesheets().add("/styles/styles.css");
+        scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
         stage.setTitle("Hello JavaFX and Maven");
         stage.setScene(scene);
         stage.show();

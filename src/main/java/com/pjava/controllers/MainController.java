@@ -30,6 +30,9 @@ public class MainController extends BorderPane {
         }
     }
 
+    // include a fxml file into another with:
+    // <fx:include source="Child.fxml"/>
+
     public void initialize() {
         // initialization here, if needed...
         itemList.setItems(FXCollections.observableArrayList("Ploof", "Glooof", "Mloof", "Floof", "Floof", "Floof"));

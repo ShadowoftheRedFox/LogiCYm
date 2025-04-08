@@ -1,3 +1,4 @@
-* {
-    background-color: gainsboro;
+.root {
+    -fx-background-color: rgb(215, 221, 255);
+    background-color: rgb(215, 221, 255);
 }
