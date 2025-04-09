@@ -17,9 +17,9 @@
             <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" HBox.hgrow="ALWAYS">
                 <children>
                     <ChoiceBox maxWidth="1.7976931348623157E308" prefWidth="150.0" VBox.vgrow="ALWAYS" />
-                    <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+                    <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="NEVER">
                         <children>
-                            <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                            <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="NEVER">
                                 <children>
                                     <CheckBox alignment="TOP_CENTER" mnemonicParsing="false" text="Urgent" HBox.hgrow="ALWAYS" />
                                     <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" HBox.hgrow="ALWAYS">
@@ -30,9 +30,9 @@
                                     </HBox>
                                 </children>
                             </HBox>
-                            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="NEVER">
                                 <children>
-                                    <Label text="Capacité sac: 100. Volume sac:" />
+                                    <Label text="Capacité sac: 100. Volume sac:" HBox.hgrow="NEVER" />
                                     <TextField disable="true" editable="false" text="1" />
                                 </children>
                             </HBox>
@@ -43,7 +43,7 @@
                     </VBox>
                     <HBox alignment="BOTTOM_CENTER" spacing="10.0">
                         <children>
-                            <Button mnemonicParsing="false" text="Ajouter" HBox.hgrow="ALWAYS" />
+                            <Button mnemonicParsing="false" onAction="#click" text="Ajouter" HBox.hgrow="ALWAYS" />
                             <Button mnemonicParsing="false" text="Affranchir" HBox.hgrow="ALWAYS" />
                             <Button mnemonicParsing="false" text="Quitter" HBox.hgrow="ALWAYS" />
                         </children>
