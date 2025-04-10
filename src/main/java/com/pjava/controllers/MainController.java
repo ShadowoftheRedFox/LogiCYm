@@ -43,7 +43,7 @@ public class MainController extends AnchorPane {
         itemList.setItems(FXCollections.observableArrayList("Ploof", "Glooof", "Mloof", "Floof", "Floof", "Floof"));
 
         typeChoiceBox.setItems(FXCollections.observableArrayList("Lettre", "Colis"));
-        typeChoiceBox.setValue("Lettre");
+        typeChoiceBox.getSelectionModel().select(0);
     }
 
     @FXML
