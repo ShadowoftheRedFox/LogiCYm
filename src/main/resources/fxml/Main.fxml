@@ -12,28 +12,19 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-    prefHeight="400.0" prefWidth="600.0" type="AnchorPane" xmlns="http://javafx.com/javafx/23.0.1"
-    xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" type="AnchorPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <HBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" prefHeight="100.0"
-            prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-            AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <HBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER"
-                    HBox.hgrow="ALWAYS">
+                <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" HBox.hgrow="ALWAYS">
                     <children>
-                        <ChoiceBox fx:id="typeChoiceBox" maxWidth="1.7976931348623157E308"
-                            prefWidth="150.0" VBox.vgrow="ALWAYS" />
+                        <ChoiceBox fx:id="typeChoiceBox" maxWidth="1.7976931348623157E308" prefWidth="150.0" VBox.vgrow="ALWAYS" />
                         <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="NEVER">
                             <children>
-                                <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0"
-                                    VBox.vgrow="NEVER">
+                                <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="NEVER">
                                     <children>
-                                        <CheckBox alignment="TOP_CENTER" mnemonicParsing="false"
-                                            text="Urgent" HBox.hgrow="ALWAYS" />
-                                        <HBox alignment="TOP_CENTER" prefHeight="100.0"
-                                            prefWidth="200.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                                        <CheckBox alignment="TOP_CENTER" mnemonicParsing="false" text="Urgent" HBox.hgrow="ALWAYS" />
+                                        <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" HBox.hgrow="ALWAYS">
                                             <children>
                                                 <Label text="Volume colis" />
                                                 <TextField promptText="1" text="1" />
@@ -41,11 +32,9 @@
                                         </HBox>
                                     </children>
                                 </HBox>
-                                <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0"
-                                    spacing="10.0" VBox.vgrow="NEVER">
+                                <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="NEVER">
                                     <children>
-                                        <Label text="Capacité sac: 100. Volume sac:"
-                                            HBox.hgrow="NEVER" />
+                                        <Label text="Capacité sac: 100. Volume sac:" HBox.hgrow="NEVER" />
                                         <TextField disable="true" editable="false" text="1" />
                                     </children>
                                 </HBox>
@@ -56,11 +45,9 @@
                         </VBox>
                         <HBox alignment="BOTTOM_CENTER" spacing="10.0">
                             <children>
-                                <Button mnemonicParsing="false" onAction="#click" text="Ajouter"
-                                    HBox.hgrow="ALWAYS" />
-                                <Button mnemonicParsing="false" text="Affranchir"
-                                    HBox.hgrow="ALWAYS" />
-                                <Button mnemonicParsing="false" text="Quitter" HBox.hgrow="ALWAYS" />
+                                <Button mnemonicParsing="false" onAction="#click" text="Ajouter" HBox.hgrow="ALWAYS" />
+                                <Button mnemonicParsing="false" text="Affranchir" HBox.hgrow="ALWAYS" />
+                                <Button mnemonicParsing="false" onAction="#quit" text="Quitter" HBox.hgrow="ALWAYS" />
                             </children>
                             <VBox.margin>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -68,8 +55,7 @@
                         </HBox>
                     </children>
                 </VBox>
-                <ListView fx:id="itemList" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0"
-                    BorderPane.alignment="TOP_LEFT" HBox.hgrow="SOMETIMES" />
+                <ListView fx:id="itemList" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="TOP_LEFT" HBox.hgrow="SOMETIMES" />
             </children>
         </HBox>
     </children>

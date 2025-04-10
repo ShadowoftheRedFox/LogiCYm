@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import com.pjava.src.SceneManager;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ChoiceBox;
@@ -50,5 +51,11 @@ public class MainController extends AnchorPane {
     public void click(ActionEvent event) {
         this.manager.activate("ploof");
         System.out.println("Changement à ploof!");
+    }
+
+    @FXML
+    public void quit(ActionEvent event) {
+        System.out.println("Fermeture...");
+        Platform.exit();
     }
 }
