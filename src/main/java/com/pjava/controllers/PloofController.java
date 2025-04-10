@@ -8,9 +8,9 @@ import java.io.IOException;
 import com.pjava.src.SceneManager;
 
 import javafx.event.ActionEvent;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
 
-public class PloofController extends Pane {
+public class PloofController extends AnchorPane {
 
     private SceneManager manager;
 

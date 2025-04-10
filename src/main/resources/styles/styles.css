@@ -1,4 +1,18 @@
 .root {
-    -fx-background-color: rgb(215, 221, 255);
-    background-color: rgb(215, 221, 255);
+    -fx-background-color: rgba(215, 221, 255);
+    background-color: rgba(215, 221, 255);
+}
+
+.indexed-cell {
+    -fx-wrap-text: true;
+}
+
+.indexed-cell:even {
+    -fx-background-color: rgb(173, 185, 255);
+    background-color: rgba(173, 185, 255);
+}
+
+.indexed-cell:odd {
+    -fx-background-color: rgb(226, 230, 255);
+    background-color: rgba(226, 230, 255);
 }

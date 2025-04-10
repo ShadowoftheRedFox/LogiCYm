@@ -9,12 +9,16 @@ import com.pjava.src.SceneManager;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.AnchorPane;
 
-public class MainController extends BorderPane {
+public class MainController extends AnchorPane {
     @FXML
     public ListView<String> itemList;
+
+    @FXML
+    public ChoiceBox<String> typeChoiceBox;
 
     private SceneManager manager;
 
@@ -37,6 +41,9 @@ public class MainController extends BorderPane {
     public void initialize() {
         // initialization here, if needed...
         itemList.setItems(FXCollections.observableArrayList("Ploof", "Glooof", "Mloof", "Floof", "Floof", "Floof"));
+
+        typeChoiceBox.setItems(FXCollections.observableArrayList("Lettre", "Colis"));
+        typeChoiceBox.setValue("Lettre");
     }
 
     @FXML
