@@ -1,22 +1,17 @@
-<style>
-todo {
-    text-decoration-style: dotted;
-    text-decoration-line: underline;
-}
-</style>
-
-# Projet Java IHM CY Tech 2025
+# Projet Java IHM CY Tech 2025: CYrcuits
 
 Ceci est le repository du projet de la matière Java IHM CY Tch de l'année 2025.
 
 # Sommaire
 
-- [Projet Java IHM CY Tech 2025](#projet-java-ihm-cy-tech-2025)
+- [Projet Java IHM CY Tech 2025: CYrcuits](#projet-java-ihm-cy-tech-2025-cyrcuits)
 - [Sommaire](#sommaire)
 - [Installation](#installation)
 - [Utilisation](#utilisation)
 - [Architecture](#architecture)
 - [Informations](#informations)
+- [Notes présentation projet](#notes-présentation-projet)
+  - [Soutenance oral](#soutenance-oral)
 
 # Installation
 
@@ -49,8 +44,8 @@ Les fichiers dans [src](./src/main/java/com/pjava/src/) servent de contenus inte
 
 Je suppose ici que tout les [controllers](./src/main/java/com/pjava/controllers/) fonctionnent en mode **fx:root**, d'où la possibilité d'utiliser le SceneManager sans trop de soucis.  
 
-Le fichier [styles.css](./src/main/resources/styles/styles.css) est global à toute l'application, et est <todo title="Pas encore implémenté">importé dans les autres fichiers css</todo>.  
+Le fichier [styles.css](./src/main/resources/styles/styles.css) est global à toute l'application, et est <span style="text-decoration-style: dotted;text-decoration-line: underline;" title="Pas encore implémenté">importé dans les autres fichiers css</span>.  
 
 Les [fichiers fxml](./src/main/resources/fxml/) sont pour la plupart fait de façon semi automatique avec scène builder (voir [Installation](#installation)), d'où le manque, voir l'inexistance, de commentaires.  
 
-Le fichier [run.sh](./run.sh) est présent originellement pour faciliter le lancement du projet, car la commande n'est pas forcément intuituve. Il permattra dans le futur de <todo title="Pas encore implémenté, et même juste une idée">faire des vérifications avant le lancement de la compilation</todo>.  
+Le fichier [run.sh](./run.sh) est présent originellement pour faciliter le lancement du projet, car la commande n'est pas forcément intuituve. Il permattra dans le futur de <span style="text-decoration-style: dotted;text-decoration-line: underline;" title="Pas encore implémenté, et même juste une idée">faire des vérifications avant le lancement de la compilation</span>.  
