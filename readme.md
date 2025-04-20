@@ -10,8 +10,6 @@ Ceci est le repository du projet de la matière Java IHM CY Tch de l'année 2025
 - [Utilisation](#utilisation)
 - [Architecture](#architecture)
 - [Informations](#informations)
-- [Notes présentation projet](#notes-présentation-projet)
-  - [Soutenance oral](#soutenance-oral)
 
 # Installation
 
@@ -25,7 +23,9 @@ Recommendé:
 
 # Utilisation
 
-Il suffit de lancer le fichier [run.sh](/run.sh). L'application se compilera et se lancera d'elle même.  
+Le ficheir [clean.sh](./clean.sh) est utilisé pour compiler et lancer le projet à partir de 0.  
+
+Le fichier [run.sh](/run.sh) ne compilera que les fichiers ayant changés et lancera l'application.  
 
 # Architecture
 

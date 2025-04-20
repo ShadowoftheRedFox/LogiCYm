@@ -20,6 +20,10 @@ public class App extends Application {
 
     SceneManager manager;
 
+    /**
+     * Setup the application here with every scene.
+     * Might be modified later.
+     */
     @Override
     public void start(Stage stage) throws IOException {
         Scene scene = new Scene(new BorderPane(), 400, 200);
