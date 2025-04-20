@@ -1,6 +1,6 @@
 package com.pjava.src.components.gates;
 
-import com.pjava.src.States;
+import com.pjava.src.config.States;
 
 /**
  * The AND gate.

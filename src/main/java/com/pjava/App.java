@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.pjava.controllers.MainController;
 import com.pjava.controllers.PloofController;
-import com.pjava.src.SceneManager;
+import com.pjava.src.UI.SceneManager;
 
 import javafx.application.Application;
 import javafx.scene.Scene;

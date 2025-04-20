@@ -2,7 +2,7 @@ package com.pjava.src.components.cables;
 
 import java.util.ArrayList;
 
-import com.pjava.src.States;
+import com.pjava.src.config.States;
 
 public class Cable {
     /**

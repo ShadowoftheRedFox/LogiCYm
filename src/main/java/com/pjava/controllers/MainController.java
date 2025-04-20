@@ -5,7 +5,7 @@ import javafx.fxml.FXMLLoader;
 
 import java.io.IOException;
 
-import com.pjava.src.SceneManager;
+import com.pjava.src.UI.SceneManager;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;

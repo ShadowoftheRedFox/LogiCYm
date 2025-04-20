@@ -1,4 +1,4 @@
-package com.pjava.src;
+package com.pjava.src.config;
 
 /**
  * Cable and flow state, to emulate electricity traveling.

@@ -1,4 +1,4 @@
-package com.pjava.src;
+package com.pjava.src.UI;
 
 import java.util.HashMap;
 
