@@ -1,6 +1,4 @@
-package com.pjava.src.components.gates;
-
-import com.pjava.src.components.cables.Cable;
+package com.pjava.src.components.cables;
 
 public class Output extends Cable {
 
