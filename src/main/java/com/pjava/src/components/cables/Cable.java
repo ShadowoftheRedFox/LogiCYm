@@ -56,8 +56,8 @@ public class Cable {
 
         // change the state array
         if (state.size() > busSize) {
-            for (int i = 0; i < state.size() - busSize; i++) {
-                state.removeLast();
+            for (int i = state.size(); i > busSize; i--) {
+                state.remove(i);
             }
         } else if (state.size() < busSize) {
             for (int i = 0; i < busSize - state.size(); i++) {
