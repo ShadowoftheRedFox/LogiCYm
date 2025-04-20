@@ -1,6 +1,9 @@
 package com.pjava.src.components.gates;
 
-import com.pjava.src.config.States;
+import java.util.ArrayList;
+
+import com.pjava.src.components.Gate;
+import com.pjava.src.components.cables.Cable;
 
 /**
  * The NOT gate.
@@ -8,23 +11,22 @@ import com.pjava.src.config.States;
  * Otherwise, apply the "not" logic to the input and output the result.
  */
 public class NOT extends Gate {
-    NOT() {
-        // tell the Gate class that this NOT gate has only one input.
-        super(true);
+    public NOT() {
+        setInputNumber(1);
     }
 
     @Override
-    public void updateState() {
-        States input = getInputState()[0];
+    public int getState() {
+        ArrayList<Cable> inputs = getInputCable();
 
-        if (input == States.Unpowered) {
-            setOutputState(States.Unpowered);
+        return (byte) toggleByte(inputs.get(0).getState());
+    }
+
+    private int toggleByte(int value) {
+        for (int i = 0; i < getInputCable().get(0).getBusSize(); i++) {
+            value = value ^ (1 << i);
         }
 
-        if (input == States.High) {
-            setOutputState(States.Low);
-        } else {
-            setOutputState(States.High);
-        }
+        return value;
     }
 }

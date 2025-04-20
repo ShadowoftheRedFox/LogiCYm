@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.pjava.controllers.MainController;
 import com.pjava.controllers.PloofController;
 import com.pjava.src.UI.SceneManager;
+import com.pjava.test.Test;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -38,6 +39,8 @@ public class App extends Application {
         stage.show();
 
         manager.activate("main");
+
+        Test.run();
     }
 
     public static void main(String[] args) {

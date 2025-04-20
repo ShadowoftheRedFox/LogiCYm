@@ -1,12 +1,12 @@
 package com.pjava.src.components.gates;
 
-import com.pjava.src.config.States;
+import com.pjava.src.components.Gate;
 
-public class Clock {
+public class Clock extends Gate {
     /**
      * Current state of the clock.
      */
-    private States state = States.Low;
+    private byte state = 0;
 
     /**
      * The cycle speed between states, in ms.
@@ -26,6 +26,7 @@ public class Clock {
     private Boolean enabled = false;
 
     public Clock() {
+        setPowered(true);
     }
 
     public Clock(Long cycleSpeed) {
@@ -36,14 +37,10 @@ public class Clock {
      * Make a cycle instantaneously.
      */
     public void instantCycle() {
-        if (state == States.Low) {
-            state = States.High;
-        } else {
-            state = States.Low;
-        }
+        state = (byte) (~state);
 
         lastCycle = System.currentTimeMillis();
-        // TODO update output
+        updateState();
     }
 
     /**
@@ -58,13 +55,14 @@ public class Clock {
         }
     }
 
+    @Override
+    public int getState() {
+        return state;
+    }
+
     // #region Getters
     public Long getCycleSpeed() {
         return cycleSpeed;
-    }
-
-    public States getState() {
-        return state;
     }
 
     public Boolean getEnabled() {

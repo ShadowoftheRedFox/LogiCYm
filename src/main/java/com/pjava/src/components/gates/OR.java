@@ -1,6 +1,9 @@
 package com.pjava.src.components.gates;
 
-import com.pjava.src.config.States;
+import java.util.ArrayList;
+
+import com.pjava.src.components.Gate;
+import com.pjava.src.components.cables.Cable;
 
 /**
  * The OR gate.
@@ -9,17 +12,14 @@ import com.pjava.src.config.States;
  */
 public class OR extends Gate {
     @Override
-    public void updateState() {
-        States[] inputs = getInputState();
+    public int getState() {
+        ArrayList<Cable> inputs = getInputCable();
 
-        if (inputs[0] == States.Unpowered || inputs[1] == States.Unpowered) {
-            setOutputState(States.Unpowered);
-        }
-
-        if (inputs[0] == States.High || inputs[1] == States.High) {
-            setOutputState(States.High);
+        if (inputs.get(0).getState(0) == 1 ||
+                inputs.get(1).getState(0) == 1) {
+            return 1;
         } else {
-            setOutputState(States.Low);
+            return 0;
         }
     }
 }
