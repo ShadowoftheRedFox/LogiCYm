@@ -1,6 +1,7 @@
 package com.pjava.src.components.gates;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 
 import com.pjava.src.components.Gate;
 import com.pjava.src.components.cables.Cable;
@@ -12,21 +13,19 @@ import com.pjava.src.components.cables.Cable;
  */
 public class NOT extends Gate {
     public NOT() {
-        setInputNumber(1);
+        setBusInput(new Integer[] { 1 });
     }
 
     @Override
-    public int getState() {
+    public BitSet getState() {
         ArrayList<Cable> inputs = getInputCable();
+        BitSet result = new BitSet(getOutputNumber());
 
-        return (byte) toggleByte(inputs.get(0).getState());
-    }
+        // TODO should check if inputs are not null for all gates
 
-    private int toggleByte(int value) {
-        for (int i = 0; i < getInputCable().get(0).getBusSize(); i++) {
-            value = value ^ (1 << i);
-        }
+        result.or(inputs.get(0));
+        result.flip(0, result.length());
 
-        return value;
+        return result;
     }
 }

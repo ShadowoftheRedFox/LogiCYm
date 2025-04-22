@@ -1,6 +1,7 @@
 package com.pjava.src.components;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 
 import com.pjava.src.components.cables.Cable;
 
@@ -10,18 +11,25 @@ import com.pjava.src.components.cables.Cable;
 public abstract class Gate {
     private Boolean powered = false;
 
-    private Integer inputNumber = 2;
-
-    private Integer outputNumber = 1;
+    /**
+     * Give the number and size of the available input ports.
+     */
+    private Integer[] busInput = new Integer[] { 1, 1 };
 
     /**
-     * The input states cables.
-     * The input state by default of all cables are unpowered.
+     * Give the number and size of the available output ports.
+     */
+    private Integer[] busOutput = new Integer[] { 1 };
+
+    // TODO check correct size when adding input/output
+    /**
+     * The input cables.
+     * All cables are unpowered by default.
      */
     private ArrayList<Cable> inputCable = new ArrayList<Cable>();
 
     /**
-     * The output states cables.
+     * The output cables.
      */
     private ArrayList<Cable> outputCable = new ArrayList<Cable>();
 
@@ -30,7 +38,9 @@ public abstract class Gate {
     };
 
     // This constructor is the one if we want to precise the inputAlone variable.
-    public Gate(Integer inputNumber, Integer outputNumber) {
+    public Gate(Integer[] busInput, Integer[] busOutput) {
+        setBusInput(busInput);
+        setBusOutput(busOutput);
     }
 
     /**
@@ -38,7 +48,9 @@ public abstract class Gate {
      */
     public void updateState() {
         getOutputCable().forEach(cable -> {
-            cable.updateState();
+            if (cable != null) {
+                cable.updateState();
+            }
         });
     };
 
@@ -46,7 +58,7 @@ public abstract class Gate {
      * This function is called when inputCable changes.
      * It should updates the return the state accordingly to the inputs.
      */
-    public abstract int getState();
+    public abstract BitSet getState();
 
     /**
      * Allow to edit a cable input from a gate
@@ -70,11 +82,11 @@ public abstract class Gate {
     }
 
     public Integer getInputNumber() {
-        return inputNumber;
+        return busInput.length;
     }
 
     public Integer getOutputNumber() {
-        return outputNumber;
+        return busOutput.length;
     }
 
     public ArrayList<Cable> getInputCable() {
@@ -91,18 +103,20 @@ public abstract class Gate {
         this.powered = powered;
     }
 
-    public void setInputNumber(Integer inputNumber) {
-        assert inputNumber >= 0;
-        this.inputNumber = inputNumber;
+    public void setBusInput(Integer[] busInput) {
+        assert busInput.length >= 0;
+        this.busInput = busInput;
+        // TODO check already connected cable, and/or throw errors
     }
 
-    public void setOutputNumber(Integer outputNumber) {
-        assert outputNumber >= 1;
-        this.outputNumber = outputNumber;
+    public void setBusOutput(Integer[] busOutput) {
+        assert busOutput.length >= 1;
+        this.busOutput = busOutput;
+        // TODO check already connected cable, and/or throw errors
     }
 
     public void setInputCable(ArrayList<Cable> inputCable) throws Error {
-        if (inputCable.size() != inputNumber)
+        if (inputCable.size() != busInput.length)
             throw new Error("input state size is different than input number");
 
         // TODO check for cable bus size
@@ -113,11 +127,19 @@ public abstract class Gate {
         this.inputCable = inputCable;
     }
 
+    public void setInputCable(Cable inputCable, int index) {
+        // TODO
+    }
+
     public void setOutputCable(ArrayList<Cable> outputCable) throws Error {
-        if (outputCable.size() != outputNumber)
+        if (outputCable.size() != busOutput.length)
             throw new Error("output state size is different than output number");
         this.outputCable = outputCable;
         // TODO if simulation enabled, call updateState
+    }
+
+    public void setOutputCable(Cable outputCable, int index) {
+        // TODO
     }
     // #endregion
 }

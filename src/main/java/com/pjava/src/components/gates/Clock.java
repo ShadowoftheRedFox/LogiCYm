@@ -1,12 +1,14 @@
 package com.pjava.src.components.gates;
 
+import java.util.BitSet;
+
 import com.pjava.src.components.Gate;
 
 public class Clock extends Gate {
     /**
      * Current state of the clock.
      */
-    private byte state = 0;
+    private BitSet state = new BitSet(1);
 
     /**
      * The cycle speed between states, in ms.
@@ -37,7 +39,11 @@ public class Clock extends Gate {
      * Make a cycle instantaneously.
      */
     public void instantCycle() {
-        state = (byte) (~state);
+        if (state.get(0)) {
+            state.clear(0);
+        } else {
+            state.set(0);
+        }
 
         lastCycle = System.currentTimeMillis();
         updateState();
@@ -56,7 +62,7 @@ public class Clock extends Gate {
     }
 
     @Override
-    public int getState() {
+    public BitSet getState() {
         return state;
     }
 

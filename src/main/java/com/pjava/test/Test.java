@@ -47,6 +47,6 @@ public class Test {
 
         p1.updateState();
         p2.updateState();
-        System.out.println("Expected: \t" + (a && b) + "\nResult: \t" + (and.getState() == 1));
+        System.out.println("Expected: \t" + (a && b) + "\nResult: \t" + and.getState().get(0));
     }
 }

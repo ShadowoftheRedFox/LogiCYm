@@ -55,3 +55,4 @@ Le fichier [run.sh](./run.sh) est présent originellement pour faciliter le lanc
 
 - [ ] : Demander au prof ce que l'on doit faire pour le pas a pas (un délai lors de la propagation du signal, ou une erreur comme logisim)  
 - [ ] : demander à quoi corresponde masse et l'alimentation spécifiquement
+- [ ] : method dans [Gate](./src/main/java/com/pjava/src/components/Gate.java) `public Cable connect(Gate arg0)` qui connecte this à arg0 avec un cable qui est renvoyé, this en ouput et arg0 en input, le premier compatible. Et un overload de la fonction qui précise quel input/output doit prendre.

@@ -1,6 +1,7 @@
 package com.pjava.src.components.gates;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 
 import com.pjava.src.components.Gate;
 import com.pjava.src.components.cables.Cable;
@@ -12,14 +13,22 @@ import com.pjava.src.components.cables.Cable;
  */
 public class AND extends Gate {
     @Override
-    public int getState() {
+    public BitSet getState() {
         ArrayList<Cable> inputs = getInputCable();
+        BitSet result = new BitSet(getOutputNumber());
 
-        if (inputs.get(0).getState(0) == 1 &&
-                inputs.get(1).getState(0) == 1) {
-            return 1;
-        } else {
-            return 0;
-        }
+        result.or(inputs.get(0));
+        result.and(inputs.get(1));
+
+        // return result;
+
+        // if (inputs.get(0).get(0) == true &&
+        // inputs.get(1).get(0) == true) {
+        // result.set(0, true);
+        // } else {
+        // result.set(0, false);
+        // }
+
+        return result;
     }
 }
