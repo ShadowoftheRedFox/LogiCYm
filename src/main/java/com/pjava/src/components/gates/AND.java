@@ -17,17 +17,12 @@ public class AND extends Gate {
         ArrayList<Cable> inputs = getInputCable();
         BitSet result = new BitSet(getOutputNumber());
 
+        if (inputs.get(0) == null || inputs.get(1) == null) {
+            return null;
+        }
+
         result.or(inputs.get(0));
         result.and(inputs.get(1));
-
-        // return result;
-
-        // if (inputs.get(0).get(0) == true &&
-        // inputs.get(1).get(0) == true) {
-        // result.set(0, true);
-        // } else {
-        // result.set(0, false);
-        // }
 
         return result;
     }

@@ -27,14 +27,15 @@ public class Cable extends BitSet {
     public void updateState() {
         // if multiple input, add (the "or" bitwise) the result
         this.clear();
-        inputGate.forEach(gate -> {
+        for (Gate gate : inputGate) {
             if (gate != null) {
                 if (!gate.getPowered()) {
                     setPowered(false);
+                } else {
+                    this.or(gate.getState());
                 }
-                this.or(gate.getState());
             }
-        });
+        }
 
         // then call all output
         if (outputGate.size() == 0)

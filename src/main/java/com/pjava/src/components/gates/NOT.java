@@ -21,7 +21,10 @@ public class NOT extends Gate {
         ArrayList<Cable> inputs = getInputCable();
         BitSet result = new BitSet(getOutputNumber());
 
-        // TODO should check if inputs are not null for all gates
+        if (inputs.get(0) == null) {
+            setPowered(false);
+            return null;
+        }
 
         result.or(inputs.get(0));
         result.flip(0, result.length());
