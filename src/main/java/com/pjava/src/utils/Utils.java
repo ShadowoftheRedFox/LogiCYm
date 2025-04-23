@@ -24,4 +24,42 @@ public abstract class Utils {
             k = 32;
         return 1 << k;
     }
+
+    /**
+     * Tells whether the target is in the array.
+     *
+     * @param array  The array to look into.
+     * @param target The target we want to know if its inside array.
+     * @return True if target is inside array, false otherwise.
+     */
+    public static boolean includes(int[] array, int target) {
+        if (array == null || array.length == 0) {
+            return false;
+        }
+        for (int i : array) {
+            if (i == target) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Tells whether the target is in the array.
+     *
+     * @param array  The array to look into.
+     * @param target The target we want to know if its inside array.
+     * @return True if target is inside array, false otherwise.
+     */
+    public static boolean includes(Integer[] array, int target) {
+        if (array == null || array.length == 0) {
+            return false;
+        }
+        for (int i : array) {
+            if (i == target) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

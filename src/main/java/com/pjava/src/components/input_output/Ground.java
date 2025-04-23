@@ -15,6 +15,7 @@ public class Ground extends Gate {
      * Create a new Ground gate. Default size is 1.
      */
     public Ground() {
+        super(new Integer[] {}, new Integer[] { 1 });
         setPowered(true);
         value = new BitSet(1);
         value.clear();

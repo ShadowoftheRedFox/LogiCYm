@@ -55,5 +55,6 @@ Le fichier [run.sh](./run.sh) est présent originellement pour faciliter le lanc
 
 - [ ] : Demander au prof ce que l'on doit faire pour le pas a pas (un délai lors de la propagation du signal, ou une erreur comme logisim)  
 - [ ] : demander à quoi corresponde masse et l'alimentation spécifiquement
-- [ ] : method dans [Gate](./src/main/java/com/pjava/src/components/Gate.java) `public Cable connect(Gate arg0)` qui connecte this à arg0 avec un cable qui est renvoyé, this en ouput et arg0 en input, le premier compatible. Et un overload de la fonction qui précise quel input/output doit prendre.
+- [ ] : method dans [Gate](./src/main/java/com/pjava/src/components/Gate.java) `public Cable connect(Gate arg0)` qui connecte this à arg0 avec un cable qui est renvoyé, this en output et arg0 en input, le premier compatible. Et un overload de la fonction qui précise quel input/output doit prendre.
 - [ ] : demander au prof si on doit vraiment tout check pour les erreurs, en mode dans [Gate.java à setPowered](./src/main/java/com/pjava/src/components/Gate.java#142), doit on vérifier que le `Boolean` est pas `null`, ou juste mettre `boolean`?
+- [ ] : peut etre une optim pour le future: pour les portes de inception, regarder les valeurs des entrées du précédents getstate, si pas changé, renvoyer le même résultat

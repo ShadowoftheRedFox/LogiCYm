@@ -13,7 +13,7 @@ import com.pjava.src.components.cables.Cable;
  */
 public class NOT extends Gate {
     public NOT() {
-        setBusInput(new Integer[] { 1 });
+        super(new Integer[] { 1 }, new Integer[] { 1 });
     }
 
     @Override

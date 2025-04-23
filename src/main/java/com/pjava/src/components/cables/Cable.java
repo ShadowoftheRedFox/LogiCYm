@@ -2,11 +2,17 @@ package com.pjava.src.components.cables;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.UUID;
 
 import com.pjava.src.components.Gate;
 
 public class Cable extends BitSet {
+    // unique identifier to distinguish cable
+    private final UUID uuid = UUID.randomUUID();
+
     private Boolean powered = false;
+
+    private int busSize = 1;
 
     /**
      * The input gates.
@@ -22,6 +28,7 @@ public class Cable extends BitSet {
 
     public Cable(Integer busSize) {
         super(busSize);
+        this.busSize = busSize;
     }
 
     public void updateState() {
@@ -48,8 +55,20 @@ public class Cable extends BitSet {
     }
 
     // #region Getters
+    /**
+     * Returns the unique id to distinguish this cable, while keeping the equals from the BitSet.
+     * @return The unique id.
+     */
+    public final UUID uuid() {
+        return uuid;
+    }
+
     public Boolean getPowered() {
         return powered;
+    }
+
+    public int getBusSize() {
+        return busSize;
     }
 
     public ArrayList<? extends Gate> getInputGate() {
@@ -64,6 +83,13 @@ public class Cable extends BitSet {
     // #region Setters
     public void setPowered(Boolean powered) {
         this.powered = powered;
+    }
+
+    public void setBusSize(int busSize) {
+        this.busSize = busSize;
+        // grow the internal BitSet
+        this.set(busSize - 1);
+        this.clear(busSize - 1);
     }
     // #endregion
 }
