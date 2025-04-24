@@ -46,19 +46,17 @@
                     <mainClass>com.pjava.App</mainClass>
                 </configuration>
             </plugin>
-        </plugins>
-
-    </build>
-
-    <!-- Generate the JavaDoc with "mvn site" -->
-    <reporting>
-        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.11.2</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <show>private</show>
+                </configuration>
             </plugin>
         </plugins>
-    </reporting>
+    </build>
+
 
 </project>

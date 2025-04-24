@@ -30,7 +30,7 @@ Le fichier [run.sh](/run.sh) ne compilera que les fichiers ayant changés et lan
 
 # Architecture
 
-Le code source se trouve sous le nom de paquet "cytech.pjava". [App.java](/src/main/java/org/openjfx/App.java) est le point d'entré de JavaFX, et [Main.java](/src/main/java/org/openjfx/src/Main.java) celui du projet.  
+Le code source se trouve sous le nom de paquet "com.pjava". [App.java](/src/main/java/org/openjfx/App.java) est le point d'entré de JavaFX, et [Main.java](/src/main/java/org/openjfx/src/Main.java) celui du projet.  
 
 La structure se découpe en module, et chaque scene est associée à un fichier fxml du même nom dans [resources](/resources/). Il est donc fortement recommendé d'utiliser **JavaFX Scene Builder**.  
 
@@ -40,6 +40,8 @@ Chaque [controllers](./src/main/java/com/pjava/controllers/) va le demander à l
 Les noms des controlleurs sont <u>**Tâche**Contoller.java</u>, dans le [dossier des controllers](./src/main/java/com/pjava/controllers/), associé à un fichier fxml <u>**Tâche**.fxml</u>, dans le [dossier des fxml](./src/main/resources/fxml/), ainsi qu'à un fichier <u>**Tâche**.css</u>, dans le [dossier des styles](./src/main/resources/styles/).  
 
 Les fichiers dans [src](./src/main/java/com/pjava/src/) servent de contenus interne (tel que le SceneManager précédemment cité).  
+
+Tout les fichiers compilés apparaissent dans le dossier [target](./target/), y compris la JavaDoc, qui peut être générée avec la commande `mvn javadoc:aggregate`.  
 
 # Informations
 
