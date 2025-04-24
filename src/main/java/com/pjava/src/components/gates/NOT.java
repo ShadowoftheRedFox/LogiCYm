@@ -10,8 +10,12 @@ import com.pjava.src.components.cables.Cable;
  * The NOT gate.
  * If the input is unpowered, then the output is unpowered.
  * Otherwise, apply the "not" logic to the input and output the result.
+ * Only has one input and one output, both of bus size of 1.
  */
 public class NOT extends Gate {
+    /**
+     * Create a new NOT gate.
+     */
     public NOT() {
         super(new Integer[] { 1 }, new Integer[] { 1 });
     }

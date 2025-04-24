@@ -5,6 +5,11 @@ import java.util.BitSet;
 import com.pjava.src.components.Gate;
 import com.pjava.src.utils.Utils;
 
+/**
+ * Represent the power gate. It always return a state of 1. It doesn't have
+ * any inputs, and has only one ouput bus of size 1. It is always powered. It
+ * ignores propagation check.
+ */
 public class Power extends Gate {
     /**
      * The constant value of 0.

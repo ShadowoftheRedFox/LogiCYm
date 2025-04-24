@@ -4,15 +4,18 @@ import java.util.ArrayList;
 import java.util.BitSet;
 
 import com.pjava.src.components.cables.Cable;
-import com.pjava.src.errors.BusDifferentSizeException;
+import com.pjava.src.errors.BusSizeException;
+import com.pjava.src.utils.Utils;
 
 /**
- * The base class of any logic gate.
+ * The base class of any logic gate. It has inputs, outputs, and gives a result
+ * depending of it's type.
  */
 public abstract class Gate {
     /**
      * Whether the gate is powered or not. Tells if all inputs are filled and are
      * powered too.
+     * An unpowered gate does not transmit nor emit updates.
      */
     private boolean powered = false;
 
@@ -21,6 +24,12 @@ public abstract class Gate {
      */
     private BitSet oldState = new BitSet();
 
+    /**
+     * When {@link #updateState(boolean)} is called, it does a check. If the
+     * previous state is the same as the current, it stop the signal from
+     * propagating.
+     * If this is set to true, then this check is ignored.
+     */
     private boolean ignorePropagationCheck = false;
 
     /**
@@ -45,15 +54,28 @@ public abstract class Gate {
      */
     private ArrayList<Cable> outputCable = new ArrayList<Cable>();
 
-    // This constructor enable implicit constructor in extending class.
+    /**
+     * Create a new default gate, with {1, 1} but input and { 1 } bus output.
+     */
     public Gate() {
         ensureCapacity();
     };
 
-    // This constructor is the one if we want to precise the inputAlone variable.
-    public Gate(Integer[] busInput, Integer[] busOutput) {
-        setInputBus(busInput);
-        setOutputBus(busOutput);
+    /**
+     * Create a new gate with customisable bus input and output.
+     *
+     * @param busInput  The list of input bus with their corresponding sizes.
+     * @param busOutput The list of output bus with their corresponding sizes.
+     * @throws Error Throw errors from either {@link #setInputBus(Integer[])} or
+     *               {@link #setOutputBus(Integer[])}
+     */
+    public Gate(Integer[] busInput, Integer[] busOutput) throws Error {
+        try {
+            setInputBus(busInput);
+            setOutputBus(busOutput);
+        } catch (NullPointerException | BusSizeException e) {
+            throw new Error(e);
+        }
     }
 
     /**
@@ -107,6 +129,8 @@ public abstract class Gate {
      * This function is called when inputCable changes.
      * It should updates the return the state accordingly to the inputs.
      * It should also return null if any of the inputs are null.
+     *
+     * @return The current state.
      */
     public abstract BitSet getState();
 
@@ -166,7 +190,11 @@ public abstract class Gate {
 
                     // if both empty, create a new cable and connect
                     if (thisOutputCable == null && arg0InputCable == null) {
-                        result = new Cable(thisoutputBusSize);
+                        try {
+                            result = new Cable(thisoutputBusSize);
+                        } catch (BusSizeException e) {
+                            e.printStackTrace();
+                        }
                         result.inputGate.add(this);
                         result.outputGate.add(arg0);
 
@@ -241,11 +269,11 @@ public abstract class Gate {
      *                                   this.{@link #outputBus}.length
      *                                   and arg0.{@link #inputBus}.length
      *                                   respectively.
-     * @throws BusDifferentSizeException Thrown when the given idenxes correspond to
+     * @throws BusSizeException          Thrown when the given idenxes correspond to
      *                                   different sizes of bus.
      */
     public Cable connect(Gate arg0, int thisOutputIndex, int arg0InputIndex)
-            throws Error, NullPointerException, IndexOutOfBoundsException, BusDifferentSizeException {
+            throws Error, NullPointerException, IndexOutOfBoundsException, BusSizeException {
         if (arg0 == null) {
             throw new NullPointerException("Expected arg0 to be an instance of Gate, received null");
         }
@@ -260,7 +288,7 @@ public abstract class Gate {
         }
 
         if (this.outputBus[thisOutputIndex] != arg0.inputBus[arg0InputIndex]) {
-            throw new BusDifferentSizeException("Expected bus size to be the same");
+            throw new BusSizeException("Expected bus size to be the same");
         }
 
         // check if both gate are already linked
@@ -380,30 +408,65 @@ public abstract class Gate {
     }
 
     // #region Getters
+    /**
+     * Getter for {@link #powered}.
+     *
+     * @return Whether this gate is powered or not.
+     */
     public boolean getPowered() {
         return powered;
     }
 
+    /**
+     * Getter for {@link #inputBus}.length.
+     *
+     * @return The number of input buses.
+     */
     public Integer getInputNumber() {
         return inputBus.length;
     }
 
+    /**
+     * Getter for {@link #inputBus}.
+     *
+     * @return The input buses.
+     */
     public Integer[] getInputBus() {
         return inputBus;
     }
 
+    /**
+     * Getter for {@link #outputBus}.length.
+     *
+     * @return The number of output buses.
+     */
     public Integer getOutputNumber() {
         return outputBus.length;
     }
 
+    /**
+     * Getter for {@link #outputBus}.
+     *
+     * @return The ouput buses.
+     */
     public Integer[] getOutputBus() {
         return outputBus;
     }
 
+    /**
+     * Getter for {@link #inputCable}.
+     *
+     * @return The list of input cables.
+     */
     public ArrayList<Cable> getInputCable() {
         return inputCable;
     }
 
+    /**
+     * Getter for {@link #outputCable}.
+     *
+     * @return The list of output cables.
+     */
     public ArrayList<Cable> getOutputCable() {
         return outputCable;
     }
@@ -411,8 +474,7 @@ public abstract class Gate {
 
     // #region Setters
     /**
-     * Set whether the cable is powered or not. An unpowered cable does not transmit
-     * nor emit updates.
+     * Setter for {@link #powered}.
      *
      * @param powered True if powered, false if not.
      */
@@ -421,19 +483,45 @@ public abstract class Gate {
     }
 
     /**
+     * Setter for {@link #oldState}.
      * Internal function that set the oldState to a clone of the current state.
      */
     private void setOldState() {
         this.oldState = (BitSet) getState().clone();
     }
 
+    /**
+     * Setter for {@link #ignorePropagationCheck}.
+     *
+     * @param ignorePropagationCheck True to ignore the check (CAN CAUSE CRASH OR
+     *                               LAG if loops), false to do the check.
+     */
     public void setIgnorePropagationCheck(boolean ignorePropagationCheck) {
         this.ignorePropagationCheck = ignorePropagationCheck;
     }
 
-    public boolean setInputBus(Integer[] busInput) throws Error {
-        assert busInput.length >= 0;
-        this.inputBus = busInput;
+    /**
+     * Setter for {@link #inputBus}.
+     *
+     * @param busSizes The new bus input sizes array.
+     * @return Return if true if all existing cables have valid bus size.
+     * @throws BusSizeException     Throw when the given size is equal or below
+     *                              0, not a power of 2, or greater than 32.
+     * @throws NullPointerException Throw when busSizes is null or contains a null.
+     */
+    public boolean setInputBus(Integer[] busSizes) throws BusSizeException, NullPointerException {
+        if (busSizes == null) {
+            throw new NullPointerException("Expected busSizes[] to be Integer[], received a null");
+        }
+        for (Integer busSize : busSizes) {
+            if (busSize == null) {
+                throw new NullPointerException("Expected busSizes to be Integer, received a null");
+            }
+            if (busSize <= 0 || Utils.isPower2(busSize) || busSize > 32) {
+                throw new BusSizeException("Expected a bus size between 1 and 32, received: " + busSize);
+            }
+        }
+        this.inputBus = busSizes;
 
         ensureCapacity();
 
@@ -451,13 +539,59 @@ public abstract class Gate {
         return valid;
     }
 
-    public void setBusInput(Integer busInput, int index) throws Error {
-        // TODO check already connected cable, and/or throw errors
+    /**
+     * Set a specific {@link #inputBus} at the given index.
+     *
+     * @param busSize The size of the bus.
+     * @param index   The index of the new busSize. Should be a valid index, lower
+     *                than {@link #inputBus}.length.
+     * @return Return if true if all existing cables have valid bus size.
+     * @throws BusSizeException          Throw when the given size is equal or below
+     *                                   0, not a power of 2, or greater than 32.
+     * @throws IndexOutOfBoundsException Throw when index is lower than 0, or equal
+     *                                   or greater than {@link #inputBus}.length.
+     * @throws NullPointerException      Throw when busSize is null.
+     */
+    public boolean setBusInput(Integer busSize, int index)
+            throws BusSizeException, IndexOutOfBoundsException, NullPointerException {
+        if (busSize == null) {
+            throw new NullPointerException("Expected busSize to be Integer, received null.");
+        }
+        if (busSize <= 0 || Utils.isPower2(busSize) || busSize > 32) {
+            throw new BusSizeException("Expected a bus size between 1 and 32, received: " + busSize);
+        }
+        if (index < 0 || index >= inputBus.length) {
+            throw new IndexOutOfBoundsException(
+                    "Expected 0 <= index < " + inputBus.length + ", received " + index);
+        }
+
+        inputBus[index] = busSize;
+
+        return busSize == inputCable.get(index).getBusSize();
     }
 
-    public boolean setOutputBus(Integer[] busOutput) throws Error {
-        assert busOutput.length >= 1;
-        this.outputBus = busOutput;
+    /**
+     * Setter for {@link #outputBus}.
+     *
+     * @param busSizes The new bus output sizes array.
+     * @return Return if true if all existing cables have valid bus size.
+     * @throws BusSizeException     Throw when the given size is equal or below
+     *                              0, not a power of 2, or greater than 32.
+     * @throws NullPointerException Throw when busSizes is null or contains a null.
+     */
+    public boolean setOutputBus(Integer[] busSizes) throws BusSizeException, NullPointerException {
+        if (busSizes == null) {
+            throw new NullPointerException("Expected busSizes[] to be Integer[], received a null");
+        }
+        for (Integer busSize : busSizes) {
+            if (busSize == null) {
+                throw new NullPointerException("Expected busSizes to be Integer, received a null");
+            }
+            if (busSize <= 0 || Utils.isPower2(busSize) || busSize > 32) {
+                throw new BusSizeException("Expected a bus size between 1 and 32, received: " + busSize);
+            }
+        }
+        this.outputBus = busSizes;
 
         ensureCapacity();
 
@@ -475,35 +609,43 @@ public abstract class Gate {
         return valid;
     }
 
-    public void setBusOutput(Integer busOutput, int index) throws Error {
-        // TODO check already connected cable, and/or throw errors
+    /**
+     * Set a specific {@link #outputBus} at the given index.
+     *
+     * @param busSize The size of the bus.
+     * @param index   The index of the new busSize. Should be a valid index, lower
+     *                than {@link #outputBus}.length.
+     * @return Return if true if all existing cables have valid bus size.
+     * @throws BusSizeException          Throw when the given size is equal or below
+     *                                   0, not a power of 2, or greater than 32.
+     * @throws IndexOutOfBoundsException Throw when index is lower than 0, or equal
+     *                                   or greater than {@link #outputBus}.length.
+     * @throws NullPointerException      Throw when busSize is null.
+     */
+    public boolean setBusOutput(Integer busSize, int index)
+            throws BusSizeException, IndexOutOfBoundsException, NullPointerException {
+        if (busSize == null) {
+            throw new NullPointerException("Expected busSize to be Integer, received null.");
+        }
+        if (busSize <= 0 || Utils.isPower2(busSize) || busSize > 32) {
+            throw new BusSizeException("Expected a bus size between 1 and 32, received: " + busSize);
+        }
+        if (index < 0 || index >= outputBus.length) {
+            throw new IndexOutOfBoundsException(
+                    "Expected 0 <= index < " + outputBus.length + ", received " + index);
+        }
+
+        outputBus[index] = busSize;
+
+        return busSize == outputCable.get(index).getBusSize();
     }
 
-    public void setInputCable(ArrayList<Cable> inputCable) throws Error {
-        if (inputCable.size() != inputBus.length)
-            throw new Error("input state size is different than input number");
-
-        // TODO check for cable bus size
-        // for (int i = 0; i < inputCable.size(); i++) {
-        // if (inputCable.get(i).getBusSize())
-        // }
-
-        this.inputCable = inputCable;
-    }
-
-    public void setInputCable(Cable inputCable, int index) throws Error {
-        // TODO
-    }
-
-    public void setOutputCable(ArrayList<Cable> outputCable) throws Error {
-        if (outputCable.size() != outputBus.length)
-            throw new Error("output state size is different than output number");
-        this.outputCable = outputCable;
-        // TODO if simulation enabled, call updateState
-    }
-
-    public void setOutputCable(Cable outputCable, int index) throws Error {
-        // TODO
-    }
+    /*
+     * TODO do them all
+     * public void setInputCable(ArrayList<Cable> inputCable) throws Error {}
+     * public void setInputCable(Cable inputCable, int index) throws Error {}
+     * public void setOutputCable(ArrayList<Cable> outputCable) throws Error {}
+     * public void setOutputCable(Cable outputCable, int index) throws Error {}
+     */
     // #endregion
 }

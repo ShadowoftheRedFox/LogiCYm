@@ -1,6 +1,15 @@
 package com.pjava.src.utils;
 
+/**
+ * An abstract class used to get access to useful static functions globally.
+ */
 public abstract class Utils {
+    /**
+     * The constructor of the Utils class.
+     */
+    protected Utils() {
+    }
+
     /**
      * Check if n is a power of 2.
      *
@@ -63,6 +72,11 @@ public abstract class Utils {
         return false;
     }
 
+    /**
+     * Used to generate unique ID at runtime.
+     *
+     * @see #runtimeID()
+     */
     static int id = 0;
 
     /**

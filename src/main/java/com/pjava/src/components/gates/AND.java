@@ -12,6 +12,14 @@ import com.pjava.src.components.cables.Cable;
  * Otherwise, apply the "and" logic to the input and output the result.
  */
 public class AND extends Gate {
+    /**
+     * Create a new AND gate.
+     *
+     * @see Gate
+     */
+    public AND() {
+    }
+
     @Override
     public BitSet getState() {
         ArrayList<Cable> inputs = getInputCable();

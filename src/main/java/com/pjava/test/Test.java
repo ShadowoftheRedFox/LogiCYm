@@ -7,12 +7,28 @@ import com.pjava.src.components.gates.NOT;
 import com.pjava.src.components.input_output.Ground;
 import com.pjava.src.components.input_output.Power;
 
+/**
+ * This a test class. Nothing more, nothing less.
+ */
 public class Test {
+    /**
+     * Create a new Test, and execute the {@link #run()} function.
+     */
+    public Test() {
+        run();
+    }
+
+    /**
+     * The main entry point of the class. Launched when contructed.
+     */
     public void run() {
         flipFlop();
         // basic();
     }
 
+    /**
+     * Run a SR flip flop and look for the correct result.
+     */
     public void flipFlop() {
         // Clock start at 0
         Clock S = new Clock();
@@ -65,6 +81,9 @@ public class Test {
         }
     }
 
+    /**
+     * Run a basic AND gate and look for the correct result.
+     */
     public void basic() {
         Power p1 = new Power();
         // Ground p1 = new Ground();

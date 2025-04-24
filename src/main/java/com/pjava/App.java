@@ -13,17 +13,27 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
- * JavaFX entry point
- *
- * Launch the Scneemanager and the main scene here
+ * JavaFX entry point.
  */
 public class App extends Application {
 
+    /**
+     * Create a new App.
+     */
+    public App() {
+
+    }
+
+    /**
+     * The scene manager of the application. Remember and provide all scenes. It
+     * should be this one given when creating a new scene.
+     */
     private SceneManager manager;
 
     /**
      * Setup the application here with every scene.
      * Might be modified later.
+     * {@inheritDoc}
      */
     @Override
     public void start(Stage stage) throws IOException {
@@ -40,7 +50,7 @@ public class App extends Application {
 
         manager.activate("main");
 
-        new Test().run();
+        new Test();
     }
 
     /**

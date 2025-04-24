@@ -1,11 +1,22 @@
 package com.pjava.src.components.cables;
 
+import com.pjava.src.errors.BusSizeException;
+
 /**
  * An extends of cable because they are a particular case of cables.
- * Otherwise, it's in the Input/Output category.
+ * Represent the whole electrical component input. It's this input that will
+ * appear on inception/custom components.
  */
 public class Input extends Cable {
-    public Input(Integer busSize) {
+    /**
+     * Create a new input with the given bus size.
+     *
+     * @param busSize The bus size of the input.
+     * @throws BusSizeException Throw when the given size is equal or below 0, not a
+     *                          power of 2, or greater than 32.
+     * @see Cable
+     */
+    public Input(Integer busSize) throws BusSizeException {
         super(busSize);
     }
 }

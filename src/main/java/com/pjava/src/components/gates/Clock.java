@@ -4,6 +4,17 @@ import java.util.BitSet;
 
 import com.pjava.src.components.Gate;
 
+/**
+ * A specific type of gate that can periodically send an update. It doesn't have
+ * any inputs, and has only one ouput bus of size 1. This gate can be
+ * enabled/disabled, and can be manually triggered. The update interval can be
+ * set when instantiating the class or later. It is always powered. It ignores
+ * propagation check.
+ *
+ * @see #cycleSpeed
+ * @see #timeCycle()
+ * @see Gate#ignorePropagationCheck
+ */
 public class Clock extends Gate {
     /**
      * Current state of the clock.
@@ -23,16 +34,25 @@ public class Clock extends Gate {
 
     /**
      * If the clock is enabled, it will periodically change states depending on
-     * {@link #cycleSpeed}.
+     * {@link #cycleSpeed}. {@link #timeCycle()} needs to be called for the
+     * {@link #state} to change if enabled.
      */
     private Boolean enabled = false;
 
+    /**
+     * Create a new clock with the default interval of 100ms.
+     */
     public Clock() {
         super(new Integer[] {}, new Integer[] { 1 });
         setIgnorePropagationCheck(true);
         setPowered(true);
     }
 
+    /**
+     * Create a new clock with the given interval.
+     *
+     * @param cycleSpeed The interval between each cycle, in ms.
+     */
     public Clock(Long cycleSpeed) {
         super(new Integer[] {}, new Integer[] { 1 });
         setIgnorePropagationCheck(true);
@@ -66,28 +86,54 @@ public class Clock extends Gate {
         }
     }
 
+    /**
+     * Return the current state without doing a {@link #timeCycle()}.
+     * {@inheritDoc}
+     */
     @Override
     public BitSet getState() {
+        timeCycle();
         return state;
     }
 
     // #region Getters
+    /**
+     * Getter for {@link #cycleSpeed}.
+     *
+     * @return The interval between cycle, in ms.
+     */
     public Long getCycleSpeed() {
         return cycleSpeed;
     }
 
+    /**
+     * Getter for {@link #enabled}.
+     *
+     * @return Whether the clock is enabled or not.
+     */
     public Boolean getEnabled() {
         return enabled;
     }
     // #endregion
 
     // #region Setters
+    /**
+     * Setter for {@link #cycleSpeed}.
+     *
+     * @param cycleSpeed The new cycle speed in ms. Does not change if it is equal
+     *                   or below 0.
+     */
     public void setCycleSpeed(Long cycleSpeed) {
         if (cycleSpeed > 0) {
             this.cycleSpeed = cycleSpeed;
         }
     }
 
+    /**
+     * Setter for {@link #enabled}.
+     *
+     * @param enabled Whether to enable or disable the clock.
+     */
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
