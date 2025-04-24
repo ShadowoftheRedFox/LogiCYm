@@ -28,6 +28,8 @@ Le ficheir [clean.sh](./clean.sh) est utilisé pour compiler et lancer le projet
 
 Le fichier [run.sh](/run.sh) ne compilera que les fichiers ayant changés et lancera l'application.  
 
+Le fichier [javadoc.sh](/run.sh) va générer la documentation du projet dans [./target/reports/apidocs](./target/reports/apidocs/).  
+
 # Architecture
 
 Le code source se trouve sous le nom de paquet "com.pjava". [App.java](/src/main/java/org/openjfx/App.java) est le point d'entré de JavaFX, et [Main.java](/src/main/java/org/openjfx/src/Main.java) celui du projet.  
@@ -40,8 +42,6 @@ Chaque [controllers](./src/main/java/com/pjava/controllers/) va le demander à l
 Les noms des controlleurs sont <u>**Tâche**Contoller.java</u>, dans le [dossier des controllers](./src/main/java/com/pjava/controllers/), associé à un fichier fxml <u>**Tâche**.fxml</u>, dans le [dossier des fxml](./src/main/resources/fxml/), ainsi qu'à un fichier <u>**Tâche**.css</u>, dans le [dossier des styles](./src/main/resources/styles/).  
 
 Les fichiers dans [src](./src/main/java/com/pjava/src/) servent de contenus interne (tel que le SceneManager précédemment cité).  
-
-Tout les fichiers compilés apparaissent dans le dossier [target](./target/), y compris la JavaDoc, qui peut être générée avec la commande `mvn javadoc:aggregate`.  
 
 # Informations
 
