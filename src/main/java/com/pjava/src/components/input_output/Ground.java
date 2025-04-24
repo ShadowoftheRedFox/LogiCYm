@@ -17,6 +17,7 @@ public class Ground extends Gate {
     public Ground() {
         super(new Integer[] {}, new Integer[] { 1 });
         setPowered(true);
+        setIgnorePropagationCheck(true);
         value = new BitSet(1);
         value.clear();
     }
@@ -35,6 +36,7 @@ public class Ground extends Gate {
         }
 
         setPowered(true);
+        setIgnorePropagationCheck(true);
         value = new BitSet(size);
         value.clear();
     }

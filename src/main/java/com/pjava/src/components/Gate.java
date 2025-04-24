@@ -10,7 +10,18 @@ import com.pjava.src.errors.BusDifferentSizeException;
  * The base class of any logic gate.
  */
 public abstract class Gate {
+    /**
+     * Whether the gate is powered or not. Tells if all inputs are filled and are
+     * powered too.
+     */
     private boolean powered = false;
+
+    /**
+     * The previous state of the gate. Should always be a clone.
+     */
+    private BitSet oldState = new BitSet();
+
+    private boolean ignorePropagationCheck = false;
 
     /**
      * Give the number and size of the available input ports.
@@ -46,43 +57,56 @@ public abstract class Gate {
     }
 
     /**
-     * This function is called when inputCable changes.
+     * This function is called when input cables states changes.
+     * Equivalent of {@code updateState(true)} ({@link #updateState(boolean)}).
      */
     public void updateState() {
-        // unpower the gate if an input is null or unpowered
-        int nullAmount = 0;
-        for (Cable cable : getInputCable()) {
-            if (cable == null || !cable.getPowered()) {
-                nullAmount++;
-            }
-        }
-        // the gate need to have input for this check to happen
-        if (nullAmount > 0 && inputBus.length != 0) {
-            setPowered(false);
-            return;
-        }
-        setPowered(true);
-
-        // otherwise, update
-        getOutputCable().forEach(cable -> {
-            if (cable != null) {
-                cable.updateState();
-            }
-        });
+        updateState(true);
     };
 
     /**
-     * {@html
-     * <p>
+     * This function is called when input cables states changes.
+     *
+     * @param propagate Whether or not to propagate the changes to the outputs.
+     */
+    public void updateState(boolean propagate) {
+        // unpower the gate if it has input, and a cable if unpowered or null
+        if (inputBus.length != 0) {
+            for (Cable cable : getInputCable()) {
+                if (cable == null || !cable.getPowered()) {
+                    setPowered(false);
+                    System.out.println(getClass().getName() + " Unpowering because " +
+                            (cable == null
+                                    ? "cable null"
+                                    : "cable unpowered " + cable.uuid()));
+                    return;
+                }
+            }
+            System.out.println(getClass().getName() + " Powering");
+        }
+        setPowered(true);
+
+        // if same state, do not send update
+        if (oldState.equals(getState()) && !ignorePropagationCheck) {
+            System.out.println(getClass().getName() + " Stopped propagation");
+            return;
+        }
+
+        // otherwise, update
+        setOldState();
+        if (propagate) {
+            getOutputCable().forEach(cable -> {
+                if (cable != null) {
+                    cable.updateState();
+                }
+            });
+        }
+    }
+
+    /**
      * This function is called when inputCable changes.
-     * </p>
-     * <p>
      * It should updates the return the state accordingly to the inputs.
-     * </p>
-     * <p>
      * It should also return null if any of the inputs are null.
-     * </p>
-     * }
      */
     public abstract BitSet getState();
 
@@ -108,6 +132,9 @@ public abstract class Gate {
         // check if both gate are already linked
         Cable result = getCableWith(arg0);
         if (result != null) {
+            // FIXME i don't like puttong setPowered raw like this, it may not be true,
+            // find the problem in the get state, or change it inside the constructors
+            result.updateState(false);
             return result;
         }
 
@@ -130,6 +157,7 @@ public abstract class Gate {
                     if (thisOutputCable != null && arg0InputCable != null) {
                         // check if it's the same cable, and return it
                         if (thisOutputCable.uuid().equals(arg0InputCable.uuid())) {
+                            this.getOutputCable().get(thisoutputBusSize).updateState(false);
                             return this.getOutputCable().get(thisoutputBusSize);
                         }
                         // TODO maybe try to merge and not throw error?
@@ -145,6 +173,7 @@ public abstract class Gate {
                         this.outputCable.set(i, result);
                         arg0.inputCable.set(j, result);
 
+                        result.updateState(false);
                         return result;
                     }
                 }
@@ -164,19 +193,21 @@ public abstract class Gate {
                     Cable thisOutputCable = this.getOutputCable().get(i);
                     Cable arg0InputCable = arg0.getInputCable().get(j);
                     // one of them is a Cable, the other is null, then get the Cable and connect
-                    {
-                        if (thisOutputCable != null && arg0InputCable == null) {
-                            thisOutputCable.outputGate.add(arg0);
-                            arg0.inputCable.set(j, thisOutputCable);
-                            return thisOutputCable;
-                        } else if (thisOutputCable == null && arg0InputCable != null) {
-                            arg0InputCable.inputGate.add(this);
-                            this.outputCable.set(i, arg0InputCable);
-                            return arg0InputCable;
-                        } else {
-                            // should never fall here
-                            throw new Error("Unknown result, lost in the code... :d");
-                        }
+                    if (thisOutputCable != null && arg0InputCable == null) {
+                        thisOutputCable.outputGate.add(arg0);
+                        arg0.inputCable.set(j, thisOutputCable);
+
+                        thisOutputCable.updateState(false);
+                        return thisOutputCable;
+                    } else if (thisOutputCable == null && arg0InputCable != null) {
+                        arg0InputCable.inputGate.add(this);
+                        this.outputCable.set(i, arg0InputCable);
+
+                        arg0InputCable.updateState(false);
+                        return arg0InputCable;
+                    } else {
+                        // should never fall here
+                        throw new Error("Unknown result, lost in the code... :d");
                     }
                 }
             }
@@ -237,6 +268,7 @@ public abstract class Gate {
         Cable arg0InputCable = arg0.inputCable.get(arg0InputIndex);
         if (thisOutputCable != null && arg0InputCable != null) {
             if (thisOutputCable.uuid().equals(arg0InputCable.uuid())) {
+                thisOutputCable.updateState(false);
                 return thisOutputCable;
             } else if (thisOutputCable.size() != arg0InputCable.size()) {
                 // incompatible sizes
@@ -254,16 +286,21 @@ public abstract class Gate {
             this.outputCable.set(thisOutputIndex, result);
             arg0.inputCable.set(arg0InputIndex, result);
 
+            result.updateState(false);
             return result;
         } else
         // if either is null
         if (thisOutputCable != null && arg0InputCable == null) {
             thisOutputCable.outputGate.add(arg0);
             arg0.inputCable.set(arg0InputIndex, thisOutputCable);
+
+            thisOutputCable.updateState(false);
             return thisOutputCable;
         } else if (thisOutputCable == null && arg0InputCable != null) {
             arg0InputCable.inputGate.add(this);
             this.outputCable.set(thisOutputIndex, arg0InputCable);
+
+            arg0InputCable.updateState(false);
             return arg0InputCable;
         }
 
@@ -287,6 +324,33 @@ public abstract class Gate {
                 if (thisCable != null &&
                         arg0Cable != null &&
                         thisCable.uuid().equals(arg0Cable.uuid())) {
+                    return thisCable;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the cable between this and arg0, or return null if no connection exists.
+     * We check the direction this.output to arg0.input.
+     *
+     * @param arg0    The gate we want to check if there is a cable connecting us.
+     * @param busSize The specific bus size of the wanted return cable.
+     * @return The Cable if it exists, null otherwise.
+     */
+    public Cable getCableWith(Gate arg0, int busSize) {
+        if (arg0 == null || busSize < 0 || busSize > 32) {
+            return null;
+        }
+
+        for (Cable thisCable : outputCable) {
+            for (Cable arg0Cable : arg0.getInputCable()) {
+                if (thisCable != null &&
+                        arg0Cable != null &&
+                        thisCable.uuid().equals(arg0Cable.uuid()) &&
+                        thisCable.getBusSize() == busSize) {
                     return thisCable;
                 }
             }
@@ -354,6 +418,17 @@ public abstract class Gate {
      */
     public void setPowered(boolean powered) {
         this.powered = powered;
+    }
+
+    /**
+     * Internal function that set the oldState to a clone of the current state.
+     */
+    private void setOldState() {
+        this.oldState = (BitSet) getState().clone();
+    }
+
+    public void setIgnorePropagationCheck(boolean ignorePropagationCheck) {
+        this.ignorePropagationCheck = ignorePropagationCheck;
     }
 
     public boolean setInputBus(Integer[] busInput) throws Error {

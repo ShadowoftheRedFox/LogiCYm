@@ -17,6 +17,7 @@ public class Power extends Gate {
     public Power() {
         super(new Integer[] {}, new Integer[] { 1 });
         setPowered(true);
+        setIgnorePropagationCheck(true);
         value = new BitSet(1);
         value.set(0);
     }
@@ -35,6 +36,7 @@ public class Power extends Gate {
         }
 
         setPowered(true);
+        setIgnorePropagationCheck(true);
         value = new BitSet(size);
         value.set(0, value.size() - 1);
     }

@@ -19,7 +19,7 @@ import javafx.stage.Stage;
  */
 public class App extends Application {
 
-    SceneManager manager;
+    private SceneManager manager;
 
     /**
      * Setup the application here with every scene.
@@ -40,9 +40,14 @@ public class App extends Application {
 
         manager.activate("main");
 
-        Test.run();
+        new Test().run();
     }
 
+    /**
+     * Entry point of the application.
+     *
+     * @param args Command line arguments.
+     */
     public static void main(String[] args) {
         launch();
     }

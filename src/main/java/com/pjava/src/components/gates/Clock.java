@@ -28,10 +28,15 @@ public class Clock extends Gate {
     private Boolean enabled = false;
 
     public Clock() {
+        super(new Integer[] {}, new Integer[] { 1 });
+        setIgnorePropagationCheck(true);
         setPowered(true);
     }
 
     public Clock(Long cycleSpeed) {
+        super(new Integer[] {}, new Integer[] { 1 });
+        setIgnorePropagationCheck(true);
+        setPowered(true);
         setCycleSpeed(cycleSpeed);
     }
 
