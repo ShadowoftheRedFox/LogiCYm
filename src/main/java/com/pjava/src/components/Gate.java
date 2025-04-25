@@ -517,7 +517,7 @@ public abstract class Gate {
             if (busSize == null) {
                 throw new NullPointerException("Expected busSizes to be Integer, received a null");
             }
-            if (busSize <= 0 || Utils.isPower2(busSize) || busSize > 32) {
+            if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
                 throw new BusSizeException("Expected a bus size between 1 and 32, received: " + busSize);
             }
         }
@@ -557,7 +557,7 @@ public abstract class Gate {
         if (busSize == null) {
             throw new NullPointerException("Expected busSize to be Integer, received null.");
         }
-        if (busSize <= 0 || Utils.isPower2(busSize) || busSize > 32) {
+        if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
             throw new BusSizeException("Expected a bus size between 1 and 32, received: " + busSize);
         }
         if (index < 0 || index >= inputBus.length) {
@@ -587,7 +587,7 @@ public abstract class Gate {
             if (busSize == null) {
                 throw new NullPointerException("Expected busSizes to be Integer, received a null");
             }
-            if (busSize <= 0 || Utils.isPower2(busSize) || busSize > 32) {
+            if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
                 throw new BusSizeException("Expected a bus size between 1 and 32, received: " + busSize);
             }
         }
@@ -627,7 +627,7 @@ public abstract class Gate {
         if (busSize == null) {
             throw new NullPointerException("Expected busSize to be Integer, received null.");
         }
-        if (busSize <= 0 || Utils.isPower2(busSize) || busSize > 32) {
+        if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
             throw new BusSizeException("Expected a bus size between 1 and 32, received: " + busSize);
         }
         if (index < 0 || index >= outputBus.length) {
