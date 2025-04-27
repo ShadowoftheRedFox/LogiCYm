@@ -24,28 +24,26 @@ public class Clock extends Gate {
     /**
      * The cycle speed between states, in ms.
      */
-    private Long cycleSpeed = 100l;
+    private long cycleSpeed = 100l;
 
     /**
      * The timestamp of the last cycle.
      * It prevent using a sleep inside a loop.
      */
-    private Long lastCycle = System.currentTimeMillis();
+    private long lastCycle = System.currentTimeMillis();
 
     /**
      * If the clock is enabled, it will periodically change states depending on
      * {@link #cycleSpeed}. {@link #timeCycle()} needs to be called for the
      * {@link #state} to change if enabled.
      */
-    private Boolean enabled = false;
+    private boolean enabled = false;
 
     /**
      * Create a new clock with the default interval of 100ms.
      */
     public Clock() {
-        super(new Integer[] {}, new Integer[] { 1 });
-        setIgnorePropagationCheck(true);
-        setPowered(true);
+        this(100l);
     }
 
     /**
@@ -87,7 +85,7 @@ public class Clock extends Gate {
     }
 
     /**
-     * Return the current state without doing a {@link #timeCycle()}.
+     * Return the current state, after a {@link #timeCycle()}.
      * {@inheritDoc}
      */
     @Override
@@ -123,7 +121,7 @@ public class Clock extends Gate {
      * @param cycleSpeed The new cycle speed in ms. Does not change if it is equal
      *                   or below 0.
      */
-    public void setCycleSpeed(Long cycleSpeed) {
+    public void setCycleSpeed(long cycleSpeed) {
         if (cycleSpeed > 0) {
             this.cycleSpeed = cycleSpeed;
         }
@@ -134,7 +132,7 @@ public class Clock extends Gate {
      *
      * @param enabled Whether to enable or disable the clock.
      */
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
     // #endregion

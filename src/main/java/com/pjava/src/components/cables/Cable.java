@@ -77,38 +77,71 @@ public class Cable extends BitSet {
      * @param propagate Whether or not to propagate the changes to the outputs.
      */
     public void updateState(boolean propagate) {
-        // if multiple input, add (the "or" bitwise) the result
-        // for the power, if one gate is powered, then the cable is powered
-        int countPoweredGates = 0;
-        this.clear();
-        for (Gate gate : inputGate) {
-            if (gate != null && gate.getPowered()) {
-                countPoweredGates++;
-                this.or(gate.getState());
-            }
-        }
-        if (powered && countPoweredGates == 0) {
-            System.out.println("Powering DOWN cable " + uuid);
-        } else if (!powered && countPoweredGates != 0) {
-            System.out.println("Powering UP cable " + uuid);
-        }
-        powered = countPoweredGates != 0;
-
-        // then call all output
-        if (outputGate.size() == 0 || !getPowered() || oldState.equals(this)) {
+        // early returns
+        if (outputGate.size() == 0 || !getPowered()) {
             // TODO special case for Input and Ouput
-            System.out.println("Early return");
+            System.out.println("Cable early return");
             return;
         }
 
+        // if multiple input, add (the "or" bitwise) the result
+        for (Gate gate : getInputGate()) {
+            if (gate != null && gate.getPowered()) {
+                this.or(gate.getState());
+            }
+        }
+
+        // another early return
+        if (oldState.equals(this)) {
+            System.out.println("Cable early return (oldstate)");
+            return;
+        }
+
+        // then call all output
         setOldState();
         if (propagate) {
-            outputGate.forEach(gate -> {
+            getOutputGate().forEach(gate -> {
                 if (gate != null) {
                     gate.updateState();
                 }
             });
         }
+    }
+
+    /**
+     * Should be called when input/output changes.
+     * Update the power of himself and its output accordingly.
+     */
+    public void updatePower() {
+        // if at least one gate is powered, then the cable is powered
+        int countPoweredGates = 0;
+        this.clear();
+        for (Gate gate : getInputGate()) {
+            if (gate != null && gate.getPowered()) {
+                countPoweredGates++;
+            }
+        }
+
+        // send update to output when powered changed
+        if ((getPowered() && countPoweredGates == 0) ||
+                (!getPowered() && countPoweredGates != 0)) {
+            // DEBUG
+            if (getPowered() && countPoweredGates == 0) {
+                System.out.println("Powering DOWN cable " + uuid);
+            } else if (!getPowered() && countPoweredGates != 0) {
+                System.out.println("Powering UP cable " + uuid);
+            }
+
+            setPowered(countPoweredGates != 0);
+            System.out.println("[Cable " + uuid + "] " + countPoweredGates + "/" + inputGate.size() + " powered gates");
+
+            for (Gate gate : getOutputGate()) {
+                if (gate != null) {
+                    gate.updatePower();
+                }
+            }
+        }
+
     }
 
     // #region Getters
@@ -157,6 +190,15 @@ public class Cable extends BitSet {
     public ArrayList<? extends Gate> getOutputGate() {
         return outputGate;
     }
+
+    /**
+     * Get the bit set instance of this cable.
+     *
+     * @return A new bit set, equals to this cable bit set.
+     */
+    public BitSet getBitSet() {
+        return BitSet.valueOf(this.toByteArray());
+    }
     // #endregion
 
     // #region Setters
@@ -166,7 +208,7 @@ public class Cable extends BitSet {
      *
      * @param powered True if powered, false if not.
      */
-    public void setPowered(boolean powered) {
+    protected void setPowered(boolean powered) {
         this.powered = powered;
     }
 
@@ -175,7 +217,7 @@ public class Cable extends BitSet {
      * Internal function that set the oldState to a clone of the current state.
      */
     private void setOldState() {
-        this.oldState = BitSet.valueOf(this.toByteArray());
+        this.oldState = getBitSet();
     }
 
     /**
@@ -186,9 +228,9 @@ public class Cable extends BitSet {
      * @throws BusSizeException Throw when the given size is equal or below 0, not a
      *                          power of 2, or greater than 32.
      */
-    public void setBusSize(int busSize) throws BusSizeException {
+    protected void setBusSize(int busSize) throws BusSizeException {
         if (busSize <= 0 || !Utils.isPower2(busSize)) {
-            throw new BusSizeException("Expected a bus size between 1 and 32, received: " + busSize);
+            throw BusSizeException.fromName("bus size", busSize);
         }
 
         this.busSize = busSize;

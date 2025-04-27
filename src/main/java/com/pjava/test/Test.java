@@ -1,11 +1,11 @@
 package com.pjava.test;
 
-import com.pjava.src.components.cables.Cable;
 import com.pjava.src.components.gates.AND;
 import com.pjava.src.components.gates.Clock;
 import com.pjava.src.components.gates.NOT;
 import com.pjava.src.components.input_output.Ground;
 import com.pjava.src.components.input_output.Power;
+import com.pjava.src.utils.Utils;
 
 /**
  * This a test class. Nothing more, nothing less.
@@ -47,37 +47,50 @@ public class Test {
         R.connect(and2);
 
         not1.connect(and2);
-        Cable c5 = not2.connect(and1);
-        c5.updateState(false);
+        not2.connect(and1);
 
-        boolean q = false;
+        boolean q = not1.getState().get(0);
 
         S.updateState();
         R.updateState();
 
-        S.instantCycle();
-        System.out.println("not2: " + c5.getInputGate().get(0).getPowered() + "\n and1: "
-                + c5.getOutputGate().get(0).getPowered());
-
-        for (int i = 0; i < 2; i++) {
-            q = (S.getState().get(0) || (!R.getState().get(0) && not1.getState().get(0)));
+        for (int i = 0; i < 5; i++) {
+            q = (S.getState().get(0) || (!R.getState().get(0) && q));
 
             if (!S.getState().get(0) && !R.getState().get(0)) {
-                System.out.println("FlipFlop invalid (any result)");
+                System.out.println("[CHECK " + i + "]\n" +
+                        "\tInputs: " +
+                        " \tS: " + S.getState().get(0) +
+                        " \tR: " + R.getState().get(0) +
+
+                        "\n\tExpected:" +
+                        " \tQ: " + true +
+                        " \t!Q: " + true +
+
+                        "\n\tResult: " +
+                        " \tQ: " + not1.getState().get(0) +
+                        " \t!Q: " + not2.getState().get(0));
             } else {
-                System.out.println("Expected:" +
-                        " Q: " + q +
-                        " !Q: " + !q +
-                        "\nResult: " +
-                        " Q: " + not1.getState().get(0) +
-                        " !Q: " + not2.getState().get(0));
+                System.out.println("[CHECK " + i + "]\n" +
+                        "\tInputs: " +
+                        " \tS: " + S.getState().get(0) +
+                        " \tR: " + R.getState().get(0) +
+
+                        "\n\tExpected:" +
+                        " \tQ: " + q +
+                        " \t!Q: " + !q +
+
+                        "\n\tResult: " +
+                        " \tQ: " + not1.getState().get(0) +
+                        " \t!Q: " + not2.getState().get(0));
             }
 
-            if (i == 0) {
+            if (Utils.isEven(i)) {
                 R.instantCycle();
             }
-            S.updateState();
-            R.updateState();
+            if (Utils.isOdd(i)) {
+                S.instantCycle();
+            }
         }
     }
 

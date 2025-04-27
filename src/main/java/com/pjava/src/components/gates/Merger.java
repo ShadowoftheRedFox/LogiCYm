@@ -1,0 +1,107 @@
+package com.pjava.src.components.gates;
+
+import java.util.BitSet;
+import java.util.Collections;
+
+import com.pjava.src.components.Gate;
+import com.pjava.src.components.cables.Cable;
+import com.pjava.src.errors.BusSizeException;
+
+/**
+ * Merge multiple cable of the same bus size into one.
+ */
+public class Merger extends Gate {
+    /**
+     * Create a new merger gate with buses of size 1 and with 2 inputs.
+     *
+     * @throws Error Throw errors from either {@link #setInputBus(Integer[])} or
+     *               {@link #setOutputBus(Integer[])}.
+     * @see Gate
+     */
+    public Merger() throws Error {
+        this(2, 1);
+    }
+
+    /**
+     * Create a new merger gate with the given buses size and with 2 inputs.
+     *
+     * @param busSize The size of the input buses.
+     * @throws Error Throw errors from either {@link #setInputBus(Integer[])} or
+     *               {@link #setOutputBus(Integer[])}.
+     * @see Gate
+     */
+    public Merger(int busSize) throws Error {
+        this(2, busSize);
+    }
+
+    /**
+     * Create a new merger gate with the given buses size and number of inputs.
+     *
+     * @param busNumber The amount of inputs.
+     * @param busSize   The size of the bus.
+     * @throws Error                    Throw errors from either
+     *                                  {@link #setInputBus(Integer[])} or
+     *                                  {@link #setOutputBus(Integer[])}.
+     * @throws IllegalArgumentException Throw IllegalArgumentException if bus number
+     *                                  is below 0.
+     * @see Gate
+     */
+    public Merger(int busNumber, int busSize) throws Error {
+        super((Integer[]) Collections.nCopies(busNumber, busSize).toArray(), new Integer[] { busSize });
+    }
+
+    /**
+     * Return the addition (bitwise or) of all input cables.
+     * {@inheritDoc}
+     */
+    @Override
+    public BitSet getState() {
+        BitSet result = new BitSet();
+        for (Cable cable : getInputCable()) {
+            if (cable != null && cable.getPowered()) {
+                result.or(cable);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Add one input to the merger.
+     * Same as addInput(1) ({@link #addInput(int)}).
+     */
+    public void addOuput() {
+        addInput(1);
+    }
+
+    /**
+     * Add n input to the merger.
+     *
+     * @param n The amount of input to add.
+     * @throws IllegalArgumentException Throw when n is below or equal to 0.
+     */
+    public void addInput(int n) throws IllegalArgumentException {
+        if (n <= 0) {
+            throw new IllegalArgumentException("Expected n to be greater than 0, received " + n);
+        }
+
+        try {
+            for (int i = 0; i < n; i++) {
+                addInputBus(getOutputBus()[0]);
+            }
+        } catch (BusSizeException e) {
+            throw new Error(e);
+        }
+    }
+
+    /**
+     * Change the size of the buses, input and output, to the new bus size.
+     *
+     * @param busSize The new bus size.
+     * @throws BusSizeException Throw when the given busSize is equal or below
+     *                          0, not a power of 2, or greater than 32.
+     */
+    public void changeBusSize(int busSize) throws BusSizeException {
+        setInputBus((Integer[]) Collections.nCopies(getInputNumber(), busSize).toArray());
+        setOutputBus((Integer[]) Collections.nCopies(getOutputNumber(), busSize).toArray());
+    }
+}

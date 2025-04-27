@@ -1,7 +1,9 @@
 package com.pjava.src.components;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.List;
 
 import com.pjava.src.components.cables.Cable;
 import com.pjava.src.errors.BusSizeException;
@@ -55,7 +57,8 @@ public abstract class Gate {
     private ArrayList<Cable> outputCable = new ArrayList<Cable>();
 
     /**
-     * Create a new default gate, with {1, 1} but input and { 1 } bus output.
+     * Create a new default gate, with two input with 1 as bus size, and one bus
+     * output of the same size.
      */
     public Gate() {
         ensureCapacity();
@@ -67,7 +70,7 @@ public abstract class Gate {
      * @param busInput  The list of input bus with their corresponding sizes.
      * @param busOutput The list of output bus with their corresponding sizes.
      * @throws Error Throw errors from either {@link #setInputBus(Integer[])} or
-     *               {@link #setOutputBus(Integer[])}
+     *               {@link #setOutputBus(Integer[])}.
      */
     public Gate(Integer[] busInput, Integer[] busOutput) throws Error {
         try {
@@ -92,37 +95,64 @@ public abstract class Gate {
      * @param propagate Whether or not to propagate the changes to the outputs.
      */
     public void updateState(boolean propagate) {
-        // unpower the gate if it has input, and a cable if unpowered or null
-        if (inputBus.length != 0) {
-            for (Cable cable : getInputCable()) {
-                if (cable == null || !cable.getPowered()) {
-                    setPowered(false);
-                    System.out.println(getClass().getName() + " Unpowering because " +
-                            (cable == null
-                                    ? "cable null"
-                                    : "cable unpowered " + cable.uuid()));
-                    return;
-                }
-            }
-            System.out.println(getClass().getName() + " Powering");
-        }
-        setPowered(true);
-
-        // if same state, do not send update
-        if (oldState.equals(getState()) && !ignorePropagationCheck) {
-            System.out.println(getClass().getName() + " Stopped propagation");
+        // if same state or unpowered, do not send update
+        if (!getPowered() || (oldState.equals(getState()) && !ignorePropagationCheck)) {
+            System.out.println("Early return");
             return;
         }
-
-        // otherwise, update
+        // update the state otherwise
         setOldState();
         if (propagate) {
             getOutputCable().forEach(cable -> {
-                if (cable != null) {
-                    cable.updateState();
-                }
+                // we do not check if cable is null here
+                // it should be checked with updatePower
+                // it should crash if it isn't
+                cable.updateState();
             });
         }
+    }
+
+    /**
+     * Should be called when input/output changes.
+     * Update the power of himself and its output accordingly.
+     */
+    public void updatePower() {
+        // if all cable are powered (and not null), then the gate is powered
+        int countPoweredCables = 0;
+        for (Cable cable : getInputCable()) {
+            if (cable != null && cable.getPowered()) {
+                countPoweredCables++;
+            } else {
+                System.out.println(getClass().getSimpleName() + " Unpowering because " +
+                        (cable == null
+                                ? "cable null"
+                                : "cable unpowered " + cable.uuid()));
+            }
+        }
+
+        // TODO check cyclic connections, and change below if conditions
+        // https://www.geeksforgeeks.org/detect-cycle-in-a-graph/
+
+        // send update to output when powered changed
+        if ((getPowered() && countPoweredCables != getInputCable().size()) ||
+                (!getPowered() && countPoweredCables == getInputCable().size())) {
+
+            // DEBUG
+            if (getPowered() && countPoweredCables != getInputCable().size()) {
+                System.out.println("Powering DOWN gate " + getClass().getSimpleName());
+            } else if (!getPowered() && countPoweredCables == getInputCable().size()) {
+                System.out.println("Powering UP gate " + getClass().getSimpleName());
+            }
+
+            setPowered(countPoweredCables == getInputCable().size());
+
+            for (Cable cable : getOutputCable()) {
+                if (cable != null) {
+                    cable.updatePower();
+                }
+            }
+        }
+
     }
 
     /**
@@ -156,9 +186,8 @@ public abstract class Gate {
         // check if both gate are already linked
         Cable result = getCableWith(arg0);
         if (result != null) {
-            // FIXME i don't like puttong setPowered raw like this, it may not be true,
-            // find the problem in the get state, or change it inside the constructors
             result.updateState(false);
+            arg0.updateState(false);
             return result;
         }
 
@@ -181,7 +210,9 @@ public abstract class Gate {
                     if (thisOutputCable != null && arg0InputCable != null) {
                         // check if it's the same cable, and return it
                         if (thisOutputCable.uuid().equals(arg0InputCable.uuid())) {
+                            this.getOutputCable().get(thisoutputBusSize).updatePower();
                             this.getOutputCable().get(thisoutputBusSize).updateState(false);
+                            arg0.updateState(false);
                             return this.getOutputCable().get(thisoutputBusSize);
                         }
                         // TODO maybe try to merge and not throw error?
@@ -201,7 +232,9 @@ public abstract class Gate {
                         this.outputCable.set(i, result);
                         arg0.inputCable.set(j, result);
 
+                        result.updatePower();
                         result.updateState(false);
+                        arg0.updateState(false);
                         return result;
                     }
                 }
@@ -225,13 +258,17 @@ public abstract class Gate {
                         thisOutputCable.outputGate.add(arg0);
                         arg0.inputCable.set(j, thisOutputCable);
 
+                        thisOutputCable.updatePower();
                         thisOutputCable.updateState(false);
+                        arg0.updateState(false);
                         return thisOutputCable;
                     } else if (thisOutputCable == null && arg0InputCable != null) {
                         arg0InputCable.inputGate.add(this);
                         this.outputCable.set(i, arg0InputCable);
 
+                        arg0InputCable.updatePower();
                         arg0InputCable.updateState(false);
+                        arg0.updateState(false);
                         return arg0InputCable;
                     } else {
                         // should never fall here
@@ -288,7 +325,8 @@ public abstract class Gate {
         }
 
         if (this.outputBus[thisOutputIndex] != arg0.inputBus[arg0InputIndex]) {
-            throw new BusSizeException("Expected bus size to be the same");
+            throw new BusSizeException("Expected bus size to be the same, received "
+                    + this.outputBus[thisOutputIndex] + " and " + arg0.inputBus[arg0InputIndex]);
         }
 
         // check if both gate are already linked
@@ -297,6 +335,7 @@ public abstract class Gate {
         if (thisOutputCable != null && arg0InputCable != null) {
             if (thisOutputCable.uuid().equals(arg0InputCable.uuid())) {
                 thisOutputCable.updateState(false);
+                arg0.updateState(false);
                 return thisOutputCable;
             } else if (thisOutputCable.size() != arg0InputCable.size()) {
                 // incompatible sizes
@@ -315,6 +354,7 @@ public abstract class Gate {
             arg0.inputCable.set(arg0InputIndex, result);
 
             result.updateState(false);
+            arg0.updateState(false);
             return result;
         } else
         // if either is null
@@ -323,12 +363,14 @@ public abstract class Gate {
             arg0.inputCable.set(arg0InputIndex, thisOutputCable);
 
             thisOutputCable.updateState(false);
+            arg0.updateState(false);
             return thisOutputCable;
         } else if (thisOutputCable == null && arg0InputCable != null) {
             arg0InputCable.inputGate.add(this);
             this.outputCable.set(thisOutputIndex, arg0InputCable);
 
             arg0InputCable.updateState(false);
+            arg0.updateState(false);
             return arg0InputCable;
         }
 
@@ -337,7 +379,7 @@ public abstract class Gate {
 
     /**
      * Get the cable between this and arg0, or return null if no connection exists.
-     * We check the direction this.output to arg0.input.
+     * The check direction is from this.output to arg0.input.
      *
      * @param arg0 The gate we want to check if there is a cable connecting us.
      * @return The Cable if it exists, null otherwise.
@@ -362,14 +404,14 @@ public abstract class Gate {
 
     /**
      * Get the cable between this and arg0, or return null if no connection exists.
-     * We check the direction this.output to arg0.input.
+     * The check direction if from this.output to arg0.input.
      *
      * @param arg0    The gate we want to check if there is a cable connecting us.
-     * @param busSize The specific bus size of the wanted return cable.
+     * @param busSize The specific bus size of the want the return cable to have.
      * @return The Cable if it exists, null otherwise.
      */
     public Cable getCableWith(Gate arg0, int busSize) {
-        if (arg0 == null || busSize < 0 || busSize > 32) {
+        if (arg0 == null || busSize <= 0 || busSize > 32 || !Utils.isPower2(busSize)) {
             return null;
         }
 
@@ -404,6 +446,88 @@ public abstract class Gate {
             for (int i = outputCable.size(); i < outputBus.length; i++) {
                 outputCable.add(null);
             }
+        }
+    }
+
+    /**
+     * Add an input bus with the given size.
+     *
+     * @param size The size of the new bus.
+     * @throws BusSizeException Throw when the given size is equal or below 0, not a
+     *                          power of 2, or greater than 32.
+     */
+    protected void addInputBus(int size) throws BusSizeException {
+        if (BusSizeException.isBusSizeException(size)) {
+            throw BusSizeException.fromName("size", size);
+        }
+
+        List<Integer> list = Arrays.asList(getInputBus());
+        list.add(size);
+        setInputBus((Integer[]) list.toArray());
+    }
+
+    /**
+     * Remove an input bus at the given index if possible.
+     *
+     * @param size The size of the new bus.
+     * @throws IllegalArgumentException Throw when index is below 0.
+     */
+    protected void removeInputBus(int index) throws IllegalArgumentException {
+        if (index < 0) {
+            throw new IllegalArgumentException("Expected index to be greater than 0, received " + index);
+        }
+
+        List<Integer> list = Arrays.asList(getInputBus());
+        if (index > list.size()) {
+            return;
+        }
+
+        list.remove(index);
+        try {
+            setInputBus((Integer[]) list.toArray());
+        } catch (NullPointerException | BusSizeException e) {
+            throw new Error(e);
+        }
+    }
+
+    /**
+     * Add an output bus with the given size.
+     *
+     * @param size The size of the new bus.
+     * @throws BusSizeException Throw when the given size is equal or below 0, not a
+     *                          power of 2, or greater than 32.
+     */
+    protected void addOutputBus(int size) throws BusSizeException {
+        if (BusSizeException.isBusSizeException(size)) {
+            throw BusSizeException.fromName("size", size);
+        }
+
+        List<Integer> list = Arrays.asList(getOutputBus());
+        list.add(size);
+        setOutputBus((Integer[]) list.toArray());
+    }
+
+    /**
+     * Remove an output bus at the given index if possible.
+     *
+     * @param size The size of the new bus.
+     * @throws IllegalArgumentException Throw when index is below 0.
+     */
+    protected void removeOutputBus(int index) throws IllegalArgumentException {
+        if (index < 0) {
+            throw new IllegalArgumentException("Expected index to be greater than 0, received " + index);
+        }
+
+        List<Integer> list = Arrays.asList(getOutputBus());
+        if (index > list.size()) {
+            return;
+        }
+
+        list.remove(index);
+        try {
+            setOutputBus((Integer[]) list.toArray());
+        } catch (NullPointerException | BusSizeException e) {
+            throw new Error(e);
         }
     }
 
@@ -478,16 +602,20 @@ public abstract class Gate {
      *
      * @param powered True if powered, false if not.
      */
-    public void setPowered(boolean powered) {
+    protected void setPowered(boolean powered) {
         this.powered = powered;
     }
 
     /**
      * Setter for {@link #oldState}.
      * Internal function that set the oldState to a clone of the current state.
+     * If {@link #getState()} returns null, does not update {@link #oldState}.
      */
-    private void setOldState() {
-        this.oldState = (BitSet) getState().clone();
+    protected void setOldState() {
+        BitSet state = getState();
+        if (state != null) {
+            this.oldState = (BitSet) state.clone();
+        }
     }
 
     /**
@@ -496,7 +624,7 @@ public abstract class Gate {
      * @param ignorePropagationCheck True to ignore the check (CAN CAUSE CRASH OR
      *                               LAG if loops), false to do the check.
      */
-    public void setIgnorePropagationCheck(boolean ignorePropagationCheck) {
+    protected void setIgnorePropagationCheck(boolean ignorePropagationCheck) {
         this.ignorePropagationCheck = ignorePropagationCheck;
     }
 
@@ -509,7 +637,7 @@ public abstract class Gate {
      *                              0, not a power of 2, or greater than 32.
      * @throws NullPointerException Throw when busSizes is null or contains a null.
      */
-    public boolean setInputBus(Integer[] busSizes) throws BusSizeException, NullPointerException {
+    protected boolean setInputBus(Integer[] busSizes) throws BusSizeException, NullPointerException {
         if (busSizes == null) {
             throw new NullPointerException("Expected busSizes[] to be Integer[], received a null");
         }
@@ -518,7 +646,7 @@ public abstract class Gate {
                 throw new NullPointerException("Expected busSizes to be Integer, received a null");
             }
             if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
-                throw new BusSizeException("Expected a bus size between 1 and 32, received: " + busSize);
+                throw BusSizeException.fromName("bus size", busSize);
             }
         }
         this.inputBus = busSizes;
@@ -536,6 +664,8 @@ public abstract class Gate {
             }
         }
 
+        // TODO check if input and output siezs are both > 0 (gate without ports at all)
+
         return valid;
     }
 
@@ -552,13 +682,13 @@ public abstract class Gate {
      *                                   or greater than {@link #inputBus}.length.
      * @throws NullPointerException      Throw when busSize is null.
      */
-    public boolean setBusInput(Integer busSize, int index)
+    protected boolean setInputBus(Integer busSize, int index)
             throws BusSizeException, IndexOutOfBoundsException, NullPointerException {
         if (busSize == null) {
             throw new NullPointerException("Expected busSize to be Integer, received null.");
         }
         if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
-            throw new BusSizeException("Expected a bus size between 1 and 32, received: " + busSize);
+            throw BusSizeException.fromName("bus size", busSize);
         }
         if (index < 0 || index >= inputBus.length) {
             throw new IndexOutOfBoundsException(
@@ -579,7 +709,7 @@ public abstract class Gate {
      *                              0, not a power of 2, or greater than 32.
      * @throws NullPointerException Throw when busSizes is null or contains a null.
      */
-    public boolean setOutputBus(Integer[] busSizes) throws BusSizeException, NullPointerException {
+    protected boolean setOutputBus(Integer[] busSizes) throws BusSizeException, NullPointerException {
         if (busSizes == null) {
             throw new NullPointerException("Expected busSizes[] to be Integer[], received a null");
         }
@@ -588,7 +718,7 @@ public abstract class Gate {
                 throw new NullPointerException("Expected busSizes to be Integer, received a null");
             }
             if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
-                throw new BusSizeException("Expected a bus size between 1 and 32, received: " + busSize);
+                throw BusSizeException.fromName("bus size", busSize);
             }
         }
         this.outputBus = busSizes;
@@ -622,13 +752,13 @@ public abstract class Gate {
      *                                   or greater than {@link #outputBus}.length.
      * @throws NullPointerException      Throw when busSize is null.
      */
-    public boolean setBusOutput(Integer busSize, int index)
+    protected boolean setOutputBus(Integer busSize, int index)
             throws BusSizeException, IndexOutOfBoundsException, NullPointerException {
         if (busSize == null) {
             throw new NullPointerException("Expected busSize to be Integer, received null.");
         }
         if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
-            throw new BusSizeException("Expected a bus size between 1 and 32, received: " + busSize);
+            throw BusSizeException.fromName("bus size", busSize);
         }
         if (index < 0 || index >= outputBus.length) {
             throw new IndexOutOfBoundsException(
@@ -639,13 +769,13 @@ public abstract class Gate {
 
         return busSize == outputCable.get(index).getBusSize();
     }
+    // #endregion
 
     /*
-     * TODO do them all
-     * public void setInputCable(ArrayList<Cable> inputCable) throws Error {}
-     * public void setInputCable(Cable inputCable, int index) throws Error {}
-     * public void setOutputCable(ArrayList<Cable> outputCable) throws Error {}
-     * public void setOutputCable(Cable outputCable, int index) throws Error {}
+     * TODO add them if needed
+     * protected void setInputCable(ArrayList<Cable> inputCable) throws Error {}
+     * protected void setInputCable(Cable inputCable, int index) throws Error {}
+     * protected void setOutputCable(ArrayList<Cable> outputCable) throws Error {}
+     * protected void setOutputCable(Cable outputCable, int index) throws Error {}
      */
-    // #endregion
 }

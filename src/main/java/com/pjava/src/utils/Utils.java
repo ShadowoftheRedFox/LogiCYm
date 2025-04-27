@@ -11,6 +11,28 @@ public abstract class Utils {
     }
 
     /**
+     * Check if the given number is even. Check with the bitwise operation.
+     *
+     * @param n The number to check.
+     * @return True is n is even, false otherwise.
+     * @see #isOdd
+     */
+    public static boolean isEven(int n) {
+        return (n & 1) == 0;
+    }
+
+    /**
+     * Check if the given number is odd. Check with the bitwise operation.
+     *
+     * @param n The number to check.
+     * @return True is n is odd, false otherwise.
+     * @see #isEven
+     */
+    public static boolean isOdd(int n) {
+        return !isEven(n);
+    }
+
+    /**
      * Check if n is a power of 2.
      *
      * @param n The value to check.
