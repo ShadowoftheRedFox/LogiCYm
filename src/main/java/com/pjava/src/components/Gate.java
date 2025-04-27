@@ -13,7 +13,7 @@ import com.pjava.src.utils.Utils;
  * The base class of any logic gate. It has inputs, outputs, and gives a result
  * depending of it's type.
  */
-public abstract class Gate {
+public abstract class Gate implements Component {
     /**
      * Whether the gate is powered or not. Tells if all inputs are filled and are
      * powered too.
@@ -469,7 +469,7 @@ public abstract class Gate {
     /**
      * Remove an input bus at the given index if possible.
      *
-     * @param size The size of the new bus.
+     * @param index The index of the bus to remove.
      * @throws IllegalArgumentException Throw when index is below 0.
      */
     protected void removeInputBus(int index) throws IllegalArgumentException {
@@ -510,7 +510,7 @@ public abstract class Gate {
     /**
      * Remove an output bus at the given index if possible.
      *
-     * @param size The size of the new bus.
+     * @param index The index of the bus to remove.
      * @throws IllegalArgumentException Throw when index is below 0.
      */
     protected void removeOutputBus(int index) throws IllegalArgumentException {
@@ -602,7 +602,7 @@ public abstract class Gate {
      *
      * @param powered True if powered, false if not.
      */
-    protected void setPowered(boolean powered) {
+    public void setPowered(boolean powered) {
         this.powered = powered;
     }
 
@@ -611,7 +611,7 @@ public abstract class Gate {
      * Internal function that set the oldState to a clone of the current state.
      * If {@link #getState()} returns null, does not update {@link #oldState}.
      */
-    protected void setOldState() {
+    public void setOldState() {
         BitSet state = getState();
         if (state != null) {
             this.oldState = (BitSet) state.clone();

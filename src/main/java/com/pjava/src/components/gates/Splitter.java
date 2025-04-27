@@ -56,12 +56,12 @@ public class Splitter extends Gate {
      */
     @Override
     public BitSet getState() {
-        return getInputCable().get(0).getBitSet();
+        return getInputCable().get(0).getState();
     }
 
     /**
      * Add one output to the splitter.
-     * Same as addOutput(1) ({@link #addOutput(int)}).
+     * Equivalent of {@code addOutput(1)} ({@link #addOutput(int)}).
      */
     public void addOuput() {
         addOutput(1);

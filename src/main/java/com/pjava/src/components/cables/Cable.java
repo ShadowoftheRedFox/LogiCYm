@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.UUID;
 
+import com.pjava.src.components.Component;
 import com.pjava.src.components.Gate;
 import com.pjava.src.errors.BusSizeException;
 import com.pjava.src.utils.Utils;
@@ -11,7 +12,7 @@ import com.pjava.src.utils.Utils;
 /**
  * Used to link multiple {@link Gate}s together.
  */
-public class Cable extends BitSet {
+public class Cable extends BitSet implements Component {
     // unique identifier to distinguish cable
     /**
      * Unique identifier to distinguish cables, while keeping the
@@ -64,7 +65,7 @@ public class Cable extends BitSet {
     }
 
     /**
-     * This function is called when inputs state changes.
+     * This function is called when inputs state change.
      * Equivalent of {@code updateState(true)} ({@link #updateState(boolean)}).
      */
     public void updateState() {
@@ -160,7 +161,7 @@ public class Cable extends BitSet {
      *
      * @return If the cable is powered or not.
      */
-    public Boolean getPowered() {
+    public boolean getPowered() {
         return powered;
     }
 
@@ -171,6 +172,24 @@ public class Cable extends BitSet {
      */
     public int getBusSize() {
         return busSize;
+    }
+
+    /**
+     * Get the number of gates connected as input for this cable.
+     *
+     * @return The number of input gates.
+     */
+    public Integer getInputNumber() {
+        return inputGate.size();
+    }
+
+    /**
+     * Get the number of gates connected as output for this cable.
+     *
+     * @return The number of output gates.
+     */
+    public Integer getOutputNumber() {
+        return outputGate.size();
     }
 
     /**
@@ -196,7 +215,7 @@ public class Cable extends BitSet {
      *
      * @return A new bit set, equals to this cable bit set.
      */
-    public BitSet getBitSet() {
+    public BitSet getState() {
         return BitSet.valueOf(this.toByteArray());
     }
     // #endregion
@@ -208,7 +227,7 @@ public class Cable extends BitSet {
      *
      * @param powered True if powered, false if not.
      */
-    protected void setPowered(boolean powered) {
+    public void setPowered(boolean powered) {
         this.powered = powered;
     }
 
@@ -216,8 +235,8 @@ public class Cable extends BitSet {
      * The setter for {@link #oldState}.
      * Internal function that set the oldState to a clone of the current state.
      */
-    private void setOldState() {
-        this.oldState = getBitSet();
+    public void setOldState() {
+        this.oldState = getState();
     }
 
     /**

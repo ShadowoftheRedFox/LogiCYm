@@ -67,7 +67,7 @@ public class Merger extends Gate {
 
     /**
      * Add one input to the merger.
-     * Same as addInput(1) ({@link #addInput(int)}).
+     * Equivalent of {@code addInput(1)} ({@link #addInput(int)}).
      */
     public void addOuput() {
         addInput(1);
