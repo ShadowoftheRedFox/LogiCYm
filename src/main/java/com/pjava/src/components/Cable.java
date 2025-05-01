@@ -1,11 +1,8 @@
-package com.pjava.src.components.cables;
+package com.pjava.src.components;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.UUID;
 
-import com.pjava.src.components.Component;
-import com.pjava.src.components.Gate;
 import com.pjava.src.errors.BusSizeException;
 import com.pjava.src.utils.Utils;
 
@@ -13,25 +10,22 @@ import com.pjava.src.utils.Utils;
  * Used to link multiple {@link Gate}s together.
  */
 public class Cable extends BitSet implements Component {
-    // unique identifier to distinguish cable
     /**
-     * Unique identifier to distinguish cables, while keeping the
-     * {@link java.util.BitSet#equals(Object)} available.
+     * A unique id to differentiate this instance from other components.
      */
-    private final int uuid = Utils.runtimeID();
-    // private final UUID uuid = UUID.randomUUID();
+    private Integer uuid = Utils.runtimeID();
 
     /**
      * Indicate whether this cable is powered. An unpowered cable means either that
      * it doesn't have any input, or that a previous {@link Gate} is also unpowered.
      * An unpowered cable does not transmit nor emit updates.
      */
-    private boolean powered = false;
+    private boolean powered = true;
 
     /**
      * The previous state of the gate. Should always be a clone.
      */
-    private BitSet oldState = new BitSet();
+    private BitSet oldState = new BitSet(1);
 
     /**
      * The size of the bus. It must be a power of 2.
@@ -81,28 +75,28 @@ public class Cable extends BitSet implements Component {
         // early returns
         if (outputGate.size() == 0 || !getPowered()) {
             // TODO special case for Input and Ouput
-            System.out.println("Cable early return");
+            System.out.println("Cable early return " + uuid);
             return;
         }
 
         // if multiple input, add (the "or" bitwise) the result
         for (Gate gate : getInputGate()) {
-            if (gate != null && gate.getPowered()) {
+            if (gate != null && gate.getPowered() && gate.getState() != null) {
                 this.or(gate.getState());
             }
         }
 
-        // another early return
-        if (oldState.equals(this)) {
-            System.out.println("Cable early return (oldstate)");
-            return;
-        }
+        // // another early return
+        // if (oldState.equals(this)) {
+        // System.out.println("Cable early return (oldstate)");
+        // return;
+        // }
 
         // then call all output
         setOldState();
         if (propagate) {
             getOutputGate().forEach(gate -> {
-                if (gate != null) {
+                if (gate != null && !gate.getPowered()) {
                     gate.updateState();
                 }
             });
@@ -147,8 +141,7 @@ public class Cable extends BitSet implements Component {
 
     // #region Getters
     /**
-     * Returns the unique id to distinguish this cable, while keeping the equals
-     * from the BitSet.
+     * Returns the unique id to distinguish this gate from other components.
      *
      * @return The unique id.
      */
@@ -211,7 +204,7 @@ public class Cable extends BitSet implements Component {
     }
 
     /**
-     * Get the bit set instance of this cable.
+     * Get the bit set instance of this cable. This is a clone of the state.
      *
      * @return A new bit set, equals to this cable bit set.
      */
@@ -253,9 +246,24 @@ public class Cable extends BitSet implements Component {
         }
 
         this.busSize = busSize;
-        // grow the internal BitSet
-        this.set(busSize - 1);
-        this.clear(busSize - 1);
     }
     // #endregion
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Cable) {
+            return ((Cable) obj).uuid.equals(uuid);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid();
+    }
+
+    @Override
+    public String toString() {
+        return "Cable " + uuid.toString();
+    }
 }

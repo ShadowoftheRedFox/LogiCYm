@@ -110,4 +110,15 @@ public abstract class Utils {
     public static int runtimeID() {
         return id++;
     }
+
+    /**
+     * Gets the number of generated components. Since all components call
+     * {@link #runtimeID()} when instantiating, returning this id without
+     * incrementing it gives the amount of components created.
+     *
+     * @return The number of component generated.
+     */
+    public static int getComponentsCount() {
+        return id;
+    }
 }

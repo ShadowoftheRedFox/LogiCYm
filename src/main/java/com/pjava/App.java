@@ -8,6 +8,7 @@ import com.pjava.src.UI.SceneManager;
 import com.pjava.test.Test;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -49,8 +50,6 @@ public class App extends Application {
         stage.show();
 
         manager.activate("main");
-
-        new Test();
     }
 
     /**
@@ -59,6 +58,11 @@ public class App extends Application {
      * @param args Command line arguments.
      */
     public static void main(String[] args) {
-        launch();
+        // perform basic tests to see if code is healthy
+        Test test = new Test();
+        if (test.getResume()) {
+            launch();
+        }
+        Platform.exit();
     }
 }

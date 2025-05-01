@@ -1,0 +1,14 @@
+{
+    "recommendations": [
+        "redhat.vscode-xml",
+        "vscjava.vscode-java-debug",
+        "editorconfig.editorconfig",
+        "usernamehw.errorlens",
+        "aaron-bond.better-comments",
+        "cschlosser.doxdocgen",
+        "hediet.vscode-drawio",
+        "pkief.material-icon-theme",
+        "gruntfuggly.todo-tree",
+        "shardulm94.trailing-spaces"
+    ]
+}

@@ -3,8 +3,8 @@ package com.pjava.src.components.gates;
 import java.util.BitSet;
 import java.util.Collections;
 
+import com.pjava.src.components.Cable;
 import com.pjava.src.components.Gate;
-import com.pjava.src.components.cables.Cable;
 import com.pjava.src.errors.BusSizeException;
 
 /**

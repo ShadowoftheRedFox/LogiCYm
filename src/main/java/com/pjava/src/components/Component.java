@@ -1,7 +1,7 @@
+
 package com.pjava.src.components;
 
 import java.util.BitSet;
-import com.pjava.src.components.cables.Cable;
 
 /**
  * The interface that should be implemented as a base for all components.
@@ -10,10 +10,20 @@ import com.pjava.src.components.cables.Cable;
  * provided to the component.
  * It also should have inputs and outputs, to communicate with other components.
  *
+ * Don't forget to also override equals, toString and hashCode for
+ * compatibility.
+ *
  * @see Cable
  * @see Gate
  */
 public interface Component {
+    /**
+     * A unique id to differentiate components between each others.
+     *
+     * @return The id.
+     */
+    Integer uuid();
+
     /**
      * Whether the component is powered or not. Tells if all inputs are filled and
      * are powered too.
@@ -24,7 +34,7 @@ public interface Component {
     /**
      * The previous state of the component. Should always be a clone.
      */
-    BitSet oldState = new BitSet();
+    BitSet oldState = new BitSet(1);
 
     /**
      * Getter for {@link #powered}.
@@ -41,6 +51,12 @@ public interface Component {
     void setPowered(boolean powered);
 
     /**
+     * Should be called when inputs or outputs changes.
+     * This is when power is being check recursively.
+     */
+    void updatePower();
+
+    /**
      * Setter for {@link #oldState}.
      * Internal function that set the oldState to a clone of the current state.
      * If {@link #getState()} returns null, does not update {@link #oldState}.
@@ -55,6 +71,20 @@ public interface Component {
      * @return The current state.
      */
     abstract BitSet getState();
+
+    /**
+     * Shorthand for {@code #getState().get(x)}.
+     *
+     * @param x The index of the xth byte.
+     * @return The state of the xth bit of the state.
+     * @throws IllegalArgumentException Throws when x less than 0.
+     */
+    default boolean getState(int x) throws IllegalArgumentException {
+        if (x < 0) {
+            throw new IllegalArgumentException("Expected x greater or equal than 0, received " + x);
+        }
+        return getState().get(x);
+    };
 
     /**
      * This function is called when inputs state change.
@@ -82,5 +112,4 @@ public interface Component {
      * @return The number of output.
      */
     Integer getOutputNumber();
-
 }

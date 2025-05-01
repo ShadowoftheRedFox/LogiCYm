@@ -3,8 +3,8 @@ package com.pjava.src.components.gates;
 import java.util.ArrayList;
 import java.util.BitSet;
 
+import com.pjava.src.components.Cable;
 import com.pjava.src.components.Gate;
-import com.pjava.src.components.cables.Cable;
 
 /**
  * The NOT gate.
@@ -23,15 +23,16 @@ public class NOT extends Gate {
     @Override
     public BitSet getState() {
         ArrayList<Cable> inputs = getInputCable();
-        BitSet result = new BitSet(getOutputNumber());
 
         if (inputs.get(0) == null) {
-            setPowered(false);
             return null;
         }
 
-        result.or(inputs.get(0));
-        result.flip(0, result.length());
+        BitSet result = inputs.get(0).getState();
+        result.flip(0);
+
+        System.out.println(
+                "-->\t" + inputs.get(0) + " input: " + inputs.get(0).getState() + "\n\t" + this + " result: " + result);
 
         return result;
     }

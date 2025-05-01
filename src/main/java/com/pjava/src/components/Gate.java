@@ -5,15 +5,20 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
-import com.pjava.src.components.cables.Cable;
 import com.pjava.src.errors.BusSizeException;
+import com.pjava.src.utils.Cyclic;
 import com.pjava.src.utils.Utils;
 
 /**
  * The base class of any logic gate. It has inputs, outputs, and gives a result
- * depending of it's type.
+ * depending of its type.
  */
 public abstract class Gate implements Component {
+    /**
+     * A unique id to differentiate this instance from other components.
+     */
+    private Integer uuid = Utils.runtimeID();
+
     /**
      * Whether the gate is powered or not. Tells if all inputs are filled and are
      * powered too.
@@ -24,7 +29,7 @@ public abstract class Gate implements Component {
     /**
      * The previous state of the gate. Should always be a clone.
      */
-    private BitSet oldState = new BitSet();
+    private BitSet oldState = new BitSet(1);
 
     /**
      * When {@link #updateState(boolean)} is called, it does a check. If the
@@ -130,9 +135,6 @@ public abstract class Gate implements Component {
             }
         }
 
-        // TODO check cyclic connections, and change below if conditions
-        // https://www.geeksforgeeks.org/detect-cycle-in-a-graph/
-
         // send update to output when powered changed
         if ((getPowered() && countPoweredCables != getInputCable().size()) ||
                 (!getPowered() && countPoweredCables == getInputCable().size())) {
@@ -147,8 +149,17 @@ public abstract class Gate implements Component {
             setPowered(countPoweredCables == getInputCable().size());
 
             for (Cable cable : getOutputCable()) {
-                if (cable != null) {
+                if (cable != null && cable.getPowered() != getPowered()) {
                     cable.updatePower();
+                }
+            }
+        } else {
+            // check cyclic connections, if cycle detected, set powered all component
+            Cyclic cycle = new Cyclic();
+            if (cycle.isCyclic(this)) {
+                System.out.println("== Cycle: " + cycle.getComponentInCyle());
+                for (Component component : cycle.getComponentInCyle()) {
+                    component.setPowered(true);
                 }
             }
         }
@@ -336,6 +347,7 @@ public abstract class Gate implements Component {
             if (thisOutputCable.uuid().equals(arg0InputCable.uuid())) {
                 thisOutputCable.updateState(false);
                 arg0.updateState(false);
+                arg0.updatePower();
                 return thisOutputCable;
             } else if (thisOutputCable.size() != arg0InputCable.size()) {
                 // incompatible sizes
@@ -355,6 +367,7 @@ public abstract class Gate implements Component {
 
             result.updateState(false);
             arg0.updateState(false);
+            arg0.updatePower();
             return result;
         } else
         // if either is null
@@ -364,6 +377,7 @@ public abstract class Gate implements Component {
 
             thisOutputCable.updateState(false);
             arg0.updateState(false);
+            arg0.updatePower();
             return thisOutputCable;
         } else if (thisOutputCable == null && arg0InputCable != null) {
             arg0InputCable.inputGate.add(this);
@@ -371,6 +385,7 @@ public abstract class Gate implements Component {
 
             arg0InputCable.updateState(false);
             arg0.updateState(false);
+            arg0.updatePower();
             return arg0InputCable;
         }
 
@@ -532,6 +547,15 @@ public abstract class Gate implements Component {
     }
 
     // #region Getters
+    /**
+     * Returns the unique id to distinguish this gate from other components.
+     *
+     * @return The unique id.
+     */
+    public Integer uuid() {
+        return uuid;
+    }
+
     /**
      * Getter for {@link #powered}.
      *
@@ -770,6 +794,27 @@ public abstract class Gate implements Component {
         return busSize == outputCable.get(index).getBusSize();
     }
     // #endregion
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj instanceof Gate) {
+            return obj == this || ((Gate) obj).uuid() == uuid();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " " + uuid.toString();
+    }
 
     /*
      * TODO add them if needed

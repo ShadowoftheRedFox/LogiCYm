@@ -1,5 +1,6 @@
 package com.pjava.src.components.cables;
 
+import com.pjava.src.components.Cable;
 import com.pjava.src.errors.BusSizeException;
 
 /**

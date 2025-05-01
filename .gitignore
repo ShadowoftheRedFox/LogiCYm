@@ -25,7 +25,8 @@ replay_pid*
 
 # auto generated folders
 target/
-.vscode/
+.vscode/*
+!.vscode/extensions.json
 
 # JFX scene builder folder
 SceneBuilder/
