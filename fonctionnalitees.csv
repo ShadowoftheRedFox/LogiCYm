@@ -30,3 +30,5 @@ Hypothèses;Connecter deux gate;Quels sont les conditions et besoin pour pouvoir
     2) On reférence le cable depuis le port output (du gate en amont)
     3) On reférence le cable depuis le port input (du gate en aval)";
 A faire;Clock;Faire un gate spécial pouvant changer d'etat dans le temps suivant une fréquence;;
+A faire;Detection de cycle;Detecter quand un signal repasse par un gate qu'il à déjà traversé. Est-ce grave ?;"* hypothèse : ce n'est pas grave si le signal se stabilise (C'est à dire: il ne change pas de valeur à l'infini)
+   Cependant, n'est-ce pas là le principe des clock ?";
