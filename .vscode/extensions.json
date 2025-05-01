@@ -9,6 +9,7 @@
         "hediet.vscode-drawio",
         "pkief.material-icon-theme",
         "gruntfuggly.todo-tree",
-        "shardulm94.trailing-spaces"
+        "shardulm94.trailing-spaces",
+        "janisdd.vscode-edit-csv"
     ]
 }
