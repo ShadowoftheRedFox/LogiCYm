@@ -8,22 +8,33 @@ import com.pjava.src.UI.SceneManager;
 import com.pjava.test.Test;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
- * JavaFX entry point
- *
- * Launch the Scneemanager and the main scene here
+ * JavaFX entry point.
  */
 public class App extends Application {
 
-    SceneManager manager;
+    /**
+     * Create a new App.
+     */
+    public App() {
+
+    }
+
+    /**
+     * The scene manager of the application. Remember and provide all scenes. It
+     * should be this one given when creating a new scene.
+     */
+    private SceneManager manager;
 
     /**
      * Setup the application here with every scene.
      * Might be modified later.
+     * {@inheritDoc}
      */
     @Override
     public void start(Stage stage) throws IOException {
@@ -39,11 +50,19 @@ public class App extends Application {
         stage.show();
 
         manager.activate("main");
-
-        Test.run();
     }
 
+    /**
+     * Entry point of the application.
+     *
+     * @param args Command line arguments.
+     */
     public static void main(String[] args) {
-        launch();
+        // perform basic tests to see if code is healthy
+        Test test = new Test();
+        if (test.getResume()) {
+            launch();
+        }
+        Platform.exit();
     }
 }

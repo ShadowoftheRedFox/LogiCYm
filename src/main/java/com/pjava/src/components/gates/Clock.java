@@ -4,6 +4,17 @@ import java.util.BitSet;
 
 import com.pjava.src.components.Gate;
 
+/**
+ * A specific type of gate that can periodically send an update. It doesn't have
+ * any inputs, and has only one ouput bus of size 1. This gate can be
+ * enabled/disabled, and can be manually triggered. The update interval can be
+ * set when instantiating the class or later. It is always powered. It ignores
+ * propagation check.
+ *
+ * @see #cycleSpeed
+ * @see #timeCycle()
+ * @see Gate#ignorePropagationCheck
+ */
 public class Clock extends Gate {
     /**
      * Current state of the clock.
@@ -13,25 +24,36 @@ public class Clock extends Gate {
     /**
      * The cycle speed between states, in ms.
      */
-    private Long cycleSpeed = 100l;
+    private long cycleSpeed = 100l;
 
     /**
      * The timestamp of the last cycle.
      * It prevent using a sleep inside a loop.
      */
-    private Long lastCycle = System.currentTimeMillis();
+    private long lastCycle = System.currentTimeMillis();
 
     /**
      * If the clock is enabled, it will periodically change states depending on
-     * {@link #cycleSpeed}.
+     * {@link #cycleSpeed}. {@link #timeCycle()} needs to be called for the
+     * {@link #state} to change if enabled.
      */
-    private Boolean enabled = false;
+    private boolean enabled = false;
 
+    /**
+     * Create a new clock with the default interval of 100ms.
+     */
     public Clock() {
-        setPowered(true);
+        this(100l);
     }
 
+    /**
+     * Create a new clock with the given interval.
+     *
+     * @param cycleSpeed The interval between each cycle, in ms.
+     */
     public Clock(Long cycleSpeed) {
+        super(new Integer[] {}, new Integer[] { 1 });
+        setPowered(true);
         setCycleSpeed(cycleSpeed);
     }
 
@@ -39,11 +61,7 @@ public class Clock extends Gate {
      * Make a cycle instantaneously.
      */
     public void instantCycle() {
-        if (state.get(0)) {
-            state.clear(0);
-        } else {
-            state.set(0);
-        }
+        state.flip(0);
 
         lastCycle = System.currentTimeMillis();
         updateState();
@@ -61,29 +79,55 @@ public class Clock extends Gate {
         }
     }
 
+    /**
+     * Return the current state, after a {@link #timeCycle()}.
+     * {@inheritDoc}
+     */
     @Override
     public BitSet getState() {
+        timeCycle();
         return state;
     }
 
     // #region Getters
+    /**
+     * Getter for {@link #cycleSpeed}.
+     *
+     * @return The interval between cycle, in ms.
+     */
     public Long getCycleSpeed() {
         return cycleSpeed;
     }
 
+    /**
+     * Getter for {@link #enabled}.
+     *
+     * @return Whether the clock is enabled or not.
+     */
     public Boolean getEnabled() {
         return enabled;
     }
     // #endregion
 
     // #region Setters
-    public void setCycleSpeed(Long cycleSpeed) {
+    /**
+     * Setter for {@link #cycleSpeed}.
+     *
+     * @param cycleSpeed The new cycle speed in ms. Does not change if it is equal
+     *                   or below 0.
+     */
+    public void setCycleSpeed(long cycleSpeed) {
         if (cycleSpeed > 0) {
             this.cycleSpeed = cycleSpeed;
         }
     }
 
-    public void setEnabled(Boolean enabled) {
+    /**
+     * Setter for {@link #enabled}.
+     *
+     * @param enabled Whether to enable or disable the clock.
+     */
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
     // #endregion
