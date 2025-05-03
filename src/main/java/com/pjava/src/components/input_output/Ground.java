@@ -5,6 +5,11 @@ import java.util.BitSet;
 import com.pjava.src.components.Gate;
 import com.pjava.src.utils.Utils;
 
+/**
+ * Represent the ground gate. It always return a state of 0. It doesn't have
+ * any inputs, and has only one ouput bus of size 1. It is always powered. It
+ * ignores propagation check.
+ */
 public class Ground extends Gate {
     /**
      * The constant value of 0.
@@ -15,10 +20,7 @@ public class Ground extends Gate {
      * Create a new Ground gate. Default size is 1.
      */
     public Ground() {
-        super(new Integer[] {}, new Integer[] { 1 });
-        setPowered(true);
-        value = new BitSet(1);
-        value.clear();
+        this(1);
     }
 
     /**

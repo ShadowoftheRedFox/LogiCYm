@@ -10,7 +10,7 @@ Ceci est le repository du projet de la matière Java IHM CY Tch de l'année 2025
 - [Utilisation](#utilisation)
 - [Architecture](#architecture)
 - [Informations](#informations)
-- [TODO](#todo)
+- [Known bugs](#known-bugs)
 
 # Installation
 
@@ -53,10 +53,6 @@ Les [fichiers fxml](./src/main/resources/fxml/) sont pour la plupart fait de fa�
 
 Le fichier [run.sh](./run.sh) est présent originellement pour faciliter le lancement du projet, car la commande n'est pas forcément intuituve. Il permattra dans le futur de <span style="text-decoration-style: dotted;text-decoration-line: underline;" title="Pas encore implémenté, et même juste une idée">faire des vérifications avant le lancement de la compilation</span>.  
 
-# TODO
+# Known bugs
 
-- [ ] : Demander au prof ce que l'on doit faire pour le pas a pas (un délai lors de la propagation du signal, ou une erreur comme logisim)  
-- [ ] : Demander à quoi corresponde masse et l'alimentation spécifiquement
-- [x] : Méthode dans [Gate](./src/main/java/com/pjava/src/components/Gate.java) `public Cable connect(Gate arg0)` qui connecte this à arg0 avec un cable qui est renvoyé, this en output et arg0 en input, le premier compatible. Et un overload de la fonction qui précise quel input/output doit prendre.
-- [ ] : Demander au prof si on doit vraiment tout check pour les erreurs, en mode dans [Gate.java à setPowered](./src/main/java/com/pjava/src/components/Gate.java#319), doit on vérifier que le `Boolean` est pas `null`, ou juste mettre `boolean`?
-- [ ] : Peut être une optim pour le future: pour les portes de inception, regarder les valeurs des entrées du précédents getstate, si pas changé, renvoyer le même résultat
+- [ ]: SR flip flop gates do not work
