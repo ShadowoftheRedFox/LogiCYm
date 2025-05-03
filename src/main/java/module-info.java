@@ -12,12 +12,10 @@ module com.pjava {
     exports com.pjava.src.components;
     exports com.pjava.src.components.cables;
     exports com.pjava.src.components.gates;
-    exports com.pjava.src.components.input_output;
     exports com.pjava.src.errors;
-    // exports com.pjava.src.inception;
+    // exports com.pjava.src.schema;
     exports com.pjava.src.UI;
     exports com.pjava.src.utils;
-    exports com.pjava.test;
 
     // to authorize FXML files and FXMLLoader to see
     // classes from our package

@@ -1,9 +1,7 @@
 package com.pjava.src.components;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
-import java.util.List;
 
 import com.pjava.src.errors.BusSizeException;
 import com.pjava.src.utils.Cyclic;
@@ -29,12 +27,12 @@ public abstract class Gate implements Component {
     /**
      * Give the number and size of the available input ports.
      */
-    private Integer[] inputBus = new Integer[] { 1, 1 };
+    private int[] inputBus = new int[] { 1, 1 };
 
     /**
      * Give the number and size of the available output ports.
      */
-    private Integer[] outputBus = new Integer[] { 1 };
+    private int[] outputBus = new int[] { 1 };
 
     /**
      * The input cables.
@@ -61,10 +59,10 @@ public abstract class Gate implements Component {
      *
      * @param busInput  The list of input bus with their corresponding sizes.
      * @param busOutput The list of output bus with their corresponding sizes.
-     * @throws Error Throw errors from either {@link #setInputBus(Integer[])} or
-     *               {@link #setOutputBus(Integer[])}.
+     * @throws Error Throw errors from either {@link #setInputBus(int[])} or
+     *               {@link #setOutputBus(int[])}.
      */
-    public Gate(Integer[] busInput, Integer[] busOutput) throws Error {
+    public Gate(int[] busInput, int[] busOutput) throws Error {
         try {
             setInputBus(busInput);
             setOutputBus(busOutput);
@@ -449,9 +447,13 @@ public abstract class Gate implements Component {
             throw BusSizeException.fromName("size", size);
         }
 
-        List<Integer> list = Arrays.asList(getInputBus());
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        for (int i : getInputBus()) {
+            list.add(Integer.valueOf(i));
+        }
+
         list.add(size);
-        setInputBus((Integer[]) list.toArray());
+        setInputBus(list.stream().mapToInt(Integer::intValue).toArray());
     }
 
     /**
@@ -465,14 +467,18 @@ public abstract class Gate implements Component {
             throw new IllegalArgumentException("Expected index to be greater than 0, received " + index);
         }
 
-        List<Integer> list = Arrays.asList(getInputBus());
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        for (int i : getInputBus()) {
+            list.add(Integer.valueOf(i));
+        }
+
         if (index > list.size()) {
             return;
         }
 
         list.remove(index);
         try {
-            setInputBus((Integer[]) list.toArray());
+            setInputBus(list.stream().mapToInt(Integer::intValue).toArray());
         } catch (NullPointerException | BusSizeException e) {
             throw new Error(e);
         }
@@ -489,10 +495,13 @@ public abstract class Gate implements Component {
         if (BusSizeException.isBusSizeException(size)) {
             throw BusSizeException.fromName("size", size);
         }
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        for (int i : getOutputBus()) {
+            list.add(Integer.valueOf(i));
+        }
 
-        List<Integer> list = Arrays.asList(getOutputBus());
         list.add(size);
-        setOutputBus((Integer[]) list.toArray());
+        setOutputBus(list.stream().mapToInt(Integer::intValue).toArray());
     }
 
     /**
@@ -506,14 +515,18 @@ public abstract class Gate implements Component {
             throw new IllegalArgumentException("Expected index to be greater than 0, received " + index);
         }
 
-        List<Integer> list = Arrays.asList(getOutputBus());
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        for (int i : getOutputBus()) {
+            list.add(Integer.valueOf(i));
+        }
+
         if (index > list.size()) {
             return;
         }
 
         list.remove(index);
         try {
-            setOutputBus((Integer[]) list.toArray());
+            setOutputBus(list.stream().mapToInt(Integer::intValue).toArray());
         } catch (NullPointerException | BusSizeException e) {
             throw new Error(e);
         }
@@ -552,7 +565,7 @@ public abstract class Gate implements Component {
      *
      * @return The input buses.
      */
-    public Integer[] getInputBus() {
+    public int[] getInputBus() {
         return inputBus;
     }
 
@@ -570,7 +583,7 @@ public abstract class Gate implements Component {
      *
      * @return The ouput buses.
      */
-    public Integer[] getOutputBus() {
+    public int[] getOutputBus() {
         return outputBus;
     }
 
@@ -612,14 +625,11 @@ public abstract class Gate implements Component {
      *                              0, not a power of 2, or greater than 32.
      * @throws NullPointerException Throw when busSizes is null or contains a null.
      */
-    protected boolean setInputBus(Integer[] busSizes) throws BusSizeException, NullPointerException {
+    protected boolean setInputBus(int[] busSizes) throws BusSizeException, NullPointerException {
         if (busSizes == null) {
-            throw new NullPointerException("Expected busSizes[] to be Integer[], received a null");
+            throw new NullPointerException("Expected busSizes[] to be int[], received a null");
         }
-        for (Integer busSize : busSizes) {
-            if (busSize == null) {
-                throw new NullPointerException("Expected busSizes to be Integer, received a null");
-            }
+        for (int busSize : busSizes) {
             if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
                 throw BusSizeException.fromName("bus size", busSize);
             }
@@ -655,13 +665,9 @@ public abstract class Gate implements Component {
      *                                   0, not a power of 2, or greater than 32.
      * @throws IndexOutOfBoundsException Throw when index is lower than 0, or equal
      *                                   or greater than {@link #inputBus}.length.
-     * @throws NullPointerException      Throw when busSize is null.
      */
-    protected boolean setInputBus(Integer busSize, int index)
-            throws BusSizeException, IndexOutOfBoundsException, NullPointerException {
-        if (busSize == null) {
-            throw new NullPointerException("Expected busSize to be Integer, received null.");
-        }
+    protected boolean setInputBus(int busSize, int index)
+            throws BusSizeException, IndexOutOfBoundsException {
         if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
             throw BusSizeException.fromName("bus size", busSize);
         }
@@ -672,7 +678,7 @@ public abstract class Gate implements Component {
 
         inputBus[index] = busSize;
 
-        return busSize == inputCable.get(index).getBusSize();
+        return inputCable.get(index) == null || busSize == inputCable.get(index).getBusSize();
     }
 
     /**
@@ -684,14 +690,11 @@ public abstract class Gate implements Component {
      *                              0, not a power of 2, or greater than 32.
      * @throws NullPointerException Throw when busSizes is null or contains a null.
      */
-    protected boolean setOutputBus(Integer[] busSizes) throws BusSizeException, NullPointerException {
+    protected boolean setOutputBus(int[] busSizes) throws BusSizeException, NullPointerException {
         if (busSizes == null) {
-            throw new NullPointerException("Expected busSizes[] to be Integer[], received a null");
+            throw new NullPointerException("Expected busSizes[] to be int[], received a null");
         }
-        for (Integer busSize : busSizes) {
-            if (busSize == null) {
-                throw new NullPointerException("Expected busSizes to be Integer, received a null");
-            }
+        for (int busSize : busSizes) {
             if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
                 throw BusSizeException.fromName("bus size", busSize);
             }
@@ -725,13 +728,9 @@ public abstract class Gate implements Component {
      *                                   0, not a power of 2, or greater than 32.
      * @throws IndexOutOfBoundsException Throw when index is lower than 0, or equal
      *                                   or greater than {@link #outputBus}.length.
-     * @throws NullPointerException      Throw when busSize is null.
      */
-    protected boolean setOutputBus(Integer busSize, int index)
-            throws BusSizeException, IndexOutOfBoundsException, NullPointerException {
-        if (busSize == null) {
-            throw new NullPointerException("Expected busSize to be Integer, received null.");
-        }
+    protected boolean setOutputBus(int busSize, int index)
+            throws BusSizeException, IndexOutOfBoundsException {
         if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
             throw BusSizeException.fromName("bus size", busSize);
         }
@@ -742,7 +741,7 @@ public abstract class Gate implements Component {
 
         outputBus[index] = busSize;
 
-        return busSize == outputCable.get(index).getBusSize();
+        return outputCable.get(index) == null || busSize == outputCable.get(index).getBusSize();
     }
     // #endregion
 

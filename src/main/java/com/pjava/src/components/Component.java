@@ -65,13 +65,18 @@ public interface Component {
      *
      * @param x The index of the xth byte.
      * @return The state of the xth bit of the state.
+     * @throws Error                    Throws when #{@link #getState()} is null
      * @throws IllegalArgumentException Throws when x less than 0.
      */
-    default boolean getState(int x) throws IllegalArgumentException {
+    default boolean getState(int x) throws Error, IllegalArgumentException {
         if (x < 0) {
             throw new IllegalArgumentException("Expected x greater or equal than 0, received " + x);
         }
-        return getState().get(x);
+        BitSet state = getState();
+        if (state == null) {
+            throw new Error("getState returned null");
+        }
+        return state.get(x);
     };
 
     /**

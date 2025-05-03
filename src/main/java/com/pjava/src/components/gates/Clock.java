@@ -8,12 +8,10 @@ import com.pjava.src.components.Gate;
  * A specific type of gate that can periodically send an update. It doesn't have
  * any inputs, and has only one ouput bus of size 1. This gate can be
  * enabled/disabled, and can be manually triggered. The update interval can be
- * set when instantiating the class or later. It is always powered. It ignores
- * propagation check.
+ * set when instantiating the class or later. It is always powered.
  *
  * @see #cycleSpeed
  * @see #timeCycle()
- * @see Gate#ignorePropagationCheck
  */
 public class Clock extends Gate {
     /**
@@ -52,7 +50,7 @@ public class Clock extends Gate {
      * @param cycleSpeed The interval between each cycle, in ms.
      */
     public Clock(Long cycleSpeed) {
-        super(new Integer[] {}, new Integer[] { 1 });
+        super(new int[] {}, new int[] { 1 });
         setPowered(true);
         setCycleSpeed(cycleSpeed);
     }

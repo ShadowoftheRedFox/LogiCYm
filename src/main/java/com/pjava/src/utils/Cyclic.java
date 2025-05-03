@@ -27,6 +27,10 @@ public class Cyclic {
      * List of components in the cycle that has been found.
      */
     private ArrayList<Component> cycleList = new ArrayList<Component>();
+    /**
+     * List of cable queued to be looked, and to add to the {@link #cycleList} if
+     * necessary.
+     */
     private ArrayList<Component> queuedCable = new ArrayList<Component>();
 
     /**
@@ -65,6 +69,16 @@ public class Cyclic {
         this.depth = depth;
     }
 
+    /**
+     * The actual function checking recursively. It's DFS.
+     *
+     * @param current Current component we are looking into.
+     * @param visited List of visited component.
+     * @param queued  List of component queued to be looked for.
+     * @param depth   Actual depth. It's the amount of cable between the origin and
+     *                current.
+     * @return True if found a cycle, false otherwise.
+     */
     private boolean checkIsCyclic(Gate current, ArrayList<Gate> visited, ArrayList<Gate> queued, int depth) {
         // System.err.println(current);
         if (depth < 0 || current == null) {
@@ -130,6 +144,13 @@ public class Cyclic {
         }
     }
 
+    /**
+     * Check if origin is part of a cycle. The components forming the found cycle
+     * can be retrieved with {@link #getComponentInCyle()}.
+     *
+     * @param origin The root component.
+     * @return True if origin is in a cycle, false otherwise.
+     */
     public boolean isCyclic(Gate origin) {
         if (origin == null) {
             return false;
@@ -151,91 +172,4 @@ public class Cyclic {
         }
         return res;
     }
-}
-
-class CyclicInt {
-    // Function to perform DFS and detect cycle in a
-    // directed graph
-    private boolean isCyclicUtil(List<Integer>[] adj,
-            int u,
-            boolean[] visited,
-            boolean[] recStack) {
-        // If the current node is already in the recursion
-        // stack, a cycle is detected
-        if (recStack[u])
-            return true;
-
-        // If already visited and not in recStack, it's not
-        // part of a cycle
-        if (visited[u])
-            return false;
-
-        // Mark the current node as visited and add it to
-        // the recursion stack
-        visited[u] = true;
-        recStack[u] = true;
-
-        // Recur for all adjacent vertices
-        for (int v : adj[u]) {
-            if (isCyclicUtil(adj, v, visited, recStack))
-                return true;
-        }
-
-        // Backtrack: remove the vertex from recursion stack
-        recStack[u] = false;
-        return false;
-    }
-
-    // Function to construct adjacency list from edge list
-    private List<Integer>[] constructAdj(
-            int V, int[][] edges) {
-        // Create an array of lists
-        @SuppressWarnings("unchecked")
-        List<Integer>[] adj = (List<Integer>[]) Collections.nCopies(V, null).toArray();
-        for (int i = 0; i < V; i++) {
-            adj[i] = new ArrayList<>();
-        }
-
-        // Add edges to the adjacency list (directed)
-        for (int[] edge : edges) {
-            adj[edge[0]].add(edge[1]);
-        }
-
-        return adj;
-    }
-
-    // Main function to check if the directed graph contains
-    // a cycle
-    public boolean isCyclic(int V, int[][] edges) {
-        List<Integer>[] adj = constructAdj(V, edges);
-        boolean[] visited = new boolean[V];
-        boolean[] recStack = new boolean[V];
-
-        // Perform DFS from each unvisited vertex
-        for (int i = 0; i < V; i++) {
-            if (!visited[i]
-                    && isCyclicUtil(adj, i, visited, recStack))
-                return true; // Cycle found
-        }
-
-        return false; // No cycle found
-    }
-
-    public void main(String[] args) {
-        int V = 4; // Number of vertices
-
-        // Directed edges of the graph
-        int[][] edges = {
-                { 0, 1 },
-                { 0, 2 },
-                { 1, 2 },
-                { 2, 0 }, // This edge creates a cycle (0 → 2 → 0)
-                { 2, 3 }
-        };
-
-        // Print result
-        System.out.println(isCyclic(V, edges) ? "true"
-                : "false");
-    }
-
 }

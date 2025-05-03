@@ -17,7 +17,7 @@ public class NOT extends Gate {
      * Create a new NOT gate.
      */
     public NOT() {
-        super(new Integer[] { 1 }, new Integer[] { 1 });
+        super(new int[] { 1 }, new int[] { 1 });
     }
 
     @Override
