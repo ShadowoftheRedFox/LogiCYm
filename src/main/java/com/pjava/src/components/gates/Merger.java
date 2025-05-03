@@ -14,8 +14,8 @@ public class Merger extends Gate {
     /**
      * Create a new merger gate with buses of size 1 and with 2 inputs.
      *
-     * @throws Error Throw errors from either {@link #setInputBus(Integer[])} or
-     *               {@link #setOutputBus(Integer[])}.
+     * @throws Error Throw errors from either {@link #setInputBus(int[])} or
+     *               {@link #setOutputBus(int[])}.
      * @see Gate
      */
     public Merger() throws Error {
@@ -26,8 +26,8 @@ public class Merger extends Gate {
      * Create a new merger gate with the given buses size and with 2 inputs.
      *
      * @param busSize The size of the input buses.
-     * @throws Error Throw errors from either {@link #setInputBus(Integer[])} or
-     *               {@link #setOutputBus(Integer[])}.
+     * @throws Error Throw errors from either {@link #setInputBus(int[])} or
+     *               {@link #setOutputBus(int[])}.
      * @see Gate
      */
     public Merger(int busSize) throws Error {
@@ -40,14 +40,15 @@ public class Merger extends Gate {
      * @param busNumber The amount of inputs.
      * @param busSize   The size of the bus.
      * @throws Error                    Throw errors from either
-     *                                  {@link #setInputBus(Integer[])} or
-     *                                  {@link #setOutputBus(Integer[])}.
+     *                                  {@link #setInputBus(int[])} or
+     *                                  {@link #setOutputBus(int[])}.
      * @throws IllegalArgumentException Throw IllegalArgumentException if bus number
      *                                  is below 0.
      * @see Gate
      */
     public Merger(int busNumber, int busSize) throws Error {
-        super((Integer[]) Collections.nCopies(busNumber, busSize).toArray(), new Integer[] { busSize });
+        super(Collections.nCopies(busNumber, busSize).stream().mapToInt(Integer::intValue).toArray(),
+                new int[] { busSize });
     }
 
     /**
@@ -101,7 +102,7 @@ public class Merger extends Gate {
      *                          0, not a power of 2, or greater than 32.
      */
     public void changeBusSize(int busSize) throws BusSizeException {
-        setInputBus((Integer[]) Collections.nCopies(getInputNumber(), busSize).toArray());
-        setOutputBus((Integer[]) Collections.nCopies(getOutputNumber(), busSize).toArray());
+        setInputBus(Collections.nCopies(getInputNumber(), busSize).stream().mapToInt(Integer::intValue).toArray());
+        setOutputBus(Collections.nCopies(getOutputNumber(), busSize).stream().mapToInt(Integer::intValue).toArray());
     }
 }

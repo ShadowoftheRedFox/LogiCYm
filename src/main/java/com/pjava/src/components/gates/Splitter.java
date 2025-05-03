@@ -13,8 +13,8 @@ public class Splitter extends Gate {
     /**
      * Create a new splitter gate with buses of size 1 and with 2 outputs.
      *
-     * @throws Error Throw errors from either {@link #setInputBus(Integer[])} or
-     *               {@link #setOutputBus(Integer[])}.
+     * @throws Error Throw errors from either {@link #setInputBus(int[])} or
+     *               {@link #setOutputBus(int[])}.
      * @see Gate
      */
     public Splitter() throws Error {
@@ -26,8 +26,8 @@ public class Splitter extends Gate {
      * outputs.
      *
      * @param busSize The size of the output buses.
-     * @throws Error Throw errors from either {@link #setInputBus(Integer[])} or
-     *               {@link #setOutputBus(Integer[])}.
+     * @throws Error Throw errors from either {@link #setInputBus(int[])} or
+     *               {@link #setOutputBus(int[])}.
      * @see Gate
      */
     public Splitter(int busSize) throws Error {
@@ -41,13 +41,14 @@ public class Splitter extends Gate {
      * @param busNumber The amount of outputs.
      * @param busSize   The size of the bus.
      * @throws Error                    Throw errors from either
-     *                                  {@link #setInputBus(Integer[])} or
-     *                                  {@link #setOutputBus(Integer[])}.
+     *                                  {@link #setInputBus(int[])} or
+     *                                  {@link #setOutputBus(int[])}.
      * @throws IllegalArgumentException Throw when bus number is below 0.
      * @see Gate
      */
     public Splitter(int busNumber, int busSize) throws Error {
-        super(new Integer[] { busSize }, (Integer[]) Collections.nCopies(busNumber, busSize).toArray());
+        super(new int[] { busSize },
+                Collections.nCopies(busNumber, busSize).stream().mapToInt(Integer::intValue).toArray());
     }
 
     /**
@@ -95,7 +96,7 @@ public class Splitter extends Gate {
      *                          0, not a power of 2, or greater than 32.
      */
     public void changeBusSize(int busSize) throws BusSizeException {
-        setInputBus((Integer[]) Collections.nCopies(getInputNumber(), busSize).toArray());
-        setOutputBus((Integer[]) Collections.nCopies(getOutputNumber(), busSize).toArray());
+        setInputBus(Collections.nCopies(getInputNumber(), busSize).stream().mapToInt(Integer::intValue).toArray());
+        setOutputBus(Collections.nCopies(getOutputNumber(), busSize).stream().mapToInt(Integer::intValue).toArray());
     }
 }
