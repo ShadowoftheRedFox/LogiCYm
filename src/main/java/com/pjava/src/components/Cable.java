@@ -73,30 +73,35 @@ public class Cable extends BitSet implements Component {
      */
     public void updateState(boolean propagate) {
         // early returns
-        if (outputGate.size() == 0 || !getPowered()) {
+        if (getOutputGate().size() == 0 || getPowered() == false) {
             // TODO special case for Input and Ouput
-            System.out.println("Cable early return " + uuid);
             return;
         }
 
         // if multiple input, add (the "or" bitwise) the result
+        this.clear();
         for (Gate gate : getInputGate()) {
-            if (gate != null && gate.getPowered() && gate.getState() != null) {
-                this.or(gate.getState());
+            BitSet gateState = gate.getState();
+            if (gate != null &&
+                    gate.getPowered() &&
+                    gateState != null) {
+                this.or(gateState);
             }
         }
 
         // // another early return
-        // if (oldState.equals(this)) {
-        // System.out.println("Cable early return (oldstate)");
-        // return;
-        // }
+        if (oldState.equals(this)) {
+            // set to the old state
+            this.clear();
+            this.or(oldState);
+            return;
+        }
 
         // then call all output
         setOldState();
         if (propagate) {
             getOutputGate().forEach(gate -> {
-                if (gate != null && !gate.getPowered()) {
+                if (gate != null) {
                     gate.updateState();
                 }
             });
@@ -120,16 +125,8 @@ public class Cable extends BitSet implements Component {
         // send update to output when powered changed
         if ((getPowered() && countPoweredGates == 0) ||
                 (!getPowered() && countPoweredGates != 0)) {
-            // DEBUG
-            if (getPowered() && countPoweredGates == 0) {
-                System.out.println("Powering DOWN cable " + uuid);
-            } else if (!getPowered() && countPoweredGates != 0) {
-                System.out.println("Powering UP cable " + uuid);
-            }
 
             setPowered(countPoweredGates != 0);
-            System.out.println("[Cable " + uuid + "] " + countPoweredGates + "/" + inputGate.size() + " powered gates");
-
             for (Gate gate : getOutputGate()) {
                 if (gate != null) {
                     gate.updatePower();

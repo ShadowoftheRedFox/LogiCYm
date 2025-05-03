@@ -8,6 +8,7 @@ import com.pjava.src.components.Gate;
 import com.pjava.src.components.gates.AND;
 import com.pjava.src.components.gates.Clock;
 import com.pjava.src.components.gates.NOT;
+import com.pjava.src.components.gates.OR;
 import com.pjava.src.components.input_output.Ground;
 import com.pjava.src.components.input_output.Power;
 import com.pjava.src.utils.Cyclic;
@@ -15,6 +16,7 @@ import com.pjava.src.utils.Utils;
 
 /**
  * This a test class. Nothing more, nothing less.
+ * TODO replace this class with unit test.
  */
 public class Test {
     /**
@@ -120,62 +122,63 @@ public class Test {
      */
     public void flipFlop() {
         // Clock start at 0
-        Clock S = new Clock();
         Clock R = new Clock();
+        Clock S = new Clock();
 
-        AND and1 = new AND();
+        OR or1 = new OR();
+        OR or2 = new OR();
+
         NOT not1 = new NOT();
-
-        AND and2 = new AND();
         NOT not2 = new NOT();
 
-        Cable cS = S.connect(and1);
-        Cable cR = R.connect(and2);
+        R.connect(or1);
+        S.connect(or2);
 
-        Cable cAnd1 = and1.connect(not1);
-        Cable cAnd2 = and2.connect(not2);
+        or1.connect(not1);
+        or2.connect(not2);
 
-        Cable cNot1 = not1.connect(and2);
-        Cable cNot2 = not2.connect(and1);
+        not1.connect(or2);
+        not2.connect(or1);
+
+        R.updateState();
+        S.updateState();
 
         boolean q = not1.getState(0);
         boolean oldq = q;
-
-        S.updateState();
-        R.updateState();
 
         Cyclic cycle = new Cyclic();
         if (cycle.isCyclic(R)) {
             System.out.println("Is R in a cycle? Expected: false -> true");
         }
-        if (!cycle.isCyclic(and1)) {
-            System.out.println("Is and1 in a cycle? Expected: true -> " + cycle.isCyclic(and1));
+        if (!cycle.isCyclic(or1)) {
+            System.out.println("Is or1 in a cycle? Expected: true -> " + cycle.isCyclic(or1));
         }
 
         boolean result = true;
-        for (int i = 0; i < 4; i++) {
-            q = (!S.getState(0) ||
-                    (R.getState(0) && q));
+        for (int i = 1; i <= 4; i++) {
+            q = (S.getState(0) ||
+                    (!R.getState(0) && oldq));
+            oldq = q;
 
-            if (!S.getState(0) && !R.getState(0)) {
+            if (S.getState(0) && R.getState(0)) {
                 System.out.println("[CHECK " + i + "] INVALID\n" +
                         "\tInputs: " +
-                        " \tS: " + !S.getState(0) +
-                        " \tR: " + !R.getState(0) +
+                        " \tS: " + S.getState(0) +
+                        " \tR: " + R.getState(0) +
 
                         "\n\tExpected:" +
-                        " \tQ: " + true +
-                        " \t!Q: " + true +
+                        " \tQ: " + false +
+                        " \t!Q: " + false +
 
                         "\n\tResult: " +
                         " \tQ: " + not1.getState(0) +
                         " \t!Q: " + not2.getState(0));
-                result = result && (not1.getState(0) && not2.getState(0));
+                result = result && (!not1.getState(0) && !not2.getState(0));
             } else {
                 System.out.println("[CHECK " + i + "]\n" +
                         "\tInputs: " +
-                        " \tS: " + !S.getState(0) +
-                        " \tR: " + !R.getState(0) +
+                        " \tS: " + S.getState(0) +
+                        " \tR: " + R.getState(0) +
                         " \tQ: " + oldq +
 
                         "\n\tExpected:" +
@@ -187,9 +190,6 @@ public class Test {
                         " \t!Q: " + not2.getState(0));
                 result = result && (not1.getState(0) == q && not2.getState(0) == !q);
             }
-            oldq = q;
-
-            drawFlipFlop(S, R, and1, and2, not1, not2, cAnd1, cAnd2, cS, cR, cNot1, cNot2);
 
             if (Utils.isEven(i)) {
                 R.instantCycle();
@@ -205,33 +205,6 @@ public class Test {
         } else {
             System.out.println("\n\t]======SR Flip Flop Failure======[\n");
         }
-    }
-
-    /**
-     * Draw a pretty graphic in the log because i'm going mad with this flip flop.
-     */
-    private void drawFlipFlop(Clock S, Clock R, AND and1, AND and2, NOT not1, NOT not2,
-            Cable cAnd1,
-            Cable cAnd2,
-            Cable cS,
-            Cable cR,
-            Cable cNot1,
-            Cable cNot2) {
-
-        System.out.println(
-                "Name |  Powered\t | State\n" +
-                        "S    : " + S.getPowered() + "\t | " + S.getState(0) + "\n" +
-                        "R    : " + R.getPowered() + "\t | " + R.getState(0) + "\n" +
-                        "and1 : " + and1.getPowered() + "\t | " + and1.getState(0) + "\n" +
-                        "and2 : " + and2.getPowered() + "\t | " + and2.getState(0) + "\n" +
-                        "not1 : " + not1.getPowered() + "\t | " + not1.getState(0) + "\n" +
-                        "not2 : " + not2.getPowered() + "\t | " + not2.getState(0) + "\n" +
-                        "cAnd1: " + cAnd1.getPowered() + "\t | " + cAnd1.getState(0) + "\n" +
-                        "cAnd2: " + cAnd2.getPowered() + "\t | " + cAnd2.getState(0) + "\n" +
-                        "cS   : " + cS.getPowered() + "\t | " + cS.getState(0) + "\n" +
-                        "cR   : " + cR.getPowered() + "\t | " + cR.getState(0) + "\n" +
-                        "cNot1: " + cNot1.getPowered() + "\t | " + cNot1.getState(0) + "\n" +
-                        "cNot2: " + cNot2.getPowered() + "\t | " + cNot2.getState(0) + "\n");
     }
 
     /**

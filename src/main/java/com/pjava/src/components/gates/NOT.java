@@ -31,9 +31,6 @@ public class NOT extends Gate {
         BitSet result = inputs.get(0).getState();
         result.flip(0);
 
-        System.out.println(
-                "-->\t" + inputs.get(0) + " input: " + inputs.get(0).getState() + "\n\t" + this + " result: " + result);
-
         return result;
     }
 }

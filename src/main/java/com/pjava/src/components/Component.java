@@ -32,11 +32,6 @@ public interface Component {
     boolean powered = false;
 
     /**
-     * The previous state of the component. Should always be a clone.
-     */
-    BitSet oldState = new BitSet(1);
-
-    /**
      * Getter for {@link #powered}.
      *
      * @return Whether this gate is powered or not.
@@ -55,13 +50,6 @@ public interface Component {
      * This is when power is being check recursively.
      */
     void updatePower();
-
-    /**
-     * Setter for {@link #oldState}.
-     * Internal function that set the oldState to a clone of the current state.
-     * If {@link #getState()} returns null, does not update {@link #oldState}.
-     */
-    void setOldState();
 
     /**
      * This function is called when inputs state change.

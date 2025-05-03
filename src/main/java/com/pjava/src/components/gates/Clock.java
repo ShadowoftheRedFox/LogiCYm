@@ -53,7 +53,6 @@ public class Clock extends Gate {
      */
     public Clock(Long cycleSpeed) {
         super(new Integer[] {}, new Integer[] { 1 });
-        setIgnorePropagationCheck(true);
         setPowered(true);
         setCycleSpeed(cycleSpeed);
     }
@@ -62,11 +61,7 @@ public class Clock extends Gate {
      * Make a cycle instantaneously.
      */
     public void instantCycle() {
-        if (state.get(0)) {
-            state.clear(0);
-        } else {
-            state.set(0);
-        }
+        state.flip(0);
 
         lastCycle = System.currentTimeMillis();
         updateState();

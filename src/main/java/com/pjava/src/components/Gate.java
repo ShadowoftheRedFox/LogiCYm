@@ -27,19 +27,6 @@ public abstract class Gate implements Component {
     private boolean powered = false;
 
     /**
-     * The previous state of the gate. Should always be a clone.
-     */
-    private BitSet oldState = new BitSet(1);
-
-    /**
-     * When {@link #updateState(boolean)} is called, it does a check. If the
-     * previous state is the same as the current, it stop the signal from
-     * propagating.
-     * If this is set to true, then this check is ignored.
-     */
-    private boolean ignorePropagationCheck = false;
-
-    /**
      * Give the number and size of the available input ports.
      */
     private Integer[] inputBus = new Integer[] { 1, 1 };
@@ -101,12 +88,11 @@ public abstract class Gate implements Component {
      */
     public void updateState(boolean propagate) {
         // if same state or unpowered, do not send update
-        if (!getPowered() || (oldState.equals(getState()) && !ignorePropagationCheck)) {
-            System.out.println("Early return");
+        if (!getPowered()) {
             return;
         }
+
         // update the state otherwise
-        setOldState();
         if (propagate) {
             getOutputCable().forEach(cable -> {
                 // we do not check if cable is null here
@@ -127,24 +113,12 @@ public abstract class Gate implements Component {
         for (Cable cable : getInputCable()) {
             if (cable != null && cable.getPowered()) {
                 countPoweredCables++;
-            } else {
-                System.out.println(getClass().getSimpleName() + " Unpowering because " +
-                        (cable == null
-                                ? "cable null"
-                                : "cable unpowered " + cable.uuid()));
             }
         }
 
         // send update to output when powered changed
         if ((getPowered() && countPoweredCables != getInputCable().size()) ||
                 (!getPowered() && countPoweredCables == getInputCable().size())) {
-
-            // DEBUG
-            if (getPowered() && countPoweredCables != getInputCable().size()) {
-                System.out.println("Powering DOWN gate " + getClass().getSimpleName());
-            } else if (!getPowered() && countPoweredCables == getInputCable().size()) {
-                System.out.println("Powering UP gate " + getClass().getSimpleName());
-            }
 
             setPowered(countPoweredCables == getInputCable().size());
 
@@ -157,7 +131,6 @@ public abstract class Gate implements Component {
             // check cyclic connections, if cycle detected, set powered all component
             Cyclic cycle = new Cyclic();
             if (cycle.isCyclic(this)) {
-                System.out.println("== Cycle: " + cycle.getComponentInCyle());
                 for (Component component : cycle.getComponentInCyle()) {
                     component.setPowered(true);
                 }
@@ -197,8 +170,8 @@ public abstract class Gate implements Component {
         // check if both gate are already linked
         Cable result = getCableWith(arg0);
         if (result != null) {
-            result.updateState(false);
-            arg0.updateState(false);
+            result.updateState();
+            arg0.updateState();
             return result;
         }
 
@@ -222,8 +195,8 @@ public abstract class Gate implements Component {
                         // check if it's the same cable, and return it
                         if (thisOutputCable.uuid().equals(arg0InputCable.uuid())) {
                             this.getOutputCable().get(thisoutputBusSize).updatePower();
-                            this.getOutputCable().get(thisoutputBusSize).updateState(false);
-                            arg0.updateState(false);
+                            this.getOutputCable().get(thisoutputBusSize).updateState();
+                            arg0.updateState();
                             return this.getOutputCable().get(thisoutputBusSize);
                         }
                         // TODO maybe try to merge and not throw error?
@@ -244,8 +217,8 @@ public abstract class Gate implements Component {
                         arg0.inputCable.set(j, result);
 
                         result.updatePower();
-                        result.updateState(false);
-                        arg0.updateState(false);
+                        result.updateState();
+                        arg0.updateState();
                         return result;
                     }
                 }
@@ -270,16 +243,16 @@ public abstract class Gate implements Component {
                         arg0.inputCable.set(j, thisOutputCable);
 
                         thisOutputCable.updatePower();
-                        thisOutputCable.updateState(false);
-                        arg0.updateState(false);
+                        thisOutputCable.updateState();
+                        arg0.updateState();
                         return thisOutputCable;
                     } else if (thisOutputCable == null && arg0InputCable != null) {
                         arg0InputCable.inputGate.add(this);
                         this.outputCable.set(i, arg0InputCable);
 
                         arg0InputCable.updatePower();
-                        arg0InputCable.updateState(false);
-                        arg0.updateState(false);
+                        arg0InputCable.updateState();
+                        arg0.updateState();
                         return arg0InputCable;
                     } else {
                         // should never fall here
@@ -345,8 +318,8 @@ public abstract class Gate implements Component {
         Cable arg0InputCable = arg0.inputCable.get(arg0InputIndex);
         if (thisOutputCable != null && arg0InputCable != null) {
             if (thisOutputCable.uuid().equals(arg0InputCable.uuid())) {
-                thisOutputCable.updateState(false);
-                arg0.updateState(false);
+                thisOutputCable.updateState();
+                arg0.updateState();
                 arg0.updatePower();
                 return thisOutputCable;
             } else if (thisOutputCable.size() != arg0InputCable.size()) {
@@ -365,8 +338,8 @@ public abstract class Gate implements Component {
             this.outputCable.set(thisOutputIndex, result);
             arg0.inputCable.set(arg0InputIndex, result);
 
-            result.updateState(false);
-            arg0.updateState(false);
+            result.updateState();
+            arg0.updateState();
             arg0.updatePower();
             return result;
         } else
@@ -375,16 +348,16 @@ public abstract class Gate implements Component {
             thisOutputCable.outputGate.add(arg0);
             arg0.inputCable.set(arg0InputIndex, thisOutputCable);
 
-            thisOutputCable.updateState(false);
-            arg0.updateState(false);
+            thisOutputCable.updateState();
+            arg0.updateState();
             arg0.updatePower();
             return thisOutputCable;
         } else if (thisOutputCable == null && arg0InputCable != null) {
             arg0InputCable.inputGate.add(this);
             this.outputCable.set(thisOutputIndex, arg0InputCable);
 
-            arg0InputCable.updateState(false);
-            arg0.updateState(false);
+            arg0InputCable.updateState();
+            arg0.updateState();
             arg0.updatePower();
             return arg0InputCable;
         }
@@ -628,28 +601,6 @@ public abstract class Gate implements Component {
      */
     public void setPowered(boolean powered) {
         this.powered = powered;
-    }
-
-    /**
-     * Setter for {@link #oldState}.
-     * Internal function that set the oldState to a clone of the current state.
-     * If {@link #getState()} returns null, does not update {@link #oldState}.
-     */
-    public void setOldState() {
-        BitSet state = getState();
-        if (state != null) {
-            this.oldState = (BitSet) state.clone();
-        }
-    }
-
-    /**
-     * Setter for {@link #ignorePropagationCheck}.
-     *
-     * @param ignorePropagationCheck True to ignore the check (CAN CAUSE CRASH OR
-     *                               LAG if loops), false to do the check.
-     */
-    protected void setIgnorePropagationCheck(boolean ignorePropagationCheck) {
-        this.ignorePropagationCheck = ignorePropagationCheck;
     }
 
     /**
