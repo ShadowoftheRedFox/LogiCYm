@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Nom de la fonctionnalit&eacute;</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <pre><code class="language-md"><span class="hljs-section"># Nom de la fonctionnalité</span>
+<span class="hljs-quote">&gt; <span class="hljs-strong">**Description :**</span></span>
+<span class="hljs-quote">&gt; <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span></span><span class="hljs-strong">**Etat :**</span> &quot;A faire&quot; &quot;Hypothèses&quot; &quot;Prêt&quot; &quot;Intégré&quot;</span>
+<span class="hljs-section">### Hypothèses/Idées :</span>
+<span class="hljs-section">### Solution Choisie :</span>
+</code></pre>
+<h1 id="passer-un-signal-dans-le-circuit">Passer un signal dans le circuit</h1>
+<blockquote>
+<p><strong>Description :</strong> Quand le mode simulation est activé, comment on passe un état de porte en porte, pas à pas.
+<br><strong>Etat :</strong> Hypothèses</p>
+</blockquote>
+<h3 id="hypothèsesidées-">Hypothèses/Idées :</h3>
+<ol>
+<li>
+<p>Transporter dans le signal le nombre de gate parcouru, ainsi, au pas numéro 3, tous les signaux devraient en être à leur 3 ème gate.
+<br> <strong>/!\</strong> Les gates qui reçoivent plusieurs signaux au même pas risque de se mettre à jour plusieurs fois. Il faudra prendre en compte le dernier changement à ce pas.</p>
+</li>
+<li>
+<p>Faire un dictionnaire qui se vide après chaques pas, référançant les gates à mettre à jour (= regarde ses entrées et met à jour ses sorties)</p>
+</li>
+</ol>
+<pre><code>Exemple : Dictionnaire en fonction du temp T
+
+T=0 : {&quot;&quot;idGate0&quot;&quot; : ref_Input_A, &quot;&quot;idGate1&quot;&quot; : ref_Input_B}
+    -&gt;  On commence à partir des gate input A et B.
+    Ils regardent leur état/valeurs d'entrée (ici les deux sont à 1) et le propage à leurs outputs (les cables qui sont connecté).
+    Ces outputs sont ajoutés au dictionnaire pour T=1.
+
+T=1 : {&quot;&quot;idCable0&quot;&quot; : ref_Cable_0, &quot;&quot;idCable1&quot;&quot; : ref_Cable_1}
+    -&gt;  Les valeurs de T=0 on été suprimés et remplacées
+    Les éléments (ici les cables) vérifies leurs entrées/etat et mettent à jour leur sorties (ils passent la valeur au gate suivant)
+    Les éléments ajoute les références de leurs sorties au Dictionnaire pour T=2.
+
+T=2 : {&quot;&quot;idGate2&quot;&quot; : ref_Gate_A}
+    -&gt;  Les deux cables faisaient référance au même gate (qui dans notre exemple est un gate AND)
+    Celui-ci vérifie donc UNE SEULE FOIS ses entrées et modifie sa sortie
+    On ajoute l'élément référencé par sa sortie au Dictionnaire pour T=3.
+
+T=3 : c'est un cable, on référence sa sortie pour T=4.
+
+T=4 : {&quot;&quot;idGate0&quot;&quot; : ref_Output_A}
+    -&gt;  Le gate output vérifie ses entrées et change d'état(/sortie), ce qui permetra d'afficher le résultat.
+</code></pre>
+<h3 id="solution-choisie-">Solution Choisie :</h3>
+<h1 id="connecter-deux-gate">Connecter deux gate</h1>
+<blockquote>
+<p><strong>Description :</strong> Quels sont les conditions et besoin pour pouvoir connecter deux gates
+<br> <strong>Etat :</strong> Hypothèses</p>
+</blockquote>
+<h3 id="hypothèsesidées--1">Hypothèses/Idées :</h3>
+<ul>
+<li>Il faut que les deux gates existes.</li>
+<li>Les ports doivent être précisés [strictement 1 input et 1 output].</li>
+<li>Les ports doivent avoir la même taille de bus.</li>
+<li>Si les ports sont déjà pris on déconnecte l'ancien câble et on branche le nouveau.
+<ul>
+<li>(si on est en ligne de commande on lui demande s'il veut remplacer par la nouvelle connexion)</li>
+</ul>
+</li>
+</ul>
+<pre><code>Exemple d'utilisation :
+1) On crée une instance de cable (id unique, ref gate amont, ref gate aval, taille de bus ?)
+2) On reférence le cable depuis le port output (du gate en amont)
+3) On reférence le cable depuis le port input (du gate en aval)
+</code></pre>
+<h3 id="solution-choisie--1">Solution Choisie :</h3>
+<h1 id="clock">Clock</h1>
+<blockquote>
+<p><strong>Description :</strong> Faire un gate spécial pouvant changer d'etat dans le temps suivant une fréquence
+<br><strong>Etat :</strong> A faire</p>
+</blockquote>
+<h3 id="hypothèsesidées--2">Hypothèses/Idées :</h3>
+<h3 id="solution-choisie--2">Solution Choisie :</h3>
+<h1 id="detection-de-cycle">Detection de cycle</h1>
+<blockquote>
+<p><strong>Description :</strong> Detecter quand un signal repasse par un gate qu'il à déjà traversé. Est-ce grave ?
+<br><strong>Etat :</strong> A faire</p>
+</blockquote>
+<h3 id="hypothèsesidées--3">Hypothèses/Idées :</h3>
+<p>hypothèse : ce n'est pas grave si le signal se stabilise (C'est à dire: il ne change pas de valeur à l'infini)
+<br>Cependant, n'est-ce pas là le principe des clock ?</p>
+<h3 id="solution-choisie--3">Solution Choisie :</h3>
+
+            
+            
+        </body>
+        </html>
