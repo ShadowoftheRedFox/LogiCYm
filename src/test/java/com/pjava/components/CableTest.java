@@ -8,13 +8,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import com.pjava.src.components.Cable;
-import com.pjava.src.components.gates.NOT;
+import com.pjava.src.components.gates.Not;
 import com.pjava.src.errors.BusSizeException;
 
 public class CableTest {
-    class testCable extends Cable {
-        testCable(int size) throws BusSizeException {
+    class TestCable extends Cable {
+        TestCable(int size) throws BusSizeException {
             super(size);
+        }
+
+        @Override
+        public void setPowered(boolean powered) {
+            super.setPowered(powered);
         }
 
         @Override
@@ -35,7 +40,7 @@ public class CableTest {
 
     @Test
     void getsetPowered() throws BusSizeException {
-        Cable c = new Cable(1);
+        TestCable c = new TestCable(1);
         c.setPowered(false);
         assertEquals(false, c.getPowered());
         c.setPowered(true);
@@ -44,7 +49,7 @@ public class CableTest {
 
     @Test
     void getsetBusSize() throws BusSizeException {
-        testCable c = new testCable(1);
+        TestCable c = new TestCable(1);
         assertEquals(1, c.getBusSize());
         c.setBusSize(2);
         assertEquals(2, c.getBusSize());
@@ -55,8 +60,8 @@ public class CableTest {
         Cable c = new Cable(2);
         assertEquals(0, c.getInputNumber());
         assertEquals(0, c.getInputGate().size());
-        NOT n1 = new NOT();
-        NOT n2 = new NOT();
+        Not n1 = new Not();
+        Not n2 = new Not();
         Cable d = n1.connect(n2);
         assertEquals(1, d.getInputNumber());
         assertEquals(1, d.getInputGate().size());
@@ -67,8 +72,8 @@ public class CableTest {
         Cable c = new Cable(2);
         assertEquals(0, c.getOutputNumber());
         assertEquals(0, c.getOutputGate().size());
-        NOT n1 = new NOT();
-        NOT n2 = new NOT();
+        Not n1 = new Not();
+        Not n2 = new Not();
         Cable d = n1.connect(n2);
         assertEquals(1, d.getOutputNumber());
         assertEquals(1, d.getOutputGate().size());
@@ -87,8 +92,6 @@ public class CableTest {
     void gateHashCode() throws BusSizeException {
         Cable c = new Cable(1);
         Cable d = new Cable(1);
-        assertEquals(c.hashCode(), c.hashCode());
-        assertEquals(c.hashCode(), c.uuid());
         assertNotEquals(d, c);
     }
 }

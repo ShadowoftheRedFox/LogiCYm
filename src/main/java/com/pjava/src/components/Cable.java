@@ -9,18 +9,7 @@ import com.pjava.src.utils.Utils;
 /**
  * Used to link multiple {@link Gate}s together.
  */
-public class Cable extends BitSet implements Component {
-    /**
-     * A unique id to differentiate this instance from other components.
-     */
-    private Integer uuid = Utils.runtimeID();
-
-    /**
-     * Indicate whether this cable is powered. An unpowered cable means either that
-     * it doesn't have any input, or that a previous {@link Gate} is also unpowered.
-     * An unpowered cable does not transmit nor emit updates.
-     */
-    private boolean powered = true;
+public class Cable extends Element {
 
     /**
      * The previous state of the gate. Should always be a clone.
@@ -53,8 +42,7 @@ public class Cable extends BitSet implements Component {
      * @param busSize The size of the cable bus.
      * @throws BusSizeException Throws error from {@link #setBusSize(int)}.
      */
-    public Cable(Integer busSize) throws BusSizeException {
-        super(busSize);
+    public Cable(int busSize) throws BusSizeException {
         setBusSize(busSize);
     }
 
@@ -79,21 +67,21 @@ public class Cable extends BitSet implements Component {
         }
 
         // if multiple input, add (the "or" bitwise) the result
-        this.clear();
+        state.clear();
         for (Gate gate : getInputGate()) {
             BitSet gateState = gate.getState();
             if (gate != null &&
                     gate.getPowered() &&
                     gateState != null) {
-                this.or(gateState);
+                state.or(gateState);
             }
         }
 
         // // another early return
         if (oldState.equals(this)) {
             // set to the old state
-            this.clear();
-            this.or(oldState);
+            state.clear();
+            state.or(oldState);
             return;
         }
 
@@ -115,7 +103,7 @@ public class Cable extends BitSet implements Component {
     public void updatePower() {
         // if at least one gate is powered, then the cable is powered
         int countPoweredGates = 0;
-        this.clear();
+        state.clear();
         for (Gate gate : getInputGate()) {
             if (gate != null && gate.getPowered()) {
                 countPoweredGates++;
@@ -137,24 +125,6 @@ public class Cable extends BitSet implements Component {
     }
 
     // #region Getters
-    /**
-     * Returns the unique id to distinguish this gate from other components.
-     *
-     * @return The unique id.
-     */
-    public final Integer uuid() {
-        return uuid;
-    }
-
-    /**
-     * Getter for {@link #powered}.
-     *
-     * @return If the cable is powered or not.
-     */
-    public boolean getPowered() {
-        return powered;
-    }
-
     /**
      * Getter for {@link #busSize}.
      *
@@ -199,28 +169,9 @@ public class Cable extends BitSet implements Component {
     public ArrayList<? extends Gate> getOutputGate() {
         return outputGate;
     }
-
-    /**
-     * Get the bit set instance of this cable. This is a clone of the state.
-     *
-     * @return A new bit set, equals to this cable bit set.
-     */
-    public BitSet getState() {
-        return BitSet.valueOf(this.toByteArray());
-    }
     // #endregion
 
     // #region Setters
-    /**
-     * The setter for {@link #powered}.
-     * Set whether the cable is powered or not.
-     *
-     * @param powered True if powered, false if not.
-     */
-    public void setPowered(boolean powered) {
-        this.powered = powered;
-    }
-
     /**
      * The setter for {@link #oldState}.
      * Internal function that set the oldState to a clone of the current state.
@@ -245,22 +196,4 @@ public class Cable extends BitSet implements Component {
         this.busSize = busSize;
     }
     // #endregion
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Cable) {
-            return ((Cable) obj).uuid.equals(uuid);
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return uuid();
-    }
-
-    @Override
-    public String toString() {
-        return "Cable " + uuid.toString();
-    }
 }

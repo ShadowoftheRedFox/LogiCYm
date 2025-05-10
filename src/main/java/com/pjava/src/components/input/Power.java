@@ -1,4 +1,4 @@
-package com.pjava.src.components.gates;
+package com.pjava.src.components.input;
 
 import java.util.BitSet;
 
@@ -14,7 +14,7 @@ public class Power extends Gate {
     /**
      * The constant value of 0.
      */
-    private BitSet value;
+    private final BitSet value;
 
     /**
      * Create a new Power gate. Default size is 1.
@@ -33,18 +33,18 @@ public class Power extends Gate {
     public Power(int size) throws Error {
         if (!Utils.isPower2(size)) {
             throw new Error(
-                    "size must be a power of 2.\nExpected a value being a power of 2 between 1 and 32, got " + value);
+                    "size must be a power of 2.\nExpected a value being a power of 2 between 1 and 32, got " + size);
         }
 
         setPowered(true);
         value = new BitSet(size);
-        value.set(0, value.size() - 1);
+        value.set(0);
     }
 
     @Override
     public BitSet getState() {
         // in case the internal values changed
-        value.set(0, value.size() - 1);
+        value.set(0);
         return value;
     }
 }

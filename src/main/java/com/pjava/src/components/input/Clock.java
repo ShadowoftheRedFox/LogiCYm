@@ -1,4 +1,4 @@
-package com.pjava.src.components.gates;
+package com.pjava.src.components.input;
 
 import java.util.BitSet;
 
@@ -14,11 +14,6 @@ import com.pjava.src.components.Gate;
  * @see #timeCycle()
  */
 public class Clock extends Gate {
-    /**
-     * Current state of the clock.
-     */
-    private BitSet state = new BitSet(1);
-
     /**
      * The cycle speed between states, in ms.
      */

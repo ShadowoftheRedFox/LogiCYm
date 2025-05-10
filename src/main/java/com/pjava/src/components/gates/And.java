@@ -7,29 +7,29 @@ import com.pjava.src.components.Cable;
 import com.pjava.src.components.Gate;
 
 /**
- * The NOT gate.
- * If the input is unpowered, then the output is unpowered.
- * Otherwise, apply the "not" logic to the input and output the result.
- * Only has one input and one output, both of bus size of 1.
+ * The And gate.
+ * If any of the two inputs are unpowered, then the output is unpowered.
+ * Otherwise, apply the "and" logic to the input and output the result.
  */
-public class NOT extends Gate {
+public class And extends Gate {
     /**
-     * Create a new NOT gate.
+     * Create a new And gate.
+     *
+     * @see Gate
      */
-    public NOT() {
-        super(new int[] { 1 }, new int[] { 1 });
+    public And() {
     }
 
     @Override
     public BitSet getState() {
         ArrayList<Cable> inputs = getInputCable();
 
-        if (inputs.get(0) == null) {
+        if (inputs.get(0) == null || inputs.get(1) == null) {
             return null;
         }
 
         BitSet result = inputs.get(0).getState();
-        result.flip(0);
+        result.and(inputs.get(1).getState());
 
         return result;
     }

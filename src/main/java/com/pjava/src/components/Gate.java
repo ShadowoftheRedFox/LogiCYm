@@ -11,19 +11,7 @@ import com.pjava.src.utils.Utils;
  * The base class of any logic gate. It has inputs, outputs, and gives a result
  * depending of its type.
  */
-public abstract class Gate implements Component {
-    /**
-     * A unique id to differentiate this instance from other components.
-     */
-    private Integer uuid = Utils.runtimeID();
-
-    /**
-     * Whether the gate is powered or not. Tells if all inputs are filled and are
-     * powered too.
-     * An unpowered gate does not transmit nor emit updates.
-     */
-    private boolean powered = false;
-
+public abstract class Gate extends Element {
     /**
      * Give the number and size of the available input ports.
      */
@@ -70,14 +58,6 @@ public abstract class Gate implements Component {
             throw new Error(e);
         }
     }
-
-    /**
-     * This function is called when input cables states changes.
-     * Equivalent of {@code updateState(true)} ({@link #updateState(boolean)}).
-     */
-    public void updateState() {
-        updateState(true);
-    };
 
     /**
      * This function is called when input cables states changes.
@@ -129,8 +109,8 @@ public abstract class Gate implements Component {
             // check cyclic connections, if cycle detected, set powered all component
             Cyclic cycle = new Cyclic();
             if (cycle.isCyclic(this)) {
-                for (Component component : cycle.getComponentInCyle()) {
-                    component.setPowered(true);
+                for (Element element : cycle.getElementInCyle()) {
+                    element.setPowered(true);
                 }
             }
         }
@@ -316,11 +296,12 @@ public abstract class Gate implements Component {
         Cable arg0InputCable = arg0.inputCable.get(arg0InputIndex);
         if (thisOutputCable != null && arg0InputCable != null) {
             if (thisOutputCable.uuid().equals(arg0InputCable.uuid())) {
+                thisOutputCable.updatePower();
+                arg0.updatePower();
                 thisOutputCable.updateState();
                 arg0.updateState();
-                arg0.updatePower();
                 return thisOutputCable;
-            } else if (thisOutputCable.size() != arg0InputCable.size()) {
+            } else if (thisOutputCable.getBusSize() != arg0InputCable.getBusSize()) {
                 // incompatible sizes
                 return null;
             } else {
@@ -336,9 +317,10 @@ public abstract class Gate implements Component {
             this.outputCable.set(thisOutputIndex, result);
             arg0.inputCable.set(arg0InputIndex, result);
 
+            result.updatePower();
+            arg0.updatePower();
             result.updateState();
             arg0.updateState();
-            arg0.updatePower();
             return result;
         } else
         // if either is null
@@ -346,17 +328,19 @@ public abstract class Gate implements Component {
             thisOutputCable.outputGate.add(arg0);
             arg0.inputCable.set(arg0InputIndex, thisOutputCable);
 
+            thisOutputCable.updatePower();
+            arg0.updatePower();
             thisOutputCable.updateState();
             arg0.updateState();
-            arg0.updatePower();
             return thisOutputCable;
         } else if (thisOutputCable == null && arg0InputCable != null) {
             arg0InputCable.inputGate.add(this);
             this.outputCable.set(thisOutputIndex, arg0InputCable);
 
+            arg0InputCable.updatePower();
+            arg0.updatePower();
             arg0InputCable.updateState();
             arg0.updateState();
-            arg0.updatePower();
             return arg0InputCable;
         }
 
@@ -534,24 +518,6 @@ public abstract class Gate implements Component {
 
     // #region Getters
     /**
-     * Returns the unique id to distinguish this gate from other components.
-     *
-     * @return The unique id.
-     */
-    public Integer uuid() {
-        return uuid;
-    }
-
-    /**
-     * Getter for {@link #powered}.
-     *
-     * @return Whether this gate is powered or not.
-     */
-    public boolean getPowered() {
-        return powered;
-    }
-
-    /**
      * Getter for {@link #inputBus}.length.
      *
      * @return The number of input buses.
@@ -607,15 +573,6 @@ public abstract class Gate implements Component {
     // #endregion
 
     // #region Setters
-    /**
-     * Setter for {@link #powered}.
-     *
-     * @param powered True if powered, false if not.
-     */
-    public void setPowered(boolean powered) {
-        this.powered = powered;
-    }
-
     /**
      * Setter for {@link #inputBus}.
      *
@@ -744,27 +701,6 @@ public abstract class Gate implements Component {
         return outputCable.get(index) == null || busSize == outputCable.get(index).getBusSize();
     }
     // #endregion
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj instanceof Gate) {
-            return obj == this || ((Gate) obj).uuid() == uuid();
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return uuid();
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + " " + uuid.toString();
-    }
 
     /*
      * TODO add them if needed

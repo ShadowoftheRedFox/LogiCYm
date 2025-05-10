@@ -1,4 +1,4 @@
-package com.pjava.src.components.gates;
+package com.pjava.src.components.input;
 
 import java.util.BitSet;
 
@@ -14,7 +14,7 @@ public class Ground extends Gate {
     /**
      * The constant value of 0.
      */
-    private BitSet value;
+    private final BitSet value;
 
     /**
      * Create a new Ground gate. Default size is 1.
@@ -33,7 +33,7 @@ public class Ground extends Gate {
     public Ground(int size) throws Error {
         if (!Utils.isPower2(size)) {
             throw new Error(
-                    "size must be a power of 2.\nExpected a value being a power of 2 between 1 and 32, got " + value);
+                    "size must be a power of 2.\nExpected a value being a power of 2 between 1 and 32, got " + size);
         }
 
         setPowered(true);
