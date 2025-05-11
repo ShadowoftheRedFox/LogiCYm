@@ -15,12 +15,12 @@ public abstract class Gate extends Element {
     /**
      * Give the number and size of the available input ports.
      */
-    private int[] inputBus = new int[] { 1, 1 };
+    private int[] inputBus = new int[] {};
 
     /**
      * Give the number and size of the available output ports.
      */
-    private int[] outputBus = new int[] { 1 };
+    private int[] outputBus = new int[] {};
 
     /**
      * The input cables.
@@ -39,7 +39,7 @@ public abstract class Gate extends Element {
      * output of the same size.
      */
     public Gate() {
-        ensureCapacity();
+        this(new int[] { 1, 1 }, new int[] { 1 });
     };
 
     /**
@@ -75,7 +75,7 @@ public abstract class Gate extends Element {
             getOutputCable().forEach(cable -> {
                 // we do not check if cable is null here
                 // it should be checked with updatePower
-                // it should crash if it isn't
+                // it should crash if it isn't, or if updatePower doesn't work as expected
                 cable.updateState();
             });
         }
@@ -95,10 +95,11 @@ public abstract class Gate extends Element {
         }
 
         // send update to output when powered changed
-        if ((getPowered() && countPoweredCables != getInputCable().size()) ||
-                (!getPowered() && countPoweredCables == getInputCable().size())) {
+        final int cableAmount = getInputCable().size();
+        if ((getPowered() && countPoweredCables != cableAmount) ||
+                (!getPowered() && countPoweredCables == cableAmount)) {
 
-            setPowered(countPoweredCables == getInputCable().size());
+            setPowered(countPoweredCables == cableAmount);
 
             for (Cable cable : getOutputCable()) {
                 if (cable != null && cable.getPowered() != getPowered()) {
@@ -109,6 +110,7 @@ public abstract class Gate extends Element {
             // check cyclic connections, if cycle detected, set powered all component
             Cyclic cycle = new Cyclic();
             if (cycle.isCyclic(this)) {
+                System.out.println("No powered change, but in cycle");
                 /*
                  * TODO:
                  * we should check if, for all inputs in the cycle, without elements in the
@@ -151,13 +153,8 @@ public abstract class Gate extends Element {
             throw new NullPointerException("Expected arg0 to be an instance of Gate, received null");
         }
 
-        // check if both gate are already linked
-        Cable result = getCableWith(arg0);
-        if (result != null) {
-            result.updateState();
-            arg0.updateState();
-            return result;
-        }
+        // placeholder result
+        Cable result = null;
 
         // for the error throw later
         boolean matchedButFull = false;
@@ -178,10 +175,7 @@ public abstract class Gate extends Element {
                     if (thisOutputCable != null && arg0InputCable != null) {
                         // check if it's the same cable, and return it
                         if (thisOutputCable.uuid().equals(arg0InputCable.uuid())) {
-                            this.getOutputCable().get(thisoutputBusSize).updatePower();
-                            this.getOutputCable().get(thisoutputBusSize).updateState();
-                            arg0.updateState();
-                            return this.getOutputCable().get(thisoutputBusSize);
+                            return thisOutputCable;
                         }
                         // TODO maybe try to merge and not throw error?
                         matchedButFull = true;
@@ -302,10 +296,6 @@ public abstract class Gate extends Element {
         Cable arg0InputCable = arg0.inputCable.get(arg0InputIndex);
         if (thisOutputCable != null && arg0InputCable != null) {
             if (thisOutputCable.uuid().equals(arg0InputCable.uuid())) {
-                thisOutputCable.updatePower();
-                arg0.updatePower();
-                thisOutputCable.updateState();
-                arg0.updateState();
                 return thisOutputCable;
             } else if (thisOutputCable.getBusSize() != arg0InputCable.getBusSize()) {
                 // incompatible sizes
@@ -324,9 +314,7 @@ public abstract class Gate extends Element {
             arg0.inputCable.set(arg0InputIndex, result);
 
             result.updatePower();
-            arg0.updatePower();
             result.updateState();
-            arg0.updateState();
             return result;
         } else
         // if either is null
@@ -334,9 +322,7 @@ public abstract class Gate extends Element {
             thisOutputCable.outputGate.add(arg0);
             arg0.inputCable.set(arg0InputIndex, thisOutputCable);
 
-            thisOutputCable.updatePower();
             arg0.updatePower();
-            thisOutputCable.updateState();
             arg0.updateState();
             return thisOutputCable;
         } else if (thisOutputCable == null && arg0InputCable != null) {
@@ -344,9 +330,7 @@ public abstract class Gate extends Element {
             this.outputCable.set(thisOutputIndex, arg0InputCable);
 
             arg0InputCable.updatePower();
-            arg0.updatePower();
             arg0InputCable.updateState();
-            arg0.updateState();
             return arg0InputCable;
         }
 
@@ -582,29 +566,30 @@ public abstract class Gate extends Element {
     /**
      * Setter for {@link #inputBus}.
      *
-     * @param busSizes The new bus input sizes array.
+     * @param inputBus The new bus input sizes array.
      * @return Return if true if all existing cables have valid bus size.
      * @throws BusSizeException     Throw when the given size is equal or below
      *                              0, not a power of 2, or greater than 32.
-     * @throws NullPointerException Throw when busSizes is null or contains a null.
+     * @throws NullPointerException Throw when inputBus is null or contains a null.
      */
-    protected boolean setInputBus(int[] busSizes) throws BusSizeException, NullPointerException {
-        if (busSizes == null) {
+    protected boolean setInputBus(int[] inputBus) throws BusSizeException, NullPointerException {
+        if (inputBus == null) {
             throw new NullPointerException("Expected busSizes[] to be int[], received a null");
         }
-        for (int busSize : busSizes) {
-            if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
+        for (int busSize : inputBus) {
+            if (BusSizeException.isBusSizeException(busSize)) {
                 throw BusSizeException.fromName("bus size", busSize);
             }
         }
-        this.inputBus = busSizes;
+
+        this.inputBus = inputBus;
 
         ensureCapacity();
 
         // since it replace all existing cable, only check if size is compatible with
         // already connected cable
-        boolean valid = true;
-        for (int i = 0; i < this.inputCable.size(); i++) {
+        boolean valid = this.inputCable.size() <= this.inputBus.length;
+        for (int i = 0; i < this.inputCable.size() && i < this.inputBus.length; i++) {
             Cable cable = this.inputCable.get(i);
             if (cable != null && cable.getBusSize() != this.inputBus[i]) {
                 valid = false;
@@ -647,29 +632,31 @@ public abstract class Gate extends Element {
     /**
      * Setter for {@link #outputBus}.
      *
-     * @param busSizes The new bus output sizes array.
+     * @param outputBus The new bus output sizes array.
      * @return Return if true if all existing cables have valid bus size.
      * @throws BusSizeException     Throw when the given size is equal or below
      *                              0, not a power of 2, or greater than 32.
-     * @throws NullPointerException Throw when busSizes is null or contains a null.
+     * @throws NullPointerException Throw when inputBus is null or contains a null.
      */
-    protected boolean setOutputBus(int[] busSizes) throws BusSizeException, NullPointerException {
-        if (busSizes == null) {
+    protected boolean setOutputBus(int[] outputBus) throws BusSizeException, NullPointerException {
+        if (outputBus == null) {
             throw new NullPointerException("Expected busSizes[] to be int[], received a null");
         }
-        for (int busSize : busSizes) {
-            if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
+
+        for (int busSize : outputBus) {
+            if (BusSizeException.isBusSizeException(busSize)) {
                 throw BusSizeException.fromName("bus size", busSize);
             }
         }
-        this.outputBus = busSizes;
+
+        this.outputBus = outputBus;
 
         ensureCapacity();
 
         // since it replace all existing cable, only check if size is compatible with
         // already connected cable
-        boolean valid = true;
-        for (int i = 0; i < this.outputCable.size(); i++) {
+        boolean valid = this.outputCable.size() <= this.outputBus.length;
+        for (int i = 0; i < this.outputCable.size() && i < this.outputBus.length; i++) {
             Cable cable = this.outputCable.get(i);
             if (cable != null && cable.getBusSize() != this.outputBus[i]) {
                 valid = false;

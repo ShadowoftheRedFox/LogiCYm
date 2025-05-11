@@ -13,11 +13,21 @@ import com.pjava.src.components.Gate;
  */
 public class And extends Gate {
     /**
-     * Create a new And gate.
+     * Create a new And gate with bus sizes of 1.
      *
      * @see Gate
      */
     public And() {
+        this(1);
+    }
+
+    /**
+     * Create a new And gate with bus sizes provided.
+     *
+     * @see Gate
+     */
+    public And(int busSize) {
+        super(new int[] { busSize, busSize }, new int[] { busSize });
     }
 
     @Override

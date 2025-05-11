@@ -8,10 +8,19 @@ import com.pjava.src.components.Cable;
 
 public class Not extends Gate {
     /**
-     * Create a new Not gate.
+     * Create a new Not gate with bus sizes of 1.
      */
     public Not() {
-        super(new int[] { 1 }, new int[] { 1 });
+        this(1);
+    }
+
+    /**
+     * Create a new Not gate with bus sizes provided.
+     *
+     * @see Gate
+     */
+    public Not(int busSize) {
+        super(new int[] { busSize }, new int[] { busSize });
     }
 
     @Override

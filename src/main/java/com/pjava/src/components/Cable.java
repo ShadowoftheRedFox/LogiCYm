@@ -75,7 +75,7 @@ public class Cable extends Element {
         }
 
         // // another early return
-        if (oldState.equals(this)) {
+        if (oldState.equals(this.getState())) {
             // set to the old state
             state.clear();
             state.or(oldState);

@@ -5,7 +5,7 @@ import com.pjava.src.components.Gate;
 /**
  * An input gate.
  * Inputs only have outputs. Functions in {@link Gate} used to edit inputs
- * always throws error.
+ * always do nothing.
  */
 public abstract class Input extends Gate {
     /**
@@ -17,23 +17,57 @@ public abstract class Input extends Gate {
         super(new int[] {}, busOutput);
     }
 
+    /**
+     * Does nothing in Input and sub-class.
+     *
+     * <p>
+     * In other classes:
+     * </p>
+     * {@inheritDoc}
+     *
+     * @return Always false.
+     */
     @Override
-    protected boolean setInputBus(int[] busSizes) throws Error {
-        throw new Error("Inputs can't be modified in an Input class");
+    protected final boolean setInputBus(int[] busSizes) {
+        return false;
     }
 
+    /**
+     * Does nothing in Input and sub-class.
+     *
+     * <p>
+     * In other classes:
+     * </p>
+     * {@inheritDoc}
+     *
+     * @return Always false.
+     */
     @Override
-    protected boolean setInputBus(int busSize, int index) throws Error {
-        throw new Error("Inputs can't be modified in an Input class");
+    protected final boolean setInputBus(int busSize, int index) {
+        return false;
     }
 
+    /**
+     * Does nothing in Input and sub-class.
+     *
+     * <p>
+     * In other classes:
+     * </p>
+     * {@inheritDoc}
+     */
     @Override
-    protected void addInputBus(int size) throws Error {
-        throw new Error("Inputs can't be modified in an Input class");
+    protected final void addInputBus(int size) {
     }
 
+    /**
+     * Does nothing in Input and sub-class.
+     *
+     * <p>
+     * In other classes:
+     * </p>
+     * {@inheritDoc}
+     */
     @Override
-    protected void removeInputBus(int index) throws Error {
-        throw new Error("Inputs can't be modified in an Input class");
+    protected final void removeInputBus(int index) {
     }
 }

@@ -14,9 +14,19 @@ import com.pjava.src.components.Cable;
  */
 public class Or extends Gate {
     /**
-     * Create a new OR gate.
+     * Create a new OR gate with bus sizes of 1.
      */
     public Or() {
+        this(1);
+    }
+
+    /**
+     * Create a new Or gate with bus sizes provided.
+     *
+     * @see Gate
+     */
+    public Or(int busSize) {
+        super(new int[] { busSize, busSize }, new int[] { busSize });
     }
 
     @Override

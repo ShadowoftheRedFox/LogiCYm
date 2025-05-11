@@ -5,7 +5,7 @@ import com.pjava.src.components.Gate;
 /**
  * An output gate.
  * Outputs only have inputs. Functions in {@link Gate} used to edit outputs
- * always throws error.
+ * always do nothing.
  */
 public abstract class Output extends Gate {
     /**
@@ -17,23 +17,57 @@ public abstract class Output extends Gate {
         super(busOutput, new int[] {});
     }
 
+    /**
+     * Does nothing in Output and sub-class.
+     *
+     * <p>
+     * In other classes:
+     * </p>
+     * {@inheritDoc}
+     *
+     * @return Always false.
+     */
     @Override
-    protected boolean setOutputBus(int[] busSizes) throws Error {
-        throw new Error("Outputs can't be modified in an Output class");
+    protected final boolean setOutputBus(int[] busSizes) throws Error {
+        return false;
     }
 
+    /**
+     * Does nothing in Output and sub-class.
+     *
+     * <p>
+     * In other classes:
+     * </p>
+     * {@inheritDoc}
+     *
+     * @return Always false.
+     */
     @Override
-    protected boolean setOutputBus(int busSize, int index) throws Error {
-        throw new Error("Outputs can't be modified in an Output class");
+    protected final boolean setOutputBus(int busSize, int index) throws Error {
+        return false;
     }
 
+    /**
+     * Does nothing in Output and sub-class.
+     *
+     * <p>
+     * In other classes:
+     * </p>
+     * {@inheritDoc}
+     */
     @Override
-    protected void addOutputBus(int size) throws Error {
-        throw new Error("Outputs can't be modified in an Output class");
+    protected final void addOutputBus(int size) throws Error {
     }
 
+    /**
+     * Does nothing in Output and sub-class.
+     *
+     * <p>
+     * In other classes:
+     * </p>
+     * {@inheritDoc}
+     */
     @Override
-    protected void removeOutputBus(int index) throws Error {
-        throw new Error("Outputs can't be modified in an Output class");
+    protected final void removeOutputBus(int index) throws Error {
     }
 }

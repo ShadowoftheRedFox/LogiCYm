@@ -43,7 +43,9 @@ public class MainTest {
         System.out.println("Expected: \t" + (a && b) + "\nResult: \t" + and.getState(0));
         System.out.println("Expected: \t" + !and.getState(0) + "\nResult: \t" + not.getState(0));
 
-        assertTrue((a && b) == and.getState(0) && !and.getState(0) == not.getState(0));
+        assertTrue((a && b) == and.getState(0) && !and.getState(0) == not.getState(0),
+                () -> "Expected: \t" + (a && b) + "\nResult: \t" + and.getState(0) +
+                        "\nand expected: \t" + !and.getState(0) + "\nResult: \t" + not.getState(0));
     }
 
     @Test
