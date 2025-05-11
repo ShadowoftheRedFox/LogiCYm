@@ -19,8 +19,8 @@ public class Cable extends Element {
     /**
      * The size of the bus. It must be a power of 2.
      *
-     * @see com.pjava.src.utils.Utils#isPower2(int)
-     * @see com.pjava.src.utils.Utils#pow2(int)
+     * @see Utils#isPower2(int)
+     * @see Utils#pow2(int)
      */
     private int busSize = 1;
 
@@ -103,7 +103,6 @@ public class Cable extends Element {
     public void updatePower() {
         // if at least one gate is powered, then the cable is powered
         int countPoweredGates = 0;
-        state.clear();
         for (Gate gate : getInputGate()) {
             if (gate != null && gate.getPowered()) {
                 countPoweredGates++;
@@ -115,8 +114,9 @@ public class Cable extends Element {
                 (!getPowered() && countPoweredGates != 0)) {
 
             setPowered(countPoweredGates != 0);
+
             for (Gate gate : getOutputGate()) {
-                if (gate != null) {
+                if (gate != null && gate.getPowered() != getPowered()) {
                     gate.updatePower();
                 }
             }

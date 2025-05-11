@@ -109,12 +109,18 @@ public abstract class Gate extends Element {
             // check cyclic connections, if cycle detected, set powered all component
             Cyclic cycle = new Cyclic();
             if (cycle.isCyclic(this)) {
+                /*
+                 * TODO:
+                 * we should check if, for all inputs in the cycle, without elements in the
+                 * cycle, they are all powered
+                 * if yes, power up the cycle, then update power all elements of the cycle
+                 * if no, the inverse
+                 */
                 for (Element element : cycle.getElementInCyle()) {
                     element.setPowered(true);
                 }
             }
         }
-
     }
 
     /**
