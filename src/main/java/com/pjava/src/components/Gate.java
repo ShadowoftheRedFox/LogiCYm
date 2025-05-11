@@ -553,7 +553,7 @@ public abstract class Gate extends Element {
     /**
      * Getter for {@link #outputBus}.
      *
-     * @return The ouput buses.
+     * @return The output buses.
      */
     public int[] getOutputBus() {
         return outputBus;
@@ -612,7 +612,7 @@ public abstract class Gate extends Element {
             }
         }
 
-        // TODO check if input and output siezs are both > 0 (gate without ports at all)
+        // TODO check if input and output sizes are both > 0 (gate without ports at all)
 
         return valid;
     }

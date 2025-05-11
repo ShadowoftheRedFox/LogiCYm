@@ -26,15 +26,13 @@ public class Cable extends Element {
 
     /**
      * The input gates.
-     * TODO maybe pass this private later
      */
-    public ArrayList<Gate> inputGate = new ArrayList<Gate>();
+    protected ArrayList<Gate> inputGate = new ArrayList<Gate>();
 
     /**
      * The output gates.
-     * TODO maybe pass this private later
      */
-    public ArrayList<Gate> outputGate = new ArrayList<Gate>();
+    protected ArrayList<Gate> outputGate = new ArrayList<Gate>();
 
     /**
      * Create a new cable with the specified bus size.
@@ -62,7 +60,6 @@ public class Cable extends Element {
     public void updateState(boolean propagate) {
         // early returns
         if (getOutputGate().size() == 0 || getPowered() == false) {
-            // TODO special case for Input and Ouput
             return;
         }
 

@@ -10,7 +10,6 @@ Ceci est le repository du projet de la matière Java IHM CY Tch de l'année 2025
 - [Utilisation](#utilisation)
 - [Architecture](#architecture)
 - [Informations](#informations)
-- [Known bugs](#known-bugs)
 
 # Installation
 
@@ -52,7 +51,3 @@ Le fichier [styles.css](./src/main/resources/styles/styles.css) est global à to
 Les [fichiers fxml](./src/main/resources/fxml/) sont pour la plupart fait de façon semi automatique avec scène builder (voir [Installation](#installation)), d'où le manque, voir l'inexistance, de commentaires.  
 
 Le fichier [run.sh](./run.sh) est présent originellement pour faciliter le lancement du projet, car la commande n'est pas forcément intuituve. Il permattra dans le futur de <span style="text-decoration-style: dotted;text-decoration-line: underline;" title="Pas encore implémenté, et même juste une idée">faire des vérifications avant le lancement de la compilation</span>.  
-
-# Known bugs
-
-- [ ]: SR flip flop gates do not work

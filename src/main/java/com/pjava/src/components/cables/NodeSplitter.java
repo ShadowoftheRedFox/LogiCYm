@@ -64,7 +64,7 @@ public class NodeSplitter extends Gate {
      * Add one output to the splitter.
      * Equivalent of {@code addOutput(1)} ({@link #addOutput(int)}).
      */
-    public void addOuput() {
+    public void addOutput() {
         addOutput(1);
     }
 

@@ -116,7 +116,7 @@ public abstract class Element {
     abstract Integer getInputNumber();
 
     /**
-     * Return the number of ouputs.
+     * Return the number of outputs.
      *
      * @return The number of output.
      */

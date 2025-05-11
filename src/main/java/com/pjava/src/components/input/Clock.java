@@ -4,7 +4,7 @@ import java.util.BitSet;
 
 /**
  * A specific type of gate that can periodically send an update. It doesn't have
- * any inputs, and has only one ouput bus of size 1. This gate can be
+ * any inputs, and has only one output bus of size 1. This gate can be
  * enabled/disabled, and can be manually triggered. The update interval can be
  * set when instantiating the class or later. It is always powered.
  *

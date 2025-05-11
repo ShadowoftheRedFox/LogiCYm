@@ -84,7 +84,7 @@ public class Cyclic {
             // System.out.println("looking too deep");
             return false;
         }
-        // if the current gate has either no input or no ouput, it can't be part of a
+        // if the current gate has either no input or no output, it can't be part of a
         // cycle, therefore skip it
         if (current.getInputNumber() == 0 || current.getOutputNumber() == 0) {
             // System.out.println("one way gate");
