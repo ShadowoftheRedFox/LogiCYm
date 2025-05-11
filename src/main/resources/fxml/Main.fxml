@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" type="AnchorPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" type="AnchorPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <HBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
@@ -45,8 +45,8 @@
                         </VBox>
                         <HBox alignment="BOTTOM_CENTER" spacing="10.0">
                             <children>
-                                <Button mnemonicParsing="false" onAction="#click" text="Ajouter" HBox.hgrow="ALWAYS" />
-                                <Button mnemonicParsing="false" text="Affranchir" HBox.hgrow="ALWAYS" />
+                                <Button mnemonicParsing="false" onAction="#clickPloof" text="Ajouter" HBox.hgrow="ALWAYS" />
+                                <Button mnemonicParsing="false" onAction="#clickWorkbench" text="Affranchir" HBox.hgrow="ALWAYS" />
                                 <Button mnemonicParsing="false" onAction="#quit" text="Quitter" HBox.hgrow="ALWAYS" />
                             </children>
                             <VBox.margin>
