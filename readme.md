@@ -24,7 +24,7 @@ Recommendé:
 
 # Utilisation
 
-Le ficheir [clean.sh](./clean.sh) est utilisé pour compiler et lancer le projet à partir de 0.  
+Le fichier [clean.sh](./clean.sh) est utilisé pour compiler et lancer le projet à partir de 0.  
 
 Le fichier [run.sh](/run.sh) ne compilera que les fichiers ayant changés et lancera l'application.  
 
