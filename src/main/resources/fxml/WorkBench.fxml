@@ -8,37 +8,37 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" type="AnchorPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Wok">
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+         prefHeight="600.0" prefWidth="800.0" type="AnchorPane"
+         xmlns="http://javafx.com/javafx/23.0.1"
+         xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox alignment="CENTER" layoutX="210.0" layoutY="160.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+            AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <HBox prefHeight="400.0" prefWidth="652.0">
-               <children>
-                  <ScrollPane prefHeight="400.0" prefWidth="151.0">
-                     <content>
-                        <VBox prefHeight="605.0" prefWidth="140.0">
-                           <children>
-                              <ImageView fitHeight="108.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../img/AND.png" />
-                                 </image>
-                              </ImageView>
-                              <ImageView fitHeight="108.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../img/OR.png" />
-                                 </image>
-                              </ImageView>
-                              <ImageView fitHeight="108.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true" />
-                              <ImageView fitHeight="108.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true" />
-                              <ImageView fitHeight="108.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true" />
-                              <ImageView fitHeight="108.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true" />
-                           </children>
-                        </VBox>
-                     </content>
-                  </ScrollPane>
-                  <Pane prefHeight="400.0" prefWidth="476.0" />
-               </children>
-            </HBox>
+            <ScrollPane prefWidth="200.0">
+               <content>
+                  <VBox fx:id="sidebarVBox" prefWidth="200.0" spacing="10">
+                     <children>
+                        <ImageView fx:id="andGate" fitHeight="108.0" fitWidth="140.0"
+                                   pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../img/AND.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="orGate" fitHeight="108.0" fitWidth="140.0"
+                                   pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../img/OR.png" />
+                           </image>
+                        </ImageView>
+                        <!-- Add more ImageViews as needed -->
+                     </children>
+                  </VBox>
+               </content>
+            </ScrollPane>
+
+            <Pane fx:id="workbenchPane" HBox.hgrow="ALWAYS" style="-fx-background-color: lightgray;"/>
          </children>
       </HBox>
    </children>
