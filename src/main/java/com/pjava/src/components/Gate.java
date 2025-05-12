@@ -5,7 +5,6 @@ import java.util.BitSet;
 
 import com.pjava.src.errors.BusSizeException;
 import com.pjava.src.utils.Cyclic;
-import com.pjava.src.utils.Utils;
 
 /**
  * The base class of any logic gate. It has inputs, outputs, and gives a result
@@ -371,7 +370,7 @@ public abstract class Gate extends Element {
      * @return The Cable if it exists, null otherwise.
      */
     public Cable getCableWith(Gate arg0, int busSize) {
-        if (arg0 == null || busSize <= 0 || busSize > 32 || !Utils.isPower2(busSize)) {
+        if (arg0 == null || BusSizeException.isBusSizeException(busSize)) {
             return null;
         }
 
@@ -616,7 +615,7 @@ public abstract class Gate extends Element {
      */
     protected boolean setInputBus(int busSize, int index)
             throws BusSizeException, IndexOutOfBoundsException {
-        if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
+        if (BusSizeException.isBusSizeException(busSize)) {
             throw BusSizeException.fromName("bus size", busSize);
         }
         if (index < 0 || index >= inputBus.length) {
@@ -681,7 +680,7 @@ public abstract class Gate extends Element {
      */
     protected boolean setOutputBus(int busSize, int index)
             throws BusSizeException, IndexOutOfBoundsException {
-        if (busSize <= 0 || !Utils.isPower2(busSize) || busSize > 32) {
+        if (BusSizeException.isBusSizeException(busSize)) {
             throw BusSizeException.fromName("bus size", busSize);
         }
         if (index < 0 || index >= outputBus.length) {

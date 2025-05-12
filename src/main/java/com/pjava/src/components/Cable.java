@@ -186,7 +186,7 @@ public class Cable extends Element {
      *                          power of 2, or greater than 32.
      */
     protected void setBusSize(int busSize) throws BusSizeException {
-        if (busSize <= 0 || !Utils.isPower2(busSize)) {
+        if (BusSizeException.isBusSizeException(busSize)) {
             throw BusSizeException.fromName("bus size", busSize);
         }
 
