@@ -1,7 +1,6 @@
 package com.pjava.src.utils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.pjava.src.components.Cable;
