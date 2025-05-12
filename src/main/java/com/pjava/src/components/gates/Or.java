@@ -3,20 +3,30 @@ package com.pjava.src.components.gates;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-import com.pjava.src.components.Cable;
 import com.pjava.src.components.Gate;
+import com.pjava.src.components.Cable;
 
 /**
- * The OR gate.
+ * The Or gate.
  * If any of the two inputs are unpowered, then the output is unpowered.
  * Otherwise, apply the "or" logic to the input and output the result.
  * Only has one input and one output, both of bus size of 1.
  */
-public class OR extends Gate {
+public class Or extends Gate {
     /**
-     * Create a new OR gate.
+     * Create a new OR gate with bus sizes of 1.
      */
-    public OR() {
+    public Or() {
+        this(1);
+    }
+
+    /**
+     * Create a new Or gate with bus sizes provided.
+     *
+     * @see Gate
+     */
+    public Or(int busSize) {
+        super(new int[] { busSize, busSize }, new int[] { busSize });
     }
 
     @Override
@@ -28,7 +38,7 @@ public class OR extends Gate {
         }
 
         BitSet result = inputs.get(0).getState();
-        result.or(inputs.get(1));
+        result.or(inputs.get(1).getState());
 
         return result;
     }

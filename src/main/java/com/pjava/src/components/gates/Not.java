@@ -3,21 +3,24 @@ package com.pjava.src.components.gates;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-import com.pjava.src.components.Cable;
 import com.pjava.src.components.Gate;
+import com.pjava.src.components.Cable;
 
-/**
- * The NOT gate.
- * If the input is unpowered, then the output is unpowered.
- * Otherwise, apply the "not" logic to the input and output the result.
- * Only has one input and one output, both of bus size of 1.
- */
-public class NOT extends Gate {
+public class Not extends Gate {
     /**
-     * Create a new NOT gate.
+     * Create a new Not gate with bus sizes of 1.
      */
-    public NOT() {
-        super(new int[] { 1 }, new int[] { 1 });
+    public Not() {
+        this(1);
+    }
+
+    /**
+     * Create a new Not gate with bus sizes provided.
+     *
+     * @see Gate
+     */
+    public Not(int busSize) {
+        super(new int[] { busSize }, new int[] { busSize });
     }
 
     @Override

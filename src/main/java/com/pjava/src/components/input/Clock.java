@@ -1,24 +1,17 @@
-package com.pjava.src.components.gates;
+package com.pjava.src.components.input;
 
 import java.util.BitSet;
 
-import com.pjava.src.components.Gate;
-
 /**
  * A specific type of gate that can periodically send an update. It doesn't have
- * any inputs, and has only one ouput bus of size 1. This gate can be
+ * any inputs, and has only one output bus of size 1. This gate can be
  * enabled/disabled, and can be manually triggered. The update interval can be
  * set when instantiating the class or later. It is always powered.
  *
  * @see #cycleSpeed
  * @see #timeCycle()
  */
-public class Clock extends Gate {
-    /**
-     * Current state of the clock.
-     */
-    private BitSet state = new BitSet(1);
-
+public class Clock extends Input {
     /**
      * The cycle speed between states, in ms.
      */
@@ -50,7 +43,7 @@ public class Clock extends Gate {
      * @param cycleSpeed The interval between each cycle, in ms.
      */
     public Clock(Long cycleSpeed) {
-        super(new int[] {}, new int[] { 1 });
+        super(new int[] { 1 });
         setPowered(true);
         setCycleSpeed(cycleSpeed);
     }

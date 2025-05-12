@@ -1,64 +1,76 @@
-
 package com.pjava.src.components;
 
 import java.util.BitSet;
+import java.util.Objects;
+
+import com.pjava.src.utils.Utils;
 
 /**
- * The interface that should be implemented as a base for all components.
+ * The class that should be implemented as a base for all components.
  * It should be able to old a state, and transmit it.
  * It should also have a power state, to represent if electricity is being
  * provided to the component.
  * It also should have inputs and outputs, to communicate with other components.
  *
- * Don't forget to also override equals, toString and hashCode for
- * compatibility.
- *
  * @see Cable
  * @see Gate
  */
-public interface Component {
+public abstract class Element {
+    /**
+     * A unique id to differentiate components between each others.
+     */
+    private int uuid = Utils.runtimeID();
+
     /**
      * A unique id to differentiate components between each others.
      *
      * @return The id.
      */
-    Integer uuid();
+    public Integer uuid() {
+        return uuid;
+    };
 
     /**
      * Whether the component is powered or not. Tells if all inputs are filled and
      * are powered too.
      * An unpowered component should not transmit nor emit updates.
      */
-    boolean powered = false;
+    private boolean powered = false;
 
     /**
      * Getter for {@link #powered}.
      *
      * @return Whether this gate is powered or not.
      */
-    boolean getPowered();
+    public boolean getPowered() {
+        return powered;
+    };
 
     /**
      * Setter for {@link #powered}.
      *
      * @param powered True if powered, false if not.
      */
-    void setPowered(boolean powered);
+    protected void setPowered(boolean powered) {
+        this.powered = powered;
+    }
 
     /**
      * Should be called when inputs or outputs changes.
      * This is when power is being check recursively.
      */
-    void updatePower();
+    abstract void updatePower();
+
+    protected BitSet state = new BitSet(1);
 
     /**
-     * This function is called when inputs state change.
-     * It should updates the return the state accordingly to the inputs.
-     * It should also return null if any of the inputs are null.
+     * Return a clone of the current state
      *
      * @return The current state.
      */
-    abstract BitSet getState();
+    public BitSet getState() {
+        return (BitSet) state.clone();
+    };
 
     /**
      * Shorthand for {@code #getState().get(x)}.
@@ -68,7 +80,7 @@ public interface Component {
      * @throws Error                    Throws when #{@link #getState()} is null
      * @throws IllegalArgumentException Throws when x less than 0.
      */
-    default boolean getState(int x) throws Error, IllegalArgumentException {
+    public boolean getState(int x) throws Error, IllegalArgumentException {
         if (x < 0) {
             throw new IllegalArgumentException("Expected x greater or equal than 0, received " + x);
         }
@@ -83,26 +95,51 @@ public interface Component {
      * This function is called when inputs state change.
      * Equivalent of {@code updateState(true)} ({@link #updateState(boolean)}).
      */
-    void updateState();
+    public void updateState() {
+        updateState(true);
+    };
 
     /**
      * This function is called when inputs state changes.
+     * It should updates the return the state accordingly to the inputs.
+     * It should also return null if any of the inputs are null.
      *
      * @param propagate Whether or not to propagate the changes to the outputs.
      */
-    void updateState(boolean propagate);
+    abstract void updateState(boolean propagate);
 
     /**
      * Return the number of inputs.
      *
      * @return The number of inputs.
      */
-    Integer getInputNumber();
+    abstract Integer getInputNumber();
 
     /**
-     * Return the number of ouputs.
+     * Return the number of outputs.
      *
      * @return The number of output.
      */
-    Integer getOutputNumber();
+    abstract Integer getOutputNumber();
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj instanceof Element) {
+            return obj == this || ((Element) obj).uuid() == uuid();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid());
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " " + uuid();
+    }
 }

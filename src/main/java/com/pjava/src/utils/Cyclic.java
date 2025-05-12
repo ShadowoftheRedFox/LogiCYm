@@ -1,11 +1,10 @@
 package com.pjava.src.utils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.pjava.src.components.Cable;
-import com.pjava.src.components.Component;
+import com.pjava.src.components.Element;
 import com.pjava.src.components.Gate;
 
 /**
@@ -14,7 +13,7 @@ import com.pjava.src.components.Gate;
  * the starting gate, and not if there is any other cycle.
  *
  * This class is not static because we can specify a max depth, and get the list
- * of component in the last cycle.
+ * of element in the last cycle.
  *
  * ! We could make the assumption that if we find our starting point, we could
  * ! return true.
@@ -24,14 +23,14 @@ import com.pjava.src.components.Gate;
  */
 public class Cyclic {
     /**
-     * List of components in the cycle that has been found.
+     * List of elements in the cycle that has been found.
      */
-    private ArrayList<Component> cycleList = new ArrayList<Component>();
+    private ArrayList<Element> cycleList = new ArrayList<Element>();
     /**
      * List of cable queued to be looked, and to add to the {@link #cycleList} if
      * necessary.
      */
-    private ArrayList<Component> queuedCable = new ArrayList<Component>();
+    private ArrayList<Element> queuedCable = new ArrayList<Element>();
 
     /**
      * The depth of the search. It's counted by how many layers have been looked at.
@@ -45,12 +44,12 @@ public class Cyclic {
     }
 
     /**
-     * Once {@link #isCyclic(Gate)} has run, if there is a cycle, all component
+     * Once {@link #isCyclic(Gate)} has run, if there is a cycle, all element
      * composing this cycle will be added to the result.
      *
-     * @return Component making the cycle.
+     * @return Element making the cycle.
      */
-    public List<Component> getComponentInCyle() {
+    public List<Element> getElementInCyle() {
         return cycleList;
     }
 
@@ -72,9 +71,9 @@ public class Cyclic {
     /**
      * The actual function checking recursively. It's DFS.
      *
-     * @param current Current component we are looking into.
-     * @param visited List of visited component.
-     * @param queued  List of component queued to be looked for.
+     * @param current Current element we are looking into.
+     * @param visited List of visited element.
+     * @param queued  List of element queued to be looked for.
      * @param depth   Actual depth. It's the amount of cable between the origin and
      *                current.
      * @return True if found a cycle, false otherwise.
@@ -85,7 +84,7 @@ public class Cyclic {
             // System.out.println("looking too deep");
             return false;
         }
-        // if the current gate has either no input or no ouput, it can't be part of a
+        // if the current gate has either no input or no output, it can't be part of a
         // cycle, therefore skip it
         if (current.getInputNumber() == 0 || current.getOutputNumber() == 0) {
             // System.out.println("one way gate");
@@ -136,19 +135,19 @@ public class Cyclic {
     /**
      * Add x to the {@link #cycleList} if x isn't in the list already.
      *
-     * @param x The component to add into the list.
+     * @param x The element to add into the list.
      */
-    private void addToCycleList(Component x) {
+    private void addToCycleList(Element x) {
         if (!cycleList.contains(x)) {
             cycleList.add(x);
         }
     }
 
     /**
-     * Check if origin is part of a cycle. The components forming the found cycle
-     * can be retrieved with {@link #getComponentInCyle()}.
+     * Check if origin is part of a cycle. The elements forming the found cycle
+     * can be retrieved with {@link #getElementInCyle()}.
      *
-     * @param origin The root component.
+     * @param origin The root element.
      * @return True if origin is in a cycle, false otherwise.
      */
     public boolean isCyclic(Gate origin) {
@@ -158,8 +157,8 @@ public class Cyclic {
 
         ArrayList<Gate> visited = new ArrayList<Gate>();
         ArrayList<Gate> queued = new ArrayList<Gate>();
-        cycleList = new ArrayList<Component>();
-        queuedCable = new ArrayList<Component>();
+        cycleList = new ArrayList<Element>();
+        queuedCable = new ArrayList<Element>();
 
         boolean res = false;
         try {

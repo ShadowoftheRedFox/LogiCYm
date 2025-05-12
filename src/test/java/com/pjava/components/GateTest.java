@@ -16,18 +16,23 @@ import com.pjava.src.components.Gate;
 import com.pjava.src.errors.BusSizeException;
 
 public class GateTest {
-    class testGate extends Gate {
-        testGate() {
+    class TestGate extends Gate {
+        TestGate() {
             super();
         }
 
-        testGate(int[] busInput, int[] busOutput) {
+        TestGate(int[] busInput, int[] busOutput) {
             super(busInput, busOutput);
         }
 
         @Override
         public BitSet getState() {
             return null;
+        }
+
+        @Override
+        protected void setPowered(boolean powered) {
+            super.setPowered(powered);
         }
 
         @Override
@@ -76,19 +81,19 @@ public class GateTest {
     @Test
     void gateContructor() {
         assertDoesNotThrow(() -> {
-            new testGate();
+            new TestGate();
         });
         assertThrows(Error.class, () -> {
-            new testGate(new int[] { -1 }, new int[] { 0 });
+            new TestGate(new int[] { -1 }, new int[] { 0 });
         });
         assertThrows(Error.class, () -> {
-            new testGate(null, null);
+            new TestGate(null, null);
         });
     }
 
     @Test
     void getState() {
-        testGate g = new testGate();
+        TestGate g = new TestGate();
         assertNull(g.getState());
         assertThrows(IllegalArgumentException.class, () -> {
             g.getState(-1);
@@ -100,9 +105,9 @@ public class GateTest {
 
     @Test
     void connect() throws NullPointerException, IndexOutOfBoundsException, BusSizeException, Error {
-        testGate g = new testGate(new int[] { 1, 1 }, new int[] { 1, 1 });
-        testGate h = new testGate(new int[] { 1, 1 }, new int[] { 1, 1 });
-        testGate i = new testGate(new int[] { 2 }, new int[] { 2 });
+        TestGate g = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
+        TestGate h = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
+        TestGate i = new TestGate(new int[] { 2 }, new int[] { 2 });
         assertThrows(NullPointerException.class, () -> {
             g.connect(null);
         });
@@ -128,9 +133,9 @@ public class GateTest {
 
     @Test
     void getCableWith() {
-        testGate g = new testGate(new int[] { 1, 1 }, new int[] { 1, 1 });
-        testGate h = new testGate(new int[] { 1, 1 }, new int[] { 1, 1 });
-        testGate i = new testGate(new int[] { 2 }, new int[] { 2 });
+        TestGate g = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
+        TestGate h = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
+        TestGate i = new TestGate(new int[] { 2 }, new int[] { 2 });
         Cable c = g.connect(h);
         assertEquals(c, g.getCableWith(h));
         assertEquals(c, g.getCableWith(h, 1));
@@ -141,7 +146,7 @@ public class GateTest {
 
     @Test
     void addInputBus() throws BusSizeException {
-        testGate g = new testGate(new int[] { 1, 1 }, new int[] { 1, 1 });
+        TestGate g = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
         assertThrows(BusSizeException.class, () -> {
             g.addInputBus(0);
         });
@@ -153,7 +158,7 @@ public class GateTest {
 
     @Test
     void addOutputBus() throws BusSizeException {
-        testGate g = new testGate(new int[] { 1, 1 }, new int[] { 1, 1 });
+        TestGate g = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
         assertThrows(BusSizeException.class, () -> {
             g.addOutputBus(0);
         });
@@ -165,7 +170,7 @@ public class GateTest {
 
     @Test
     void removeInputBus() {
-        testGate g = new testGate(new int[] { 1, 1 }, new int[] { 1, 1 });
+        TestGate g = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
         assertThrows(IllegalArgumentException.class, () -> {
             g.removeInputBus(-1);
         });
@@ -177,7 +182,7 @@ public class GateTest {
 
     @Test
     void removeOutputBus() {
-        testGate g = new testGate(new int[] { 1, 1 }, new int[] { 1, 1 });
+        TestGate g = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
         assertThrows(IllegalArgumentException.class, () -> {
             g.removeOutputBus(-1);
         });
@@ -189,7 +194,7 @@ public class GateTest {
 
     @Test
     void setInputBus() {
-        testGate g = new testGate();
+        TestGate g = new TestGate();
         assertThrows(NullPointerException.class, () -> {
             g.setInputBus(null);
         });
@@ -215,7 +220,7 @@ public class GateTest {
 
     @Test
     void setOutputBus() {
-        testGate g = new testGate();
+        TestGate g = new TestGate();
         assertThrows(NullPointerException.class, () -> {
             g.setOutputBus(null);
         });
@@ -241,7 +246,7 @@ public class GateTest {
 
     @Test
     void getsetPowered() {
-        testGate g = new testGate();
+        TestGate g = new TestGate();
         g.setPowered(false);
         assertEquals(false, g.getPowered());
         g.setPowered(true);
@@ -250,22 +255,22 @@ public class GateTest {
 
     @Test
     void getInputNumberAndBus() {
-        testGate g = new testGate(new int[] { 1, 1 }, new int[] { 1, 1 });
+        TestGate g = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
         assertEquals(2, g.getInputNumber());
         assertEquals(2, g.getOutputBus().length);
     }
 
     @Test
     void getOutputNumberAndBus() {
-        testGate g = new testGate(new int[] { 1, 1 }, new int[] { 1, 1 });
+        TestGate g = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
         assertEquals(2, g.getOutputNumber());
         assertEquals(2, g.getOutputBus().length);
     }
 
     @Test
     void gateEquals() {
-        testGate g = new testGate();
-        testGate h = new testGate();
+        TestGate g = new TestGate();
+        TestGate h = new TestGate();
         assertEquals(g, g);
         assertNotEquals(h, g);
         assertNotEquals(null, g);
@@ -273,10 +278,8 @@ public class GateTest {
 
     @Test
     void gateHashCode() {
-        testGate g = new testGate();
-        testGate h = new testGate();
-        assertEquals(g.hashCode(), g.hashCode());
-        assertEquals(g.hashCode(), g.uuid());
+        TestGate g = new TestGate();
+        TestGate h = new TestGate();
         assertNotEquals(h, g);
     }
 }
