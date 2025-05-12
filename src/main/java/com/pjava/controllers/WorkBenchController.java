@@ -4,14 +4,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import java.io.IOException;
 import com.pjava.src.UI.SceneManager;
+import javafx.event.ActionEvent;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.event.ActionEvent;
-
-
-
 
 public class WorkBenchController extends AnchorPane {
     private SceneManager manager;
@@ -27,9 +24,11 @@ public class WorkBenchController extends AnchorPane {
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/WorkBench.fxml"));
+            loader.setRoot(this);
             loader.setController(this);
             loader.load();
 
+            // Initialize draggable images
             initializeDraggableImages();
         } catch (IOException ex) {
             System.err.println(WorkBenchController.class.getName() + " " + ex.toString());
@@ -37,7 +36,6 @@ public class WorkBenchController extends AnchorPane {
     }
 
     private void initializeDraggableImages() {
-        // Iterate through ImageViews in the sidebar and make them draggable
         for (javafx.scene.Node node : sidebarVBox.getChildren()) {
             if (node instanceof ImageView) {
                 ImageView imageView = (ImageView) node;
