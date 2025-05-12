@@ -1,6 +1,6 @@
 # Projet Java IHM CY Tech 2025: CYrcuits
 
-Ceci est le repository du projet de la matière Java IHM CY Tch de l'année 2025.
+Ceci est le repository du projet de la matière Java IHM CY Tech de l'année 2025.
 
 # Sommaire
 
@@ -13,7 +13,7 @@ Ceci est le repository du projet de la matière Java IHM CY Tch de l'année 2025
 
 # Installation
 
-Les logiciels nécéssaire sont:  
+Les logiciels nécéssaires sont:  
 - javac v21.0.6  
 - openjdk v21.0.6  
 - Maven 3.8.7  
@@ -32,6 +32,8 @@ Le fichier [javadoc.sh](/run.sh) va générer la documentation du projet dans [.
 # Architecture
 
 Le code source se trouve sous le nom de paquet "com.pjava". [App.java](/src/main/java/org/openjfx/App.java) est le point d'entré de JavaFX.  
+
+Les test unitaires se font automatiquement au lancement du projet, les tests étant dans [ici](./src/test/java/com/pjava/).  
 
 La structure se découpe en module, et chaque scene est associée à un fichier fxml du même nom dans [resources](/resources/). Il est donc fortement recommendé d'utiliser **JavaFX Scene Builder**.  
 
