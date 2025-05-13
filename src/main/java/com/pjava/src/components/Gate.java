@@ -72,10 +72,9 @@ public abstract class Gate extends Element {
         // update the state otherwise
         if (propagate) {
             getOutputCable().forEach(cable -> {
-                // we do not check if cable is null here
-                // it should be checked with updatePower
-                // it should crash if it isn't, or if updatePower doesn't work as expected
+               if (cable != null){
                 cable.updateState();
+               }
             });
         }
     }
