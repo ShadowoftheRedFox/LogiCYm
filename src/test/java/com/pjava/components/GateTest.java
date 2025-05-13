@@ -104,7 +104,7 @@ public class GateTest {
     }
 
     @Test
-    void connect() throws NullPointerException, IndexOutOfBoundsException, BusSizeException, Error {
+    void connect() throws NullPointerException, IndexOutOfBoundsException, BusSizeException, Exception {
         TestGate g = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
         TestGate h = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
         TestGate i = new TestGate(new int[] { 2 }, new int[] { 2 });
@@ -132,7 +132,7 @@ public class GateTest {
     }
 
     @Test
-    void getCableWith() {
+    void getCableWith() throws Exception {
         TestGate g = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
         TestGate h = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
         TestGate i = new TestGate(new int[] { 2 }, new int[] { 2 });

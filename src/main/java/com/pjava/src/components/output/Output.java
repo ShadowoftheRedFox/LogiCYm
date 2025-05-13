@@ -1,5 +1,7 @@
 package com.pjava.src.components.output;
 
+import java.util.BitSet;
+
 import com.pjava.src.components.Gate;
 
 /**
@@ -69,5 +71,20 @@ public abstract class Output extends Gate {
      */
     @Override
     protected final void removeOutputBus(int index) throws Error {
+    }
+
+    /**
+     * Since output have no outputs, getState should return null, since they process
+     * nothing.
+     *
+     * <p>
+     * In other classes:
+     * </p>
+     * {@inheritDoc}
+     */
+    @Override
+    public BitSet getState() {
+        // no output
+        return null;
     }
 }

@@ -22,7 +22,7 @@ import com.pjava.src.utils.Utils;
 public class MainTest {
 
     @Test
-    void basic() {
+    void basic() throws Exception {
         Power p1 = new Power();
         // Ground p1 = new Ground();
         // Power p2 = new Power();
@@ -49,7 +49,7 @@ public class MainTest {
     }
 
     @Test
-    void SRFlipFlop() {
+    void SRFlipFlop() throws Exception {
         // Clock start at 0
         Clock R = new Clock();
         Clock S = new Clock();

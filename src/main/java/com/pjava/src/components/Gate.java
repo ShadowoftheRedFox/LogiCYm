@@ -143,11 +143,12 @@ public abstract class Gate extends Element {
      * @param arg0 The gate input you want to connect this output.
      * @return The Cable making the connection, or null if the connection is
      *         impossible (incompatible bus size).
-     * @throws Error                Throw an error if the connection is possible but
+     * @throws Exception            Throw an exception if the connection is possible
+     *                              but
      *                              different Cable are already connected to both.
      * @throws NullPointerException When arg0 is null.
      */
-    public Cable connect(Gate arg0) throws Error, NullPointerException {
+    public Cable connect(Gate arg0) throws Exception, NullPointerException {
         if (arg0 == null) {
             throw new NullPointerException("Expected arg0 to be an instance of Gate, received null");
         }
@@ -155,7 +156,7 @@ public abstract class Gate extends Element {
         // placeholder result
         Cable result = null;
 
-        // for the error throw later
+        // for the exception throw later
         boolean matchedButFull = false;
 
         // look through all the this.outputBus and arg0.inputBus, and get each match
@@ -242,7 +243,7 @@ public abstract class Gate extends Element {
         // if we're here, either no match or connection impossible
 
         if (matchedButFull) {
-            throw new Error("connection possible but bus allready full");
+            throw new Exception("connection possible but bus allready full");
         }
 
         return null;
@@ -258,7 +259,7 @@ public abstract class Gate extends Element {
      * @param arg0InputIndex  The index in arg0.inputCable ArrayList.
      * @return The cable making the connection, or null if the connection is
      *         impossible (incompatible bus size).
-     * @throws Error                     Throw an error if the connection is
+     * @throws Exception                 Throw an exception if the connection is
      *                                   possible but different Cable are already
      *                                   connected to both.
      * @throws NullPointerException      When arg0 is null.
@@ -271,7 +272,7 @@ public abstract class Gate extends Element {
      *                                   different sizes of bus.
      */
     public Cable connect(Gate arg0, int thisOutputIndex, int arg0InputIndex)
-            throws Error, NullPointerException, IndexOutOfBoundsException, BusSizeException {
+            throws Exception, NullPointerException, IndexOutOfBoundsException, BusSizeException {
         if (arg0 == null) {
             throw new NullPointerException("Expected arg0 to be an instance of Gate, received null");
         }
@@ -300,7 +301,7 @@ public abstract class Gate extends Element {
                 // incompatible sizes
                 return null;
             } else {
-                throw new Error("connection possible but bus allready full");
+                throw new Exception("connection possible but bus allready full");
             }
         } else
         // check if both cable are empty

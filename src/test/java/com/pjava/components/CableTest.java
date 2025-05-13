@@ -56,7 +56,7 @@ public class CableTest {
     }
 
     @Test
-    void getInputNumberAndBus() throws BusSizeException {
+    void getInputNumberAndBus() throws BusSizeException, Exception {
         Cable c = new Cable(2);
         assertEquals(0, c.getInputNumber());
         assertEquals(0, c.getInputGate().size());
@@ -68,7 +68,7 @@ public class CableTest {
     }
 
     @Test
-    void getOutputNumberAndBus() throws BusSizeException {
+    void getOutputNumberAndBus() throws BusSizeException, Exception {
         Cable c = new Cable(2);
         assertEquals(0, c.getOutputNumber());
         assertEquals(0, c.getOutputGate().size());

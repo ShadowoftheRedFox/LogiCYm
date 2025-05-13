@@ -44,7 +44,6 @@ public class Clock extends Input {
      */
     public Clock(Long cycleSpeed) {
         super(new int[] { 1 });
-        setPowered(true);
         setCycleSpeed(cycleSpeed);
     }
 
