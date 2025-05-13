@@ -9,6 +9,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.Node;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Circle;
+
 
 public class WorkBenchController extends AnchorPane {
     private SceneManager manager;
@@ -28,43 +32,106 @@ public class WorkBenchController extends AnchorPane {
             loader.setController(this);
             loader.load();
 
-            // Initialize draggable images
-            initializeDraggableImages();
+            // Initialize draggable nodes
+            initializeDraggableNodes();
         } catch (IOException ex) {
             System.err.println(WorkBenchController.class.getName() + " " + ex.toString());
         }
     }
 
-    private void initializeDraggableImages() {
-        for (javafx.scene.Node node : sidebarVBox.getChildren()) {
+    private void initializeDraggableNodes() {
+        for (Node node : sidebarVBox.getChildren()) {
+            // Make ImageViews draggable
             if (node instanceof ImageView) {
-                ImageView imageView = (ImageView) node;
-                makeDraggable(imageView);
+                makeDraggable((ImageView) node);
+            }
+            // Make AnchorPanes draggable
+            else if (node instanceof AnchorPane) {
+                makeDraggable((AnchorPane) node);
             }
         }
     }
 
     private void makeDraggable(ImageView imageView) {
-        // Create a copy of the image when dragged
         imageView.setOnDragDetected(event -> {
-            // Clone the image for dragging
             ImageView draggedImage = new ImageView(imageView.getImage());
             draggedImage.setFitWidth(imageView.getFitWidth());
             draggedImage.setFitHeight(imageView.getFitHeight());
-
-            // Make the dragged image movable within the workbench
-            draggedImage.setOnMousePressed(pressEvent -> {
-                draggedImage.setTranslateX(pressEvent.getSceneX() - workbenchPane.getLayoutX());
-                draggedImage.setTranslateY(pressEvent.getSceneY() - workbenchPane.getLayoutY());
-            });
-
-            draggedImage.setOnMouseDragged(dragEvent -> {
-                draggedImage.setTranslateX(dragEvent.getSceneX() - workbenchPane.getLayoutX());
-                draggedImage.setTranslateY(dragEvent.getSceneY() - workbenchPane.getLayoutY());
-            });
-
-            // Add the dragged image to the workbench
+            setupDraggableNode(draggedImage);
             workbenchPane.getChildren().add(draggedImage);
+        });
+    }
+
+    private void makeDraggable(AnchorPane anchorPane) {
+        anchorPane.setOnDragDetected(event -> {
+            try {
+                // Create a deep copy of the AnchorPane and its children
+                AnchorPane draggedPane = new AnchorPane();
+                draggedPane.setPrefWidth(anchorPane.getPrefWidth());
+                draggedPane.setPrefHeight(anchorPane.getPrefHeight());
+
+                // Copy all children (including lines and images)
+                for (Node child : anchorPane.getChildren()) {
+                    Node childCopy = copyNode(child);
+                    draggedPane.getChildren().add(childCopy);
+                }
+
+                setupDraggableNode(draggedPane);
+                workbenchPane.getChildren().add(draggedPane);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private Node copyNode(Node original) {
+        if (original instanceof ImageView) {
+            ImageView originalImg = (ImageView) original;
+            ImageView copy = new ImageView(originalImg.getImage());
+            copy.setFitWidth(originalImg.getFitWidth());
+            copy.setFitHeight(originalImg.getFitHeight());
+            copy.setLayoutX(originalImg.getLayoutX());
+            copy.setLayoutY(originalImg.getLayoutY());
+            copy.setPickOnBounds(originalImg.isPickOnBounds());
+            copy.setPreserveRatio(originalImg.isPreserveRatio());
+            return copy;
+        } else if (original instanceof Line) {
+            Line originalLine = (Line) original;
+            Line copy = new Line();
+            copy.setStartX(originalLine.getStartX());
+            copy.setStartY(originalLine.getStartY());
+            copy.setEndX(originalLine.getEndX());
+            copy.setEndY(originalLine.getEndY());
+            copy.setLayoutX(originalLine.getLayoutX());
+            copy.setLayoutY(originalLine.getLayoutY());
+            return copy;
+        } else if (original instanceof Circle) {
+            Circle originalCircle = (Circle) original;
+            Circle copy = new Circle();
+            copy.setCenterX(originalCircle.getCenterX());
+            copy.setCenterY(originalCircle.getCenterY());
+            copy.setRadius(originalCircle.getRadius());
+            copy.setFill(originalCircle.getFill());
+            copy.setStroke(originalCircle.getStroke());
+            copy.setStrokeWidth(originalCircle.getStrokeWidth());
+            return copy;
+        }
+        return null;
+    }
+
+    private void setupDraggableNode(Node node) {
+        final double[] offset = new double[2];
+
+        node.setOnMousePressed(pressEvent -> {
+            offset[0] = pressEvent.getSceneX() - node.getTranslateX();
+            offset[1] = pressEvent.getSceneY() - node.getTranslateY();
+            pressEvent.consume();
+        });
+
+        node.setOnMouseDragged(dragEvent -> {
+            node.setTranslateX(dragEvent.getSceneX() - offset[0]);
+            node.setTranslateY(dragEvent.getSceneY() - offset[1]);
+            dragEvent.consume();
         });
     }
 
