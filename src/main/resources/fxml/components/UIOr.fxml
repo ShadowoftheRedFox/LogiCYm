@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Arc?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ImageView fitHeight="284.0" fitWidth="292.0" layoutX="154.0" layoutY="58.0">
+         <image>
+            <Image url="@../img/OR.png" />
+         </image>
+      </ImageView>
+      <Arc fill="DODGERBLUE" layoutX="193.0" layoutY="135.0" length="180.0" radiusX="31.0" radiusY="31.0" startAngle="90.0" stroke="BLACK" strokeType="INSIDE" type="ROUND" />
+      <Arc fill="DODGERBLUE" layoutX="192.0" layoutY="275.0" length="180.0" radiusX="31.0" radiusY="31.0" startAngle="90.0" stroke="BLACK" strokeType="INSIDE" type="ROUND" />
+      <Arc fill="DODGERBLUE" layoutX="405.0" layoutY="200.0" length="180.0" radiusX="31.0" radiusY="31.0" startAngle="-90.0" stroke="BLACK" strokeType="INSIDE" type="ROUND" />
+   </children>
+</AnchorPane>
