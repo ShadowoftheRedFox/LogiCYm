@@ -136,6 +136,11 @@ public class WorkBenchController extends AnchorPane {
     }
 
     @FXML
+    public void clickInput(ActionEvent event){
+        //liée
+    }
+
+    @FXML
     public void click(ActionEvent event) {
         this.manager.activate("main");
         System.out.println("Changement à main!");
