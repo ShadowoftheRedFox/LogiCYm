@@ -7,17 +7,28 @@ import com.pjava.src.components.Cable;
 import com.pjava.src.components.Gate;
 
 /**
- * The AND gate.
+ * The And gate.
  * If any of the two inputs are unpowered, then the output is unpowered.
  * Otherwise, apply the "and" logic to the input and output the result.
  */
-public class AND extends Gate {
+public class And extends Gate {
     /**
-     * Create a new AND gate.
+     * Create a new And gate with bus sizes of 1.
      *
      * @see Gate
      */
-    public AND() {
+    public And() {
+        this(1);
+    }
+
+    /**
+     * Create a new And gate with bus sizes provided.
+     *
+     * @param busSize Size of the bus for all input and output pins.
+     * @see Gate
+     */
+    public And(int busSize) {
+        super(new int[] { busSize, busSize }, new int[] { busSize });
     }
 
     @Override
@@ -29,7 +40,7 @@ public class AND extends Gate {
         }
 
         BitSet result = inputs.get(0).getState();
-        result.and(inputs.get(1));
+        result.and(inputs.get(1).getState());
 
         return result;
     }

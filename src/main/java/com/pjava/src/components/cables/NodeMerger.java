@@ -1,4 +1,4 @@
-package com.pjava.src.components.gates;
+package com.pjava.src.components.cables;
 
 import java.util.BitSet;
 import java.util.Collections;
@@ -10,15 +10,16 @@ import com.pjava.src.errors.BusSizeException;
 /**
  * Merge multiple cable of the same bus size into one.
  */
-public class Merger extends Gate {
+public class NodeMerger extends Gate {
+
     /**
      * Create a new merger gate with buses of size 1 and with 2 inputs.
      *
-     * @throws Error Throw errors from either {@link #setInputBus(int[])} or
-     *               {@link #setOutputBus(int[])}.
+     * @throws Exception Throw Exception from either {@link #setInputBus(int[])} or
+     *                   {@link #setOutputBus(int[])}.
      * @see Gate
      */
-    public Merger() throws Error {
+    public NodeMerger() throws Exception {
         this(2, 1);
     }
 
@@ -26,11 +27,11 @@ public class Merger extends Gate {
      * Create a new merger gate with the given buses size and with 2 inputs.
      *
      * @param busSize The size of the input buses.
-     * @throws Error Throw errors from either {@link #setInputBus(int[])} or
-     *               {@link #setOutputBus(int[])}.
+     * @throws Exception Throw Exception from either {@link #setInputBus(int[])} or
+     *                   {@link #setOutputBus(int[])}.
      * @see Gate
      */
-    public Merger(int busSize) throws Error {
+    public NodeMerger(int busSize) throws Exception {
         this(2, busSize);
     }
 
@@ -39,14 +40,14 @@ public class Merger extends Gate {
      *
      * @param busNumber The amount of inputs.
      * @param busSize   The size of the bus.
-     * @throws Error                    Throw errors from either
+     * @throws Exception                Throw Exception from either
      *                                  {@link #setInputBus(int[])} or
      *                                  {@link #setOutputBus(int[])}.
      * @throws IllegalArgumentException Throw IllegalArgumentException if bus number
      *                                  is below 0.
      * @see Gate
      */
-    public Merger(int busNumber, int busSize) throws Error {
+    public NodeMerger(int busNumber, int busSize) throws Exception {
         super(Collections.nCopies(busNumber, busSize).stream().mapToInt(Integer::intValue).toArray(),
                 new int[] { busSize });
     }
@@ -60,7 +61,7 @@ public class Merger extends Gate {
         BitSet result = new BitSet();
         for (Cable cable : getInputCable()) {
             if (cable != null && cable.getPowered()) {
-                result.or(cable);
+                result.or(cable.getState());
             }
         }
         return result;
@@ -70,7 +71,7 @@ public class Merger extends Gate {
      * Add one input to the merger.
      * Equivalent of {@code addInput(1)} ({@link #addInput(int)}).
      */
-    public void addOuput() {
+    public void addInput() {
         addInput(1);
     }
 

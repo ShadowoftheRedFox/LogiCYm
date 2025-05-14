@@ -4,22 +4,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.pjava.src.components.gates.Clock;
-import com.pjava.src.components.gates.NOT;
-import com.pjava.src.components.gates.OR;
+import com.pjava.src.components.Cable;
+import com.pjava.src.components.gates.Not;
+import com.pjava.src.components.gates.Or;
+import com.pjava.src.components.input.Clock;
 import com.pjava.src.utils.Cyclic;
 
 public class CycliTest {
     @Test
-    void isCyclic() {
+    void isCyclic() throws Exception {
         Clock R = new Clock();
         Clock S = new Clock();
 
-        OR or1 = new OR();
-        OR or2 = new OR();
+        Or or1 = new Or();
+        Or or2 = new Or();
 
-        NOT not1 = new NOT();
-        NOT not2 = new NOT();
+        Not not1 = new Not();
+        Not not2 = new Not();
+
+        Not notOut = new Not();
 
         R.connect(or1);
         S.connect(or2);
@@ -30,17 +33,31 @@ public class CycliTest {
         not1.connect(or2);
         not2.connect(or1);
 
+        Cable out = not1.connect(notOut);
+
         Cyclic cycle = new Cyclic();
         assertEquals(false, cycle.isCyclic(R),
                 () -> "Cyclic.isCyclic(R) expected to be false, received true");
-        int Rsize = cycle.getComponentInCyle().size();
+        final int Rsize = cycle.getElementInCyle().size();
         assertEquals(0, Rsize,
-                () -> "Cycle.getComponentInCyle().size() after Cyclic.isCyclic(R) expected to be 0, received " + Rsize);
+                () -> "Cycle.getElementInCyle().size() after Cyclic.isCyclic(R) expected to be 0, received "
+                        + Rsize);
         assertEquals(true, cycle.isCyclic(or1),
                 () -> "Cyclic.isCyclic(R) expected to be true, received false");
-        int Or1size = cycle.getComponentInCyle().size();
+        final int Or1size = cycle.getElementInCyle().size();
         assertEquals(8, Or1size,
-                () -> "Cycle.getComponentInCyle().size() after Cyclic.isCyclic(R) expected to be 0, received "
+                () -> "Cycle.getElementInCyle().size() after Cyclic.isCyclic(R) expected to be 8, received "
                         + Or1size);
+        final int Or1InputSize = cycle.getCycleInput().size();
+        assertEquals(2, Or1InputSize,
+                () -> "Cycle.getCycleInput().size() after Cyclic.isCyclic(R) expected to be 2, received "
+                        + Or1InputSize);
+        final int Or1OutputSize = cycle.getCycleOutput().size();
+        assertEquals(1, Or1OutputSize,
+                () -> "Cycle.getCycleOutput().size() after Cyclic.isCyclic(R) expected to be 1, received "
+                        + cycle.getCycleOutput() + " " + out);
+        assertEquals(out, cycle.getCycleOutput().get(0),
+                () -> "Cycle.getCycleOutput().get(0) after Cyclic.isCyclic(R) expected to be Cable out, received "
+                        + cycle.getCycleOutput().get(0));
     }
 }

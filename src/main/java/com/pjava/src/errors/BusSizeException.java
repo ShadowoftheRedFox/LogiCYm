@@ -1,7 +1,5 @@
 package com.pjava.src.errors;
 
-import com.pjava.src.utils.Utils;
-
 /**
  * This exception should be raised when the given bus size is not the one
  * expected.
@@ -64,13 +62,13 @@ public class BusSizeException extends Exception {
     }
 
     /**
-     * CHeck whether the given number is a valid case to throw this exception.
+     * Check whether the given number is a valid case to throw this exception.
      *
      * @param x The number to check.
      * @return False if x is a valid bus size, true otherwise.
      */
     public static boolean isBusSizeException(Integer x) {
-        return x == null || x <= 0 || x > 32 || !Utils.isPower2(x);
+        return x == null || x <= 0 || x > 32;
     }
 
     /**
@@ -87,6 +85,6 @@ public class BusSizeException extends Exception {
         }
 
         return new BusSizeException("Expected " + name + " to be a valid bus size, received: " + x
-                + "\nValid bus size are between 1 and 32 included, and a power of 2");
+                + "\nValid bus size are between 1 and 32 included");
     }
 }

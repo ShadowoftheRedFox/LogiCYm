@@ -12,6 +12,8 @@ module com.pjava {
     exports com.pjava.src.components;
     exports com.pjava.src.components.cables;
     exports com.pjava.src.components.gates;
+    exports com.pjava.src.components.input;
+    exports com.pjava.src.components.output;
     exports com.pjava.src.errors;
     // exports com.pjava.src.schema;
     exports com.pjava.src.UI;

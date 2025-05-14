@@ -62,6 +62,6 @@ public class App extends Application {
      * @param args Command line arguments.
      */
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 }
