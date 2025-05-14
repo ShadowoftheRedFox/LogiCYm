@@ -13,7 +13,6 @@ public abstract class Input extends Gate {
      * Create a new Input with the given amount of outputs.
      *
      * @param busOutput The output buses array.
-     * @param powered   The permanent state of power.
      */
     public Input(int[] busOutput) {
         super(new int[] {}, busOutput);

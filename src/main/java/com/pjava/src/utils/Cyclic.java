@@ -26,6 +26,20 @@ public class Cyclic {
      * List of elements in the cycle that has been found.
      */
     private ArrayList<Element> cycleList = new ArrayList<Element>();
+
+    /**
+     * List of cable that are the inputs of the elements in {@link #cycleList}. If
+     * all are powered, that means the cycle should be powered. The opposite stands
+     * true.
+     */
+    private ArrayList<Cable> inputCableList = new ArrayList<Cable>();
+
+    /**
+     * List of cable that are the outputs of the elements in {@link #cycleList}. If
+     * cycle if powered, then those outputs should receive a power update.
+     */
+    private ArrayList<Cable> outputCableList = new ArrayList<Cable>();
+
     /**
      * List of cable queued to be looked, and to add to the {@link #cycleList} if
      * necessary.
@@ -51,6 +65,28 @@ public class Cyclic {
      */
     public List<Element> getElementInCyle() {
         return cycleList;
+    }
+
+    /**
+     * Once {@link #isCyclic(Gate)} has run, if there is a cycle, all cable that are
+     * inputs of said cycle will be returned here. Cables in this list are not in
+     * {@link #getElementInCyle()}.
+     *
+     * @return Cable inputs of the cycle.
+     */
+    public List<Cable> getCycleInput() {
+        return inputCableList;
+    }
+
+    /**
+     * Once {@link #isCyclic(Gate)} has run, if there is a cycle, all cable that are
+     * outputs of said cycle will be returned here. Cables in this list are not in
+     * {@link #getElementInCyle()}.
+     *
+     * @return Cable outputs of the cycle.
+     */
+    public List<Cable> getCycleOutput() {
+        return outputCableList;
     }
 
     /**
@@ -157,8 +193,11 @@ public class Cyclic {
 
         ArrayList<Gate> visited = new ArrayList<Gate>();
         ArrayList<Gate> queued = new ArrayList<Gate>();
-        cycleList = new ArrayList<Element>();
         queuedCable = new ArrayList<Element>();
+        // result if cycle
+        cycleList = new ArrayList<Element>();
+        inputCableList = new ArrayList<Cable>();
+        outputCableList = new ArrayList<Cable>();
 
         boolean res = false;
         try {
@@ -169,6 +208,48 @@ public class Cyclic {
         } catch (Error e) {
             System.out.println("Early return: " + e.getMessage());
         }
+
+        if (res) {
+            // add all inputs and outputs of the cycleList into inputCableList and
+            // outputCableList respectively
+            cycleList.forEach(element -> {
+                if (element instanceof Gate) {
+                    ((Gate) element).getInputCable().forEach(cable -> {
+                        if (cable != null) {
+                            // if the cable connect to a gate outside of the cycle, it is used as both cycle
+                            // element and input
+                            boolean usedAsBoth = false;
+                            for (Gate gate : cable.getInputGate()) {
+                                if (!cycleList.contains(gate)) {
+                                    usedAsBoth = true;
+                                }
+                            }
+
+                            if ((!cycleList.contains(cable) || usedAsBoth) && !inputCableList.contains(cable)) {
+                                inputCableList.add(cable);
+                            }
+                        }
+                    });
+                    ((Gate) element).getOutputCable().forEach(cable -> {
+                        if (cable != null) {
+                            // if the cable connect to a gate outside of the cycle, it is used as both cycle
+                            // element and output
+                            boolean usedAsBoth = false;
+                            for (Gate gate : cable.getOutputGate()) {
+                                if (!cycleList.contains(gate)) {
+                                    usedAsBoth = true;
+                                }
+                            }
+
+                            if ((!cycleList.contains(cable) || usedAsBoth) && !outputCableList.contains(cable)) {
+                                outputCableList.add(cable);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
         return res;
     }
 }

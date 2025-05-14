@@ -26,7 +26,7 @@ public class Button extends Input {
      * The timestamp of the last cycle.
      * It prevent using a sleep inside a loop.
      */
-    private long lastCycle = System.currentTimeMillis();
+    private long lastCycle = 0l;
 
     /**
      * Create a new button with 100ms of delay.
@@ -47,6 +47,16 @@ public class Button extends Input {
      */
     public Button(long delay) throws Exception {
         this(delay, false);
+    }
+
+    /**
+     * Create a new button with the given invertion.
+     *
+     * @param inverted True if the button is inverted.
+     * @throws Exception Should not throw here.
+     */
+    public Button(boolean inverted) throws Exception {
+        this(100l, inverted);
     }
 
     /**
@@ -73,7 +83,7 @@ public class Button extends Input {
         }
 
         lastCycle = System.currentTimeMillis();
-        state.set(0, inverted);
+        state.set(0, !inverted);
         updateState();
     }
 

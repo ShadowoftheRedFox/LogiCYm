@@ -62,7 +62,7 @@ public class BusSizeException extends Exception {
     }
 
     /**
-     * CHeck whether the given number is a valid case to throw this exception.
+     * Check whether the given number is a valid case to throw this exception.
      *
      * @param x The number to check.
      * @return False if x is a valid bus size, true otherwise.

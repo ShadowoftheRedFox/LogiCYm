@@ -40,8 +40,6 @@ public class MainTest {
 
         p1.updateState();
         p2.updateState();
-        System.out.println("Expected: \t" + (a && b) + "\nResult: \t" + and.getState(0));
-        System.out.println("Expected: \t" + !and.getState(0) + "\nResult: \t" + not.getState(0));
 
         assertTrue((a && b) == and.getState(0) && !and.getState(0) == not.getState(0),
                 () -> "Expected: \t" + (a && b) + "\nResult: \t" + and.getState(0) +
@@ -78,20 +76,6 @@ public class MainTest {
         Cyclic cycle = new Cyclic();
         assertEquals(false, cycle.isCyclic(R), () -> "R is not expected to be in a cycle");
         assertEquals(true, cycle.isCyclic(or1), () -> "or1 is expected to be in a cycle");
-
-        System.out.println(
-                "R: " + R.getPowered() + "\n" +
-                        "S: " + S.getPowered() + "\n" +
-                        "or1: " + or1.getPowered() + "\n" +
-                        "or2: " + or2.getPowered() + "\n" +
-                        "not1: " + not1.getPowered() + "\n" +
-                        "not2: " + not2.getPowered() + "\n" +
-                        "_0: " + _0.getPowered() + "\n" +
-                        "_1: " + _1.getPowered() + "\n" +
-                        "_2: " + _2.getPowered() + "\n" +
-                        "_3: " + _3.getPowered() + "\n" +
-                        "_4: " + _4.getPowered() + "\n" +
-                        "_5: " + _5.getPowered() + "\n");
 
         for (int i = 1; i <= 4; ++i) {
             q = (S.getState(0) || (!R.getState(0) && oldq));

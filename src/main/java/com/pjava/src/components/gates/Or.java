@@ -23,6 +23,7 @@ public class Or extends Gate {
     /**
      * Create a new Or gate with bus sizes provided.
      *
+     * @param busSize Size of the bus for all input and output pins.
      * @see Gate
      */
     public Or(int busSize) {

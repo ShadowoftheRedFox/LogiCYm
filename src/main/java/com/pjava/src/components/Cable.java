@@ -3,6 +3,7 @@ package com.pjava.src.components;
 import java.util.ArrayList;
 import java.util.BitSet;
 
+import com.pjava.src.components.cables.Splitter;
 import com.pjava.src.errors.BusSizeException;
 import com.pjava.src.utils.Utils;
 
@@ -66,11 +67,25 @@ public class Cable extends Element {
         // if multiple input, add (the "or" bitwise) the result
         state.clear();
         for (Gate gate : getInputGate()) {
-            BitSet gateState = gate.getState();
-            if (gate != null &&
-                    gate.getPowered() &&
-                    gateState != null) {
-                state.or(gateState);
+            // special case if gate in a splitter
+            if (gate instanceof Splitter) {
+                BitSet gateState;
+                try {
+                    // get the correct state specific to this cable
+                    gateState = ((Splitter) gate).getState(this);
+                } catch (Exception e) {
+                    throw new Error(e);
+                }
+                if (gateState != null) {
+                    state.or(gateState);
+                }
+            } else {
+                BitSet gateState = gate.getState();
+                if (gate != null &&
+                        gate.getPowered() &&
+                        gateState != null) {
+                    state.or(gateState);
+                }
             }
         }
 

@@ -6,6 +6,9 @@ import java.util.BitSet;
 import com.pjava.src.components.Gate;
 import com.pjava.src.components.Cable;
 
+/**
+ * A not gate. Return the opposite state of its output.
+ */
 public class Not extends Gate {
     /**
      * Create a new Not gate with bus sizes of 1.
@@ -17,6 +20,7 @@ public class Not extends Gate {
     /**
      * Create a new Not gate with bus sizes provided.
      *
+     * @param busSize Size of the bus for all input and output pins.
      * @see Gate
      */
     public Not(int busSize) {

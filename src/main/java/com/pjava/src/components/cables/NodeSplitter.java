@@ -13,11 +13,11 @@ public class NodeSplitter extends Gate {
     /**
      * Create a new splitter gate with buses of size 1 and with 2 outputs.
      *
-     * @throws Error Throw errors from either {@link #setInputBus(int[])} or
-     *               {@link #setOutputBus(int[])}.
+     * @throws Exception Throw exceptions from either {@link #setInputBus(int[])} or
+     *                   {@link #setOutputBus(int[])}.
      * @see Gate
      */
-    public NodeSplitter() throws Error {
+    public NodeSplitter() throws Exception {
         this(2, 1);
     }
 
@@ -26,11 +26,11 @@ public class NodeSplitter extends Gate {
      * outputs.
      *
      * @param busSize The size of the output buses.
-     * @throws Error Throw errors from either {@link #setInputBus(int[])} or
-     *               {@link #setOutputBus(int[])}.
+     * @throws Exception Throw exceptions from either {@link #setInputBus(int[])} or
+     *                   {@link #setOutputBus(int[])}.
      * @see Gate
      */
-    public NodeSplitter(int busSize) throws Error {
+    public NodeSplitter(int busSize) throws Exception {
         this(2, busSize);
     }
 
@@ -40,13 +40,13 @@ public class NodeSplitter extends Gate {
      *
      * @param busNumber The amount of outputs.
      * @param busSize   The size of the bus.
-     * @throws Error                    Throw errors from either
+     * @throws Exception                Throw exceptions from either
      *                                  {@link #setInputBus(int[])} or
      *                                  {@link #setOutputBus(int[])}.
      * @throws IllegalArgumentException Throw when bus number is below 0.
      * @see Gate
      */
-    public NodeSplitter(int busNumber, int busSize) throws Error {
+    public NodeSplitter(int busNumber, int busSize) throws Exception {
         super(new int[] { busSize },
                 Collections.nCopies(busNumber, busSize).stream().mapToInt(Integer::intValue).toArray());
     }

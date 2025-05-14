@@ -16,6 +16,13 @@ import com.pjava.src.utils.Utils;
  * @see Gate
  */
 public abstract class Element {
+
+    /**
+     * Create a new element.
+     */
+    public Element() {
+    }
+
     /**
      * A unique id to differentiate components between each others.
      */
@@ -61,6 +68,9 @@ public abstract class Element {
      */
     abstract void updatePower();
 
+    /**
+     * Internal state of the element.
+     */
     protected BitSet state = new BitSet(1);
 
     /**

@@ -30,7 +30,7 @@ public abstract class Output extends Gate {
      * @return Always false.
      */
     @Override
-    protected final boolean setOutputBus(int[] busSizes) throws Error {
+    protected final boolean setOutputBus(int[] busSizes) {
         return false;
     }
 
@@ -45,7 +45,7 @@ public abstract class Output extends Gate {
      * @return Always false.
      */
     @Override
-    protected final boolean setOutputBus(int busSize, int index) throws Error {
+    protected final boolean setOutputBus(int busSize, int index) {
         return false;
     }
 
@@ -58,7 +58,7 @@ public abstract class Output extends Gate {
      * {@inheritDoc}
      */
     @Override
-    protected final void addOutputBus(int size) throws Error {
+    protected final void addOutputBus(int size) {
     }
 
     /**
@@ -70,7 +70,7 @@ public abstract class Output extends Gate {
      * {@inheritDoc}
      */
     @Override
-    protected final void removeOutputBus(int index) throws Error {
+    protected final void removeOutputBus(int index) {
     }
 
     /**

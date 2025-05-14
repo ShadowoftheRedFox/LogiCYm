@@ -15,11 +15,11 @@ public class NodeMerger extends Gate {
     /**
      * Create a new merger gate with buses of size 1 and with 2 inputs.
      *
-     * @throws Error Throw errors from either {@link #setInputBus(int[])} or
-     *               {@link #setOutputBus(int[])}.
+     * @throws Exception Throw Exception from either {@link #setInputBus(int[])} or
+     *                   {@link #setOutputBus(int[])}.
      * @see Gate
      */
-    public NodeMerger() throws Error {
+    public NodeMerger() throws Exception {
         this(2, 1);
     }
 
@@ -27,11 +27,11 @@ public class NodeMerger extends Gate {
      * Create a new merger gate with the given buses size and with 2 inputs.
      *
      * @param busSize The size of the input buses.
-     * @throws Error Throw errors from either {@link #setInputBus(int[])} or
-     *               {@link #setOutputBus(int[])}.
+     * @throws Exception Throw Exception from either {@link #setInputBus(int[])} or
+     *                   {@link #setOutputBus(int[])}.
      * @see Gate
      */
-    public NodeMerger(int busSize) throws Error {
+    public NodeMerger(int busSize) throws Exception {
         this(2, busSize);
     }
 
@@ -40,14 +40,14 @@ public class NodeMerger extends Gate {
      *
      * @param busNumber The amount of inputs.
      * @param busSize   The size of the bus.
-     * @throws Error                    Throw errors from either
+     * @throws Exception                Throw Exception from either
      *                                  {@link #setInputBus(int[])} or
      *                                  {@link #setOutputBus(int[])}.
      * @throws IllegalArgumentException Throw IllegalArgumentException if bus number
      *                                  is below 0.
      * @see Gate
      */
-    public NodeMerger(int busNumber, int busSize) throws Error {
+    public NodeMerger(int busNumber, int busSize) throws Exception {
         super(Collections.nCopies(busNumber, busSize).stream().mapToInt(Integer::intValue).toArray(),
                 new int[] { busSize });
     }

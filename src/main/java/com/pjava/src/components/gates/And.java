@@ -24,6 +24,7 @@ public class And extends Gate {
     /**
      * Create a new And gate with bus sizes provided.
      *
+     * @param busSize Size of the bus for all input and output pins.
      * @see Gate
      */
     public And(int busSize) {
