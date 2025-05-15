@@ -1,6 +1,7 @@
 package com.pjava.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.pjava.src.UI.SceneManager;
 import com.pjava.src.UI.components.UIAnd;
@@ -12,14 +13,20 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
+import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 public class Editor extends VBox {
     @FXML
@@ -30,6 +37,11 @@ public class Editor extends VBox {
     public AnchorPane container;
 
     private SceneManager manager;
+
+    private Rectangle selectionRectangle = null;
+    private Point2D selectionStart = null;
+
+    private ArrayList<Node> selectedNodes = new ArrayList<Node>();
 
     public Editor(SceneManager manager) {
         this.manager = manager;
@@ -63,6 +75,9 @@ public class Editor extends VBox {
         viewScroll.setOnScroll(event -> resizeGrid());
 
         resizeGrid();
+
+        container.setOnMouseReleased(event -> endSelection(event));
+        container.setOnMouseDragged(event -> dragSelection(event));
     }
 
     private void resizeGrid() {
@@ -94,6 +109,47 @@ public class Editor extends VBox {
         for (int y = gridPane.getColumnCount(); y < wantedColumns; y++) {
             gridPane.getColumnConstraints().add(col);
         }
+    }
+
+    private void dragSelection(MouseEvent event) {
+        if (selectionRectangle == null) {
+            selectionRectangle = new Rectangle();
+            selectionStart = new Point2D(event.getX(), event.getY());
+
+            selectionRectangle.setLayoutX(event.getX());
+            selectionRectangle.setLayoutY(event.getY());
+
+            selectionRectangle.setFill(Color.BLUE);
+            selectionRectangle.setStroke(Color.BLUEVIOLET);
+            selectionRectangle.strokeWidthProperty().set(3);
+            selectionRectangle.setOpacity(0.3);
+
+            container.getChildren().add(selectionRectangle);
+            selectionRectangle.toFront();
+        }
+
+        double width = event.getX() - selectionStart.getX();
+        double height = event.getY() - selectionStart.getY();
+
+        if (width > 0) {
+            selectionRectangle.setWidth(width);
+        } else if (width < 0) {
+            selectionRectangle.setLayoutX(event.getX());
+            selectionRectangle.setWidth(-width);
+        }
+
+        if (height > 0) {
+            selectionRectangle.setHeight(height);
+        } else if (height < 0) {
+            selectionRectangle.setLayoutY(event.getY());
+            selectionRectangle.setHeight(-height);
+        }
+    }
+
+    private void endSelection(MouseEvent event) {
+        // TODO look for selected elements with selectedNodes
+        container.getChildren().remove(selectionRectangle);
+        selectionRectangle = null;
     }
 
     @FXML
