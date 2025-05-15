@@ -6,12 +6,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+<<<<<<< Updated upstream
 import com.pjava.src.components.gates.AND;
 import com.pjava.src.components.gates.Clock;
 import com.pjava.src.components.gates.Ground;
 import com.pjava.src.components.gates.NOT;
 import com.pjava.src.components.gates.OR;
 import com.pjava.src.components.gates.Power;
+=======
+import com.pjava.src.components.Project;
+import com.pjava.src.components.Cable;
+import com.pjava.src.components.gates.And;
+import com.pjava.src.components.gates.Not;
+import com.pjava.src.components.gates.Or;
+import com.pjava.src.components.input.Clock;
+import com.pjava.src.components.input.Ground;
+import com.pjava.src.components.input.Power;
+>>>>>>> Stashed changes
 import com.pjava.src.utils.Cyclic;
 import com.pjava.src.utils.Utils;
 
@@ -101,6 +112,7 @@ public class MainTest {
     }
 
     @Test
+<<<<<<< Updated upstream
     void basic() {
         Power p1 = new Power();
         // Ground p1 = new Ground();
@@ -123,5 +135,9 @@ public class MainTest {
         System.out.println("Expected: \t" + !and.getState(0) + "\nResult: \t" + not.getState(0));
 
         assertTrue((a && b) == and.getState(0) && !and.getState(0) == not.getState(0));
+=======
+    void circuit() throws Exception {
+        
+>>>>>>> Stashed changes
     }
 }

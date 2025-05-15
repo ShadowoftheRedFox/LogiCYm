@@ -1,0 +1,40 @@
+{
+  "component_biss": [
+    {
+      "id": "672359b4-8cd1-46d6-876c-7bdbb2825e5d",
+      "type": "Power_bis"
+    },
+    {
+      "id": "67446ca5-d3f3-4231-a6c2-c874425af8ae",
+      "type": "Ground_bis"
+    },
+    {
+      "id": "86499578-54d1-4229-bad3-aa14329a06bf",
+      "type": "And_bis"
+    },
+    {
+      "id": "e1c2bc05-8fbf-4f27-853b-5646333f8eec",
+      "type": "Not_bis"
+    }
+  ],
+  "connection_biss": [
+    {
+      "sourceId": "672359b4-8cd1-46d6-876c-7bdbb2825e5d",
+      "targetId": "86499578-54d1-4229-bad3-aa14329a06bf",
+      "targetPin": 0,
+      "sourcePin": 0
+    },
+    {
+      "sourceId": "67446ca5-d3f3-4231-a6c2-c874425af8ae",
+      "targetId": "86499578-54d1-4229-bad3-aa14329a06bf",
+      "targetPin": 1,
+      "sourcePin": 0
+    },
+    {
+      "sourceId": "86499578-54d1-4229-bad3-aa14329a06bf",
+      "targetId": "e1c2bc05-8fbf-4f27-853b-5646333f8eec",
+      "targetPin": 0,
+      "sourcePin": 0
+    }
+  ]
+}

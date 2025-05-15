@@ -1,6 +1,10 @@
 <mxfile host="65bd71144e">
     <diagram id="3IAo3L68MEFDZwXGB7X9" name="Use Case">
+<<<<<<< Updated upstream
         <mxGraphModel dx="1129" dy="1556" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#FFE7F3" math="0" shadow="0">
+=======
+        <mxGraphModel dx="1216" dy="1218" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#FFE7F3" math="0" shadow="0">
+>>>>>>> Stashed changes
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -305,7 +309,11 @@
         </mxGraphModel>
     </diagram>
     <diagram id="QpYlNZNFIG4gXJBc1xD_" name="Class Diagram">
+<<<<<<< Updated upstream
         <mxGraphModel dx="2479" dy="503" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+=======
+        <mxGraphModel dx="2916" dy="391" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+>>>>>>> Stashed changes
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -1187,6 +1195,7 @@
             </root>
         </mxGraphModel>
     </diagram>
+<<<<<<< Updated upstream
     <diagram id="MPVLWtZL52KPSdhGXVhN" name="Page-4">
         <mxGraphModel dx="930" dy="997" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
@@ -1196,3 +1205,6 @@
         </mxGraphModel>
     </diagram>
 </mxfile>
+=======
+</mxfile>
+>>>>>>> Stashed changes

@@ -1,0 +1,27 @@
+{
+    "InputToGate": 0,
+    "OutputFromGate": 1,
+    "Gates": [
+            {
+                "name": "gateName (and1)",
+                "inputSlots": [1, 1],
+                "outputSlots": [1],
+                "inputFrom": [1, -1],
+                "inputFromPins": [0],
+                "outputTo": [],
+                "outputToPins": []
+            },{
+                "name": "gateName (power1)",
+                "outputSlots": [1],
+                "outputTo": [0]
+            }
+    ],
+    "inputs" :[
+        {
+            "size": 1
+        }
+    ],
+    "outputs":[]
+}
+
+e d cb b[]

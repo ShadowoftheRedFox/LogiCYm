@@ -1,0 +1,40 @@
+{
+  "component_biss": [
+    {
+      "id": "66ce5f29-d74a-45ef-bfe3-7a65ec5dfa06",
+      "type": "Power_bis"
+    },
+    {
+      "id": "c0f9a18f-9c97-49c0-85dc-afb95caac749",
+      "type": "Ground_bis"
+    },
+    {
+      "id": "a601c2a4-591d-40eb-a5d9-2bba80310bf3",
+      "type": "And_bis"
+    },
+    {
+      "id": "4c6083b3-402d-487c-822f-5987c6cc4829",
+      "type": "Not_bis"
+    }
+  ],
+  "connection_biss": [
+    {
+      "sourceId": "66ce5f29-d74a-45ef-bfe3-7a65ec5dfa06",
+      "targetId": "a601c2a4-591d-40eb-a5d9-2bba80310bf3",
+      "targetPin": 0,
+      "sourcePin": 0
+    },
+    {
+      "sourceId": "c0f9a18f-9c97-49c0-85dc-afb95caac749",
+      "targetId": "a601c2a4-591d-40eb-a5d9-2bba80310bf3",
+      "targetPin": 1,
+      "sourcePin": 0
+    },
+    {
+      "sourceId": "a601c2a4-591d-40eb-a5d9-2bba80310bf3",
+      "targetId": "4c6083b3-402d-487c-822f-5987c6cc4829",
+      "targetPin": 0,
+      "sourcePin": 0
+    }
+  ]
+}

@@ -3,6 +3,9 @@ package com.pjava.src.components;
 import java.util.ArrayList;
 import java.util.BitSet;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.pjava.src.errors.BusSizeException;
 import com.pjava.src.utils.Cyclic;
 import com.pjava.src.utils.Utils;
@@ -744,6 +747,7 @@ public abstract class Gate implements Component {
         return outputCable.get(index) == null || busSize == outputCable.get(index).getBusSize();
     }
     // #endregion
+    
 
     @Override
     public boolean equals(Object obj) {
@@ -773,4 +777,25 @@ public abstract class Gate implements Component {
      * protected void setOutputCable(ArrayList<Cable> outputCable) throws Error {}
      * protected void setOutputCable(Cable outputCable, int index) throws Error {}
      */
+
+    @Override
+    public JSONObject toJSON() {
+        JSONObject json = super.toJSON();
+
+        // Sauvegarde des bus d'entrée/sortie
+        JSONArray inputBusArray = new JSONArray();
+        for (int size : getInputBus()) {
+            inputBusArray.put(size);
+        }
+        json.put("inputBus", inputBusArray);
+
+        JSONArray outputBusArray = new JSONArray();
+        for (int size : getOutputBus()) {
+            outputBusArray.put(size);
+        }
+        json.put("outputBus", outputBusArray);
+
+        return json;
+    }
+
 }

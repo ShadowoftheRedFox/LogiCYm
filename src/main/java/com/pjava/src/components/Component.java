@@ -2,6 +2,14 @@
 package com.pjava.src.components;
 
 import java.util.BitSet;
+<<<<<<< Updated upstream:src/main/java/com/pjava/src/components/Component.java
+=======
+import java.util.Objects;
+
+import org.json.JSONObject;
+
+import com.pjava.src.utils.Utils;
+>>>>>>> Stashed changes:src/main/java/com/pjava/src/components/Element.java
 
 /**
  * The interface that should be implemented as a base for all components.
@@ -104,5 +112,44 @@ public interface Component {
      *
      * @return The number of output.
      */
+<<<<<<< Updated upstream:src/main/java/com/pjava/src/components/Component.java
     Integer getOutputNumber();
+=======
+    abstract Integer getOutputNumber();
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj instanceof Element) {
+            return obj == this || ((Element) obj).uuid() == uuid();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid());
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " " + uuid();
+    }
+
+    // TODO JavaDoc
+    /**
+     * Convertit l'élément en objet JSON.
+     * @return Un JSONObject représentant cet élément
+     */
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        json.put("uuid", uuid());
+        json.put("powered", getPowered());
+        json.put("type", getClass().getSimpleName());
+        return json;
+    }
+>>>>>>> Stashed changes:src/main/java/com/pjava/src/components/Element.java
 }
+
