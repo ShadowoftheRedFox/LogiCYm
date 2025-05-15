@@ -2,15 +2,11 @@ package com.pjava.src.UI.components;
 
 import com.pjava.src.components.gates.Not;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
-
-import java.io.IOException;
 
 public class UINot extends UIGate {
     private double mouseAnchorX;
@@ -19,10 +15,14 @@ public class UINot extends UIGate {
     private double translateAnchorY;
 
     // Nœuds pour l'accès aux éléments FXML
-    @FXML private Polygon notTriangle;
-    @FXML private Circle notCircle;
-    @FXML private Arc inputArc;
-    @FXML private Arc outputArc;
+    @FXML
+    private Polygon notTriangle;
+    @FXML
+    private Circle notCircle;
+    @FXML
+    private Arc inputArc;
+    @FXML
+    private Arc outputArc;
 
     // Propriétés pour le redimensionnement
     private double initialWidth;
@@ -30,37 +30,22 @@ public class UINot extends UIGate {
     private double initialScale = 1.0;
 
     public UINot() {
-        super("UINot");
         setLogic(new Not());
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/components/UINot.fxml"));
-            loader.setRoot(this);
-            loader.setController(this);
-            loader.load();
-
-            // Initialiser les gestionnaires d'événements pour le déplacement et le redimensionnement
-            initializeHandlers();
-
-        } catch (IOException ex) {
-            System.err.println("Erreur lors du chargement de UINot.fxml: " + ex.getMessage());
-            ex.printStackTrace();
-        }
+        initializeHandlers();
     }
 
-    @Override
+    @FXML
     public void initialize() {
-        super.initialize();
-        initialWidth = getPrefWidth();
-        initialHeight = getPrefHeight();
+        // initialWidth = getPrefWidth();
+        // initialHeight = getPrefHeight();
 
         // Ajoutez l'initialisation des entrées/sorties ici si nécessaire
     }
 
     private void initializeHandlers() {
         // Gestionnaire pour le déplacement (drag)
-        setOnMousePressed(this::handleMousePressed);
-        setOnMouseDragged(this::handleMouseDragged);
+        // setOnMousePressed(this::handleMousePressed);
+        // setOnMouseDragged(this::handleMouseDragged);
 
         // Gestionnaire pour le redimensionnement (à ajouter à une zone spécifique)
         createResizeHandle();
@@ -72,11 +57,11 @@ public class UINot extends UIGate {
         mouseAnchorY = event.getSceneY();
 
         // Enregistrer la position initiale du composant
-        translateAnchorX = getTranslateX();
-        translateAnchorY = getTranslateY();
+        // translateAnchorX = getTranslateX();
+        // translateAnchorY = getTranslateY();
 
         // Amener le composant au premier plan
-        toFront();
+        // toFront();
 
         // Marquer l'événement comme traité
         event.consume();
@@ -88,8 +73,8 @@ public class UINot extends UIGate {
         double deltaY = event.getSceneY() - mouseAnchorY;
 
         // Appliquer le déplacement
-        setTranslateX(translateAnchorX + deltaX);
-        setTranslateY(translateAnchorY + deltaY);
+        // setTranslateX(translateAnchorX + deltaX);
+        // setTranslateY(translateAnchorY + deltaY);
 
         // Marquer l'événement comme traité
         event.consume();
@@ -105,7 +90,7 @@ public class UINot extends UIGate {
         AnchorPane.setRightAnchor(resizeHandle, 0.0);
 
         // Ajouter la poignée à ce composant
-        getChildren().add(resizeHandle);
+        // getChildren().add(resizeHandle);
 
         // Variables pour le redimensionnement
         final double[] initialSize = new double[2];
@@ -126,9 +111,8 @@ public class UINot extends UIGate {
 
             // Calculer le facteur d'échelle pour maintenir le ratio
             double scale = Math.max(
-                (initialSize[0] + deltaX) / initialWidth,
-                (initialSize[1] + deltaY) / initialHeight
-            );
+                    (initialSize[0] + deltaX) / initialWidth,
+                    (initialSize[1] + deltaY) / initialHeight);
 
             // Appliquer l'échelle à tous les éléments
             applyScale(scale);
@@ -139,8 +123,8 @@ public class UINot extends UIGate {
 
     private void applyScale(double scale) {
         // Appliquer l'échelle à tous les éléments graphiques
-        setScaleX(scale);
-        setScaleY(scale);
+        // setScaleX(scale);
+        // setScaleY(scale);
         initialScale = scale;
     }
 

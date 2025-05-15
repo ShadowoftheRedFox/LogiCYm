@@ -60,6 +60,12 @@ public class MainController extends AnchorPane {
     }
 
     @FXML
+    public void clickTest(ActionEvent event) {
+        this.manager.activate("editor");
+        System.out.println("Changement à editor!");
+    }
+
+    @FXML
     public void quit(ActionEvent event) {
         System.out.println("Fermeture...");
         Platform.exit();

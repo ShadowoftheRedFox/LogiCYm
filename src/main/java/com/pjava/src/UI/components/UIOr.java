@@ -4,7 +4,6 @@ import com.pjava.src.components.gates.Or;
 
 public class UIOr extends UIGate {
     public UIOr() {
-        super("UIOr");
         setLogic(new Or());
     }
 

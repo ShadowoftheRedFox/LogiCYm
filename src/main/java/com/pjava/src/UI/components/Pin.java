@@ -1,11 +1,9 @@
 package com.pjava.src.UI.components;
 
-import java.io.IOException;
-
 import com.pjava.src.errors.BusSizeException;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
@@ -25,6 +23,8 @@ public class Pin extends VBox {
      */
     private int busSize = 1;
 
+    private Color color = Color.BLUE;
+
     @FXML
     private Rectangle pinCenter;
     @FXML
@@ -32,27 +32,22 @@ public class Pin extends VBox {
     @FXML
     private Arc pinArc2;
 
-    /**
-     * Create a new pins of said size.
-     */
-    public Pin(int busSize) {
-        this(busSize, true);
+    @FXML
+    private VBox container;
+
+    @FXML
+    private void initialize() {
+        setColor(color);
+        container.setOnMousePressed(event -> pressed(event));
+        container.setOnMouseReleased(event -> released(event));
     }
 
-    /**
-     * Create a new pins of said size and if it's an input or not.
-     */
-    public Pin(int busSize, boolean isInput) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/components/Pin.fxml"));
-            loader.setRoot(this);
-            loader.setController(this);
-            loader.load();
-            setBusSize(busSize);
-            setAsInput(isInput);
-        } catch (IOException | BusSizeException e) {
-            throw new Error(e);
-        }
+    private void pressed(MouseEvent event) {
+        changeColor(color.desaturate());
+    }
+
+    private void released(MouseEvent event) {
+        changeColor(color.saturate());
     }
 
     /**
@@ -65,6 +60,11 @@ public class Pin extends VBox {
         if (color == null) {
             throw new NullPointerException("Expected color to be an instance of Color, received null");
         }
+        this.color = color;
+        changeColor(color);
+    }
+
+    private void changeColor(Color color) {
         pinCenter.setFill(color);
         pinArc1.setFill(color);
         pinArc2.setFill(color);
@@ -119,6 +119,6 @@ public class Pin extends VBox {
      */
     public void setAsInput(boolean isInput) {
         this.isInput = isInput;
-        this.setRotate(isInput ? 0 : 180);
+        setColor(isInput ? Color.BLUE : Color.RED);
     }
 }

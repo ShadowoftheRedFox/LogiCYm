@@ -7,26 +7,22 @@ import com.pjava.src.components.Element;
 
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 
-public abstract class UIElement extends AnchorPane {
+public abstract class UIElement {
     private String name = "";
     private Element logic = null;
     private Point2D position = Point2D.ZERO;
     private Rotation rotation = Rotation.EAST;
     private Color color = Color.AQUA;
 
-    protected UIElement(String fxml) {
-        loadFXML(fxml);
-    }
+    public static final int baseSize = 50;
 
-    protected void loadFXML(String fxmlName) {
+    public static Node create(Class<?> getClass, String fxml) {
+        FXMLLoader loader = new FXMLLoader(getClass.getResource("/fxml/components/" + fxml + ".fxml"));
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/components/" + name + ".fxml"));
-            loader.setRoot(this);
-            loader.setController(this);
-            loader.load();
+            return loader.load();
         } catch (IOException e) {
             throw new Error(e);
         }
