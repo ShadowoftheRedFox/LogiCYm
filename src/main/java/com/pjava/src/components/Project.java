@@ -1,7 +1,5 @@
 package com.pjava.src.components;
 
-import com.pjava.src.components.*;
-import com.pjava.src.components.gates.*;
 import com.pjava.src.components.input.Ground;
 import com.pjava.src.components.input.Power;
 
@@ -68,8 +66,13 @@ public class Project {
 
         And and = new And();
         Not not = new Not();
-        and.connect(not);
-        
+        try{
+            and.connect(not);
+        }
+        catch(Error e){
+            
+        }
+
         Project project = new Project();
         project.addElement(p1);
         project.addElement(p2);
