@@ -87,4 +87,19 @@ public abstract class Output extends Gate {
         // no output
         return null;
     }
+
+    /**
+     * Since output have no outputs, getState should return null, since they process
+     * nothing.
+     *
+     * <p>
+     * In other classes:
+     * </p>
+     * {@inheritDoc}
+     */
+    @Override
+    public BitSet getState() {
+        // no output
+        return null;
+    }
 }
