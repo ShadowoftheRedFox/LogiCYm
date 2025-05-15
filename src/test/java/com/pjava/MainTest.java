@@ -3,9 +3,9 @@ package com.pjava;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 
+import com.pjava.components.CircuitTest;
 import com.pjava.src.components.Cable;
 import com.pjava.src.components.gates.And;
 import com.pjava.src.components.gates.Not;
@@ -125,4 +125,5 @@ public class MainTest {
             }
         }
     }
+
 }

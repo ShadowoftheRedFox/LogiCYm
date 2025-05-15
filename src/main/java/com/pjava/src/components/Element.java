@@ -3,6 +3,8 @@ package com.pjava.src.components;
 import java.util.BitSet;
 import java.util.Objects;
 
+import org.json.JSONObject;
+
 import com.pjava.src.utils.Utils;
 
 /**
@@ -151,5 +153,18 @@ public abstract class Element {
     @Override
     public String toString() {
         return getClass().getSimpleName() + " " + uuid();
+    }
+
+    /**
+     * Convertit l'élément en objet JSON.
+     * @return Un JSONObject représentant cet élément
+     */
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("uuid", uuid());
+        json.put("powered", getPowered());
+        json.put("type", getClass().getSimpleName());
+        // Les sous-classes doivent compléter cette fonction
+        return json;
     }
 }

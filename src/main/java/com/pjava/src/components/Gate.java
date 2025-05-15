@@ -3,6 +3,9 @@ package com.pjava.src.components;
 import java.util.ArrayList;
 import java.util.BitSet;
 
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 import com.pjava.src.errors.BusSizeException;
 import com.pjava.src.utils.Cyclic;
 
@@ -797,6 +800,26 @@ public abstract class Gate extends Element {
     }
     // #endregion
 
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = super.toJson();
+
+        // Sauvegarde des bus d'entrée/sortie
+        JSONArray inputBusArray = new JSONArray();
+        for (int size : getInputBus()) {
+            inputBusArray.put(size);
+        }
+        json.put("inputBus", inputBusArray);
+
+        JSONArray outputBusArray = new JSONArray();
+        for (int size : getOutputBus()) {
+            outputBusArray.put(size);
+        }
+        json.put("outputBus", outputBusArray);
+
+        return json;
+    }
+
     /*
      * TODO add them if needed
      * protected void setInputCable(ArrayList<Cable> inputCable) throws Error {}
@@ -804,4 +827,6 @@ public abstract class Gate extends Element {
      * protected void setOutputCable(ArrayList<Cable> outputCable) throws Error {}
      * protected void setOutputCable(Cable outputCable, int index) throws Error {}
      */
+
+
 }
