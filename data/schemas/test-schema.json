@@ -4,28 +4,28 @@
  "Gates": [
   {
    "outputBusSize": [2],
-   "outputTo": [109],
+   "outputTo": [111],
    "inputFrom": [0],
    "powered": true,
    "inputBusSize": [2],
    "type": "Not",
-   "uuid": 107
-  },
-  {
-   "outputBusSize": [2],
-   "outputTo": [109],
-   "inputFrom": [],
-   "powered": true,
-   "inputBusSize": [],
-   "type": "Ground",
-   "uuid": 108
+   "uuid": 109
   },
   {
    "outputBusSize": [2],
    "outputTo": [111],
+   "inputFrom": [],
+   "powered": true,
+   "inputBusSize": [],
+   "type": "Ground",
+   "uuid": 110
+  },
+  {
+   "outputBusSize": [2],
+   "outputTo": [113],
    "inputFrom": [
-    107,
-    108
+    110,
+    109
    ],
    "powered": true,
    "inputBusSize": [
@@ -33,16 +33,16 @@
     2
    ],
    "type": "And",
-   "uuid": 109
+   "uuid": 111
   },
   {
    "outputBusSize": [2],
    "outputTo": [0],
-   "inputFrom": [109],
+   "inputFrom": [111],
    "powered": true,
    "inputBusSize": [2],
    "type": "Not",
-   "uuid": 111
+   "uuid": 113
   }
  ]
 }

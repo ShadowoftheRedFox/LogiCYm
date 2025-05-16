@@ -1,0 +1,33 @@
+{
+ "externalInput": [2],
+ "externalOutput": [],
+ "Gates": [
+  {
+   "outputBusSize": [],
+   "outputTo": [],
+   "inputFrom": [],
+   "powered": false,
+   "inputBusSize": [],
+   "type": "Schema",
+   "uuid": 121
+  },
+  {
+   "outputBusSize": [2],
+   "outputTo": [112],
+   "inputFrom": [],
+   "powered": true,
+   "inputBusSize": [],
+   "type": "Power",
+   "uuid": 107
+  },
+  {
+   "outputBusSize": [2],
+   "outputTo": [0],
+   "inputFrom": [107],
+   "powered": false,
+   "inputBusSize": [2],
+   "type": "Or",
+   "uuid": 112
+  }
+ ]
+}
