@@ -127,7 +127,7 @@ public class CircuitTest{
         catch(Exception e){
             System.err.println(e);
         }
-        circuit3.loadFromFile("save/save3");
+        //circuit3.loadFromFile("save/save3");
 
         int j = 0;
         for(String i : circuit3.get_allGates().keySet()){

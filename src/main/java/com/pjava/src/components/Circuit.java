@@ -159,17 +159,34 @@ public class Circuit{
 
     //#endregion
 
-    //#region
+    //#region .connectGate()
 
-    // public void connectGate(String label1, String label2, int ) throws Exception{
-    //     if(this.allGates.containsKey(label1)){
-    //         throw new Exception(String.format("Key not found : %s", label1));
-    //     }
-    //     if(this.allGates.containsKey(label2)){
-    //         throw new Exception(String.format("Key not found : %s", label2));
-    //     }
+    /**
+     * @param fromGate The gate whose output port you want to connect
+     * @param toGate The gate whose input port you want to connect
+     * @param fromPort The index of the output port
+     * @param toPort The index of the input port
+     * @return The cable created
+     */
+    public Cable connectGate(String fromGate, String toGate, int fromPort, int toPort) throws Exception{
+        if(this.allGates.containsKey(fromGate)){
+            throw new Exception(String.format("Key not found : %s", fromGate));
+        }
+        if(this.allGates.containsKey(toGate)){
+            throw new Exception(String.format("Key not found : %s", toGate));
+        }
 
-    // }
+        Cable res = null;
+
+        try{
+            res = this.allGates.get(fromGate).connect(this.allGates.get(toGate), fromPort, toPort);
+        }
+        catch(Exception e){
+            System.err.println(e);
+        }
+
+        return res;
+    }
 
     //#endregion
 
@@ -227,27 +244,35 @@ public class Circuit{
             }
 
             // 2 : Once all the gate are created, we connect them thanks to their old uuid
-            // Though, cables will will now use their new uuid
+            // Though, cables will now use their new 'uuid'
             for (int i = 0; i < gate_Array.length(); i++){
                 JSONObject gate_Json = gate_Array.getJSONObject(i);
 
-                // Start to target
+                String baseOldId = String.valueOf(gate_Json.getInt("uuid"));
 
-                // String type = gate_Json.getString("type");
-                // String oldId = String.valueOf(gate_Json.getInt("uuid"));
-                // tempCircuit.addNewGate(type, oldId);
+                JSONArray output_Array = gate_Json.getJSONArray("outputTo");
+                for(int baseOutputIndex = 0; baseOutputIndex < output_Array.length(); baseOutputIndex++){
+                    String targetOldId = String.valueOf(output_Array.getJSONArray(baseOutputIndex).getInt(0));
+                    int targetInputIndex = output_Array.getJSONArray(baseOutputIndex).getInt(1);
+
+                    tempCircuit.connectGate(baseOldId, targetOldId, baseOutputIndex, targetInputIndex);
+                }
             }
 
-
             // 3 : We fuse the temporary ciruit with the main one
+            for(Gate gate : tempCircuit.allGates.values()){
+                this.addGate(gate);
+            }
 
             // print the result for test purpose
+            /*
             System.out.println("Circuit Loaded with succes:");
             int j = 0;
             for(String i : tempCircuit.get_allGates().keySet()){
                 System.out.println(String.format("%d : key = %s : GateJSON = %s", j, i, tempCircuit.get_allGates().get(i).toJson()));
                 j++;
             }
+            */
 
         } catch (JSONException e) {
             System.err.println("Error circuit can't be launch " + e.getMessage());

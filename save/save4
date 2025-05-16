@@ -1,13 +1,27 @@
 {"Gate": [
  {
   "outputBus": [1],
+  "powered": true,
+  "inputBus": [],
+  "type": "Button",
+  "uuid": 33
+ },
+ {
+  "outputBus": [1],
+  "powered": true,
+  "inputBus": [],
+  "type": "Clock",
+  "uuid": 34
+ },
+ {
+  "outputBus": [1],
   "powered": false,
   "inputBus": [
    1,
    1
   ],
   "type": "And",
-  "uuid": 35
+  "uuid": 27
  },
  {
   "outputBus": [1],
@@ -17,48 +31,34 @@
    1
   ],
   "type": "Or",
-  "uuid": 36
+  "uuid": 28
  },
  {
   "outputBus": [1],
   "powered": false,
   "inputBus": [1],
   "type": "Not",
-  "uuid": 37
+  "uuid": 29
  },
  {
   "outputBus": [1],
   "powered": true,
   "inputBus": [],
   "type": "Power",
-  "uuid": 38
+  "uuid": 30
  },
  {
   "outputBus": [1],
   "powered": true,
   "inputBus": [],
   "type": "Ground",
-  "uuid": 39
+  "uuid": 31
  },
  {
   "outputBus": [1],
   "powered": true,
   "inputBus": [],
   "type": "Lever",
-  "uuid": 40
- },
- {
-  "outputBus": [1],
-  "powered": true,
-  "inputBus": [],
-  "type": "Button",
-  "uuid": 41
- },
- {
-  "outputBus": [1],
-  "powered": true,
-  "inputBus": [],
-  "type": "Clock",
-  "uuid": 42
+  "uuid": 32
  }
 ]}
