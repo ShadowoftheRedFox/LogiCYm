@@ -76,6 +76,7 @@ public class Editor extends VBox {
 
         resizeGrid();
 
+        container.setOnMousePressed(event -> pressSelection(event));
         container.setOnMouseReleased(event -> endSelection(event));
         container.setOnMouseDragged(event -> dragSelection(event));
     }
@@ -111,23 +112,38 @@ public class Editor extends VBox {
         }
     }
 
-    private void dragSelection(MouseEvent event) {
-        if (selectionRectangle == null) {
-            selectionRectangle = new Rectangle();
-            selectionStart = new Point2D(event.getX(), event.getY());
-
-            selectionRectangle.setLayoutX(event.getX());
-            selectionRectangle.setLayoutY(event.getY());
-
-            selectionRectangle.setFill(Color.BLUE);
-            selectionRectangle.setStroke(Color.BLUEVIOLET);
-            selectionRectangle.strokeWidthProperty().set(3);
-            selectionRectangle.setOpacity(0.3);
-
-            container.getChildren().add(selectionRectangle);
-            selectionRectangle.toFront();
+    private void pressSelection(MouseEvent event) {
+        // press is not on a blank space
+        if (!gridPane.equals(event.getTarget())) {
+            return;
         }
 
+        if (selectionRectangle != null) {
+            endSelection(event);
+        }
+
+        selectedNodes.clear();
+
+        selectionRectangle = new Rectangle();
+        selectionStart = new Point2D(event.getX(), event.getY());
+
+        selectionRectangle.setLayoutX(event.getX());
+        selectionRectangle.setLayoutY(event.getY());
+
+        selectionRectangle.setFill(Color.BLUE);
+        selectionRectangle.setStroke(Color.BLUEVIOLET);
+        selectionRectangle.strokeWidthProperty().set(3);
+        selectionRectangle.setOpacity(0.3);
+
+        container.getChildren().add(selectionRectangle);
+        selectionRectangle.toFront();
+    }
+
+    private void dragSelection(MouseEvent event) {
+        // drag detected but not a selection
+        if (selectionRectangle == null) {
+            return;
+        }
         double width = event.getX() - selectionStart.getX();
         double height = event.getY() - selectionStart.getY();
 
