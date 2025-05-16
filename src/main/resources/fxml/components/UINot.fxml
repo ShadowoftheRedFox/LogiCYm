@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.shape.Circle?>
-<?import javafx.scene.shape.Polygon?>
 
-<AnchorPane fx:id="self" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pjava.src.UI.components.UINot">
+<AnchorPane fx:id="self" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pjava.src.UI.components.UINot">
    <children>
-      <Polygon fx:id="body1" fill="WHITE" layoutX="150.0" layoutY="180.0" points="-100.0, 40.0, 100.0, 40.0, 0.0, -200.0" rotate="90.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" />
-      <Circle fx:id="body2" fill="WHITE" layoutX="260.0" layoutY="100.0" radius="25.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="3.0" />
+      <ImageView fitHeight="200.0" fitWidth="255.0" layoutX="32.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../img/NO.png" />
+         </image>
+      </ImageView>
       <fx:include fx:id="input1" layoutX="-33.0" scaleX="0.3" scaleY="0.3" source="Pin.fxml" />
       <fx:include fx:id="output1" layoutX="250.0" rotate="180.0" scaleX="0.3" scaleY="0.3" source="Pin.fxml" />
    </children>
