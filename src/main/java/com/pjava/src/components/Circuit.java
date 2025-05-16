@@ -161,8 +161,14 @@ public class Circuit{
 
     //#region
 
-    // public void connectGate(String label1, String label2) throws Error{
-    //     if(this.allGates)
+    // public void connectGate(String label1, String label2, int ) throws Exception{
+    //     if(this.allGates.containsKey(label1)){
+    //         throw new Exception(String.format("Key not found : %s", label1));
+    //     }
+    //     if(this.allGates.containsKey(label2)){
+    //         throw new Exception(String.format("Key not found : %s", label2));
+    //     }
+
     // }
 
     //#endregion
