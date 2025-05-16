@@ -45,8 +45,9 @@
                         </VBox>
                         <HBox alignment="BOTTOM_CENTER" spacing="10.0">
                             <children>
-                                <Button mnemonicParsing="false" onAction="#click" text="Ajouter" HBox.hgrow="ALWAYS" />
-                                <Button mnemonicParsing="false" text="Affranchir" HBox.hgrow="ALWAYS" />
+                                <Button mnemonicParsing="false" onAction="#clickPloof" text="Ajouter" HBox.hgrow="ALWAYS" />
+                                <Button mnemonicParsing="false" onAction="#clickWorkbench" text="Affranchir" HBox.hgrow="ALWAYS" />
+                        <Button mnemonicParsing="false" onAction="#clickTest" text="Test" />
                                 <Button mnemonicParsing="false" onAction="#quit" text="Quitter" HBox.hgrow="ALWAYS" />
                             </children>
                             <VBox.margin>
