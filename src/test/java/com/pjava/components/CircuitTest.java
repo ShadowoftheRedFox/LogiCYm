@@ -2,9 +2,6 @@ package com.pjava.components;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.pjava.src.components.*;
@@ -44,7 +41,7 @@ public class CircuitTest{
         circuit.addGate("Ground");
 
 
-        System.out.println("circuit to JSON by hand :");
+        System.out.println("circuit to JSON by hand :\nnuméro : clé : Gate");
         int j = 0;
         for(String i : circuit.get_allGates().keySet()){
             System.out.println(String.format("%d : %s : %s", j, i, circuit.get_allGates().get(i).toJson()));
@@ -52,7 +49,7 @@ public class CircuitTest{
         }
 
         System.out.println("\ncircuit to JSON with Circuit.toJSON :");
-        System.out.println(circuit.toJson().toString(1));
+        System.out.println(circuit.toJson());
 
     }
 
@@ -67,7 +64,7 @@ public class CircuitTest{
         circuit2.addGate("Power");
         circuit2.addGate("Ground");
 
-        Circuit.saveCircuit(circuit2,"save/save1");
+        Circuit.save(circuit2,"save/save1");
     }
 
 }

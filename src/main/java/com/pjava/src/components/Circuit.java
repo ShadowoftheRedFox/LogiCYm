@@ -1,15 +1,11 @@
 package com.pjava.src.components;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.BitSet;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import com.pjava.src.errors.BusSizeException;
-import com.pjava.src.utils.Cyclic;
 
 import com.pjava.src.components.gates.Or;
 import com.pjava.src.components.gates.And;
@@ -17,8 +13,6 @@ import com.pjava.src.components.gates.Not;
 import com.pjava.src.components.input.Ground;
 import com.pjava.src.components.input.Power;
 
-import com.pjava.src.components.input.Input;
-import com.pjava.src.components.output.Output;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -112,8 +106,6 @@ public class Circuit{
 
 
     // TODO : startSimulation
-    public void startSimulation() {
-    }
 
 
     public JSONObject toJson() {
@@ -131,7 +123,7 @@ public class Circuit{
     }
 
 
-    public static void saveCircuit(Circuit circuit,String fileName){
+    public static void save(Circuit circuit,String fileName){
         try (FileWriter writer = new FileWriter(fileName)){
             JSONObject circuit_Json = circuit.toJson();
             writer.write(circuit_Json.toString(1));
@@ -151,6 +143,7 @@ public class Circuit{
     //     try {
     //     Circuit circuit = new Circuit();
     //     JSONArray gate_Array = circuit_Json.getJSONArray("Gate");
+
     //     for (int i = 0; i< gate_Array.length(); i++){
     //         JSONObject gate_Json = gate_Array.getJSONObject(i);
     //         String type = gate_Json.getString("type");
@@ -162,9 +155,10 @@ public class Circuit{
     //     }
 
     //     // 2 boucle, connection entre tous les gates
+
     // }
 
-    // public void loadFromFile(String filePath){
+    // // public void loadFromFile(String filePath){
     //     StringBuilder content = new StringBuilder();
     //     try (BufferedReader reader = new BufferedReader(new FileReader(filePath))){
     //         String line;

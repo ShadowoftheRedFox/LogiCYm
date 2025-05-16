@@ -28,12 +28,12 @@ public class Cable extends Element {
     /**
      * The input gates.
      */
-    protected ArrayList<Gate> inputGate = new ArrayList<Gate>();
+    protected ArrayList<Gate> inputGate = new ArrayList<>();
 
     /**
      * The output gates.
      */
-    protected ArrayList<Gate> outputGate = new ArrayList<Gate>();
+    protected ArrayList<Gate> outputGate = new ArrayList<>();
 
     /**
      * Create a new cable with the specified bus size.
@@ -49,6 +49,7 @@ public class Cable extends Element {
      * This function is called when inputs state change.
      * Equivalent of {@code updateState(true)} ({@link #updateState(boolean)}).
      */
+    @Override
     public void updateState() {
         updateState(true);
     }
@@ -58,6 +59,7 @@ public class Cable extends Element {
      *
      * @param propagate Whether or not to propagate the changes to the outputs.
      */
+    @Override
     public void updateState(boolean propagate) {
         // early returns
         if (getOutputGate().size() == 0 || getPowered() == false) {
@@ -112,6 +114,7 @@ public class Cable extends Element {
      * Should be called when input/output changes.
      * Update the power of himself and its output accordingly.
      */
+    @Override
     public void updatePower() {
         // if at least one gate is powered, then the cable is powered
         int countPoweredGates = 0;
@@ -151,6 +154,7 @@ public class Cable extends Element {
      *
      * @return The number of input gates.
      */
+    @Override
     public Integer getInputNumber() {
         return inputGate.size();
     }
@@ -160,6 +164,7 @@ public class Cable extends Element {
      *
      * @return The number of output gates.
      */
+    @Override
     public Integer getOutputNumber() {
         return outputGate.size();
     }
