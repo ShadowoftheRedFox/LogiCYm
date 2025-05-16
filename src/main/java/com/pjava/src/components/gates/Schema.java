@@ -62,6 +62,7 @@ public class Schema extends Gate {
     public Schema(String schemaName, ArrayList<Gate> gates) throws Exception {
         // TODO cables position
         // TODO position, label, rotation of gates
+        // TODO unit tests
         setName(schemaName);
         setGates(gates);
         exportSchema();
