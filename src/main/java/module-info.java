@@ -24,4 +24,5 @@ module com.pjava {
     // to authorize FXML files and FXMLLoader to see
     // classes from our package
     opens com.pjava.controllers to javafx.fxml;
+    opens com.pjava.src.UI.components to javafx.fxml;
 }

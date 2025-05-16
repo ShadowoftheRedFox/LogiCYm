@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import com.pjava.src.components.Cable;
-import com.pjava.src.components.gates.Not;
 import com.pjava.src.errors.BusSizeException;
 
 public class CableTest {
@@ -53,30 +52,6 @@ public class CableTest {
         assertEquals(1, c.getBusSize());
         c.setBusSize(2);
         assertEquals(2, c.getBusSize());
-    }
-
-    @Test
-    void getInputNumberAndBus() throws BusSizeException, Exception {
-        Cable c = new Cable(2);
-        assertEquals(0, c.getInputNumber());
-        assertEquals(0, c.getInputGate().size());
-        Not n1 = new Not();
-        Not n2 = new Not();
-        Cable d = n1.connect(n2);
-        assertEquals(1, d.getInputNumber());
-        assertEquals(1, d.getInputGate().size());
-    }
-
-    @Test
-    void getOutputNumberAndBus() throws BusSizeException, Exception {
-        Cable c = new Cable(2);
-        assertEquals(0, c.getOutputNumber());
-        assertEquals(0, c.getOutputGate().size());
-        Not n1 = new Not();
-        Not n2 = new Not();
-        Cable d = n1.connect(n2);
-        assertEquals(1, d.getOutputNumber());
-        assertEquals(1, d.getOutputGate().size());
     }
 
     @Test

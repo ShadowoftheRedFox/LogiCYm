@@ -120,20 +120,6 @@ public abstract class Element {
      */
     abstract void updateState(boolean propagate);
 
-    /**
-     * Return the number of inputs.
-     *
-     * @return The number of inputs.
-     */
-    abstract Integer getInputNumber();
-
-    /**
-     * Return the number of outputs.
-     *
-     * @return The number of output.
-     */
-    abstract Integer getOutputNumber();
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

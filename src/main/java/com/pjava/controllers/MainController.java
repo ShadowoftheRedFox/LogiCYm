@@ -48,9 +48,21 @@ public class MainController extends AnchorPane {
     }
 
     @FXML
-    public void click(ActionEvent event) {
+    public void clickPloof(ActionEvent event) {
         this.manager.activate("ploof");
         System.out.println("Changement à ploof!");
+    }
+
+    @FXML
+    public void clickWorkbench(ActionEvent event) {
+        this.manager.activate("workbench");
+        System.out.println("Changement à workbench!");
+    }
+
+    @FXML
+    public void clickTest(ActionEvent event) {
+        this.manager.activate("editor");
+        System.out.println("Changement à editor!");
     }
 
     @FXML

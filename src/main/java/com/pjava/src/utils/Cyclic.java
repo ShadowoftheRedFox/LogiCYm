@@ -150,13 +150,11 @@ public class Cyclic {
         for (Cable cable : current.getOutputCable()) {
             if (cable != null) {
                 queuedCable.add(cable);
-                for (Gate gate : cable.getOutputGate()) {
-                    if (gate != null) {
-                        if (checkIsCyclic(gate, visited, queued, depth - 1)) {
-                            addToCycleList(gate);
-                            addToCycleList(cable);
-                            return true;
-                        }
+                if (cable.getOutputGate() != null) {
+                    if (checkIsCyclic(cable.getOutputGate(), visited, queued, depth - 1)) {
+                        addToCycleList(cable.getOutputGate());
+                        addToCycleList(cable);
+                        return true;
                     }
                 }
                 queuedCable.remove(cable);
@@ -219,10 +217,8 @@ public class Cyclic {
                             // if the cable connect to a gate outside of the cycle, it is used as both cycle
                             // element and input
                             boolean usedAsBoth = false;
-                            for (Gate gate : cable.getInputGate()) {
-                                if (!cycleList.contains(gate)) {
-                                    usedAsBoth = true;
-                                }
+                            if (!cycleList.contains(cable.getInputGate())) {
+                                usedAsBoth = true;
                             }
 
                             if ((!cycleList.contains(cable) || usedAsBoth) && !inputCableList.contains(cable)) {
@@ -235,10 +231,8 @@ public class Cyclic {
                             // if the cable connect to a gate outside of the cycle, it is used as both cycle
                             // element and output
                             boolean usedAsBoth = false;
-                            for (Gate gate : cable.getOutputGate()) {
-                                if (!cycleList.contains(gate)) {
-                                    usedAsBoth = true;
-                                }
+                            if (!cycleList.contains(cable.getOutputGate())) {
+                                usedAsBoth = true;
                             }
 
                             if ((!cycleList.contains(cable) || usedAsBoth) && !outputCableList.contains(cable)) {
