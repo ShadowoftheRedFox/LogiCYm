@@ -8,7 +8,9 @@ import com.pjava.src.UI.components.UIAnd;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UINot;
 import com.pjava.src.UI.components.UIOr;
+import com.pjava.src.utils.UIUtlis;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -146,6 +148,11 @@ public class Editor extends VBox {
         unselectAllButton.setOnAction(event -> {
             clearSelection();
         });
+
+        quitButton.setOnAction(event -> {
+            // TODO popup to ask to save?
+            Platform.exit();
+        });
         // #endregion
 
         // #region Help
@@ -161,6 +168,8 @@ public class Editor extends VBox {
                         "1;0;1\n" +
                         "0;1;0\n");
         // #endregion
+
+        UIUtlis.errorPopup("Ploof");
     }
 
     private void resizeGrid() {
