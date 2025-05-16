@@ -156,15 +156,18 @@ public abstract class Element {
     }
 
     /**
-     * Convertit l'élément en objet JSON.
-     * @return Un JSONObject représentant cet élément
+     * Convert the main informations of an element to JSON
+     * This function must be overriden by heriting classes to be precised
+     *
+     * @return JSONObject
      */
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
+
         json.put("uuid", uuid());
         json.put("powered", getPowered());
         json.put("type", getClass().getSimpleName());
-        // Les sous-classes doivent compléter cette fonction
+
         return json;
     }
 }

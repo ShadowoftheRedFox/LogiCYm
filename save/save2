@@ -6,29 +6,29 @@
    1,
    1
   ],
-  "type": "Or",
-  "uuid": 33
- },
- {
-  "outputBus": [1],
-  "powered": false,
-  "inputBus": [1],
-  "type": "Not",
+  "type": "And",
   "uuid": 34
  },
  {
   "outputBus": [1],
   "powered": true,
   "inputBus": [],
-  "type": "Power",
-  "uuid": 35
+  "type": "Ground",
+  "uuid": 38
+ },
+ {
+  "outputBus": [1],
+  "powered": false,
+  "inputBus": [1],
+  "type": "Not",
+  "uuid": 36
  },
  {
   "outputBus": [1],
   "powered": true,
   "inputBus": [],
-  "type": "Ground",
-  "uuid": 36
+  "type": "Power",
+  "uuid": 37
  },
  {
   "outputBus": [1],
@@ -37,7 +37,7 @@
    1,
    1
   ],
-  "type": "And",
-  "uuid": 32
+  "type": "Or",
+  "uuid": 35
  }
 ]}
