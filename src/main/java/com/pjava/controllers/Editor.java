@@ -198,4 +198,6 @@ public class Editor extends VBox {
     public void clickSplitter(ActionEvent event) {
         System.out.println("Click Splitter!");
     }
+
+
 }

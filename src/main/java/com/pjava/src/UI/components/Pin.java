@@ -25,6 +25,13 @@ public class Pin extends VBox {
 
     private Color color = Color.BLUE;
 
+    // Référence au mode de câblage actuel
+    private static boolean cablingMode = false;
+    // Pin source temporaire pour les connexions en cours
+    private static Pin tempSourcePin = null;
+    // Événement pour la création de câbles
+    private static CableConnectionListener cableListener = null;
+
     @FXML
     private Rectangle pinCenter;
     @FXML
@@ -44,6 +51,19 @@ public class Pin extends VBox {
 
     private void pressed(MouseEvent event) {
         changeColor(color.desaturate());
+
+        if (cablingMode) {
+            // check if its in cablingMode or not
+            if (tempSourcePin == null) {
+                tempSourcePin = this;
+            } else if (tempSourcePin != this) {
+                // finishing the connection with another cable
+                if (cableListener != null) {
+                    cableListener.onCableConnection(tempSourcePin, this);
+                }
+                tempSourcePin = null;
+            }
+        }
     }
 
     private void released(MouseEvent event) {
@@ -120,5 +140,25 @@ public class Pin extends VBox {
     public void setAsInput(boolean isInput) {
         this.isInput = isInput;
         setColor(isInput ? Color.BLUE : Color.RED);
+    }
+
+    /**
+     * Activate the cablingmode
+     */
+    public static void setCablingMode(boolean enabled) {
+        cablingMode = enabled;
+        if (!enabled) {
+            tempSourcePin = null;
+        }
+    }
+
+
+    public static void setCableConnectionListener(CableConnectionListener listener) {
+        cableListener = listener;
+    }
+
+
+    public interface CableConnectionListener {
+        void onCableConnection(Pin source, Pin target);
     }
 }
