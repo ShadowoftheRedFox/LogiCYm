@@ -301,10 +301,5 @@ public class Editor extends VBox {
     public void clickSplitter(ActionEvent event) {
         System.out.println("Click Splitter!");
     }
-<<<<<<< HEAD
-
-
-=======
     // #endregion
->>>>>>> 79493de34e220bdfeb289f231210bc356af857ea
 }
