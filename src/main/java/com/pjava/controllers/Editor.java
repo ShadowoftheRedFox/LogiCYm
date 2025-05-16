@@ -18,6 +18,8 @@ import javafx.geometry.HPos;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -27,14 +29,74 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 
 public class Editor extends VBox {
     @FXML
-    public GridPane gridPane;
+    private GridPane gridPane;
     @FXML
-    public ScrollPane viewScroll;
+    private ScrollPane viewScroll;
     @FXML
-    public AnchorPane container;
+    private AnchorPane container;
+
+    // #region Menu items
+    @FXML
+    private MenuItem copyButton;
+
+    @FXML
+    private MenuItem cutButton;
+
+    @FXML
+    private MenuItem deleteButton;
+
+    @FXML
+    private MenuItem disableSimulationButton;
+
+    @FXML
+    private MenuItem enableSimulationButton;
+
+    @FXML
+    private Text loadFromInputHelp;
+
+    @FXML
+    private MenuItem loadInputsButton;
+
+    @FXML
+    private MenuItem newFileButton;
+
+    @FXML
+    private MenuItem openFileButton;
+
+    @FXML
+    private Menu openRecentButton;
+
+    @FXML
+    private MenuItem pasteButton;
+
+    @FXML
+    private MenuItem preferencesButton;
+
+    @FXML
+    private MenuItem quitButton;
+
+    @FXML
+    private MenuItem redoButton;
+
+    @FXML
+    private MenuItem saveAsButton;
+
+    @FXML
+    private MenuItem saveButton;
+
+    @FXML
+    private MenuItem selectAllButton;
+
+    @FXML
+    private MenuItem undoButton;
+
+    @FXML
+    private MenuItem unselectAllButton;
+    // #endregion
 
     private SceneManager manager;
 
@@ -57,7 +119,7 @@ public class Editor extends VBox {
     }
 
     @FXML
-    public void initialize() {
+    private void initialize() {
         manager.getScene().widthProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth,
@@ -76,8 +138,29 @@ public class Editor extends VBox {
 
         resizeGrid();
 
+        // #region Listeners
+        container.setOnMousePressed(event -> pressSelection(event));
         container.setOnMouseReleased(event -> endSelection(event));
         container.setOnMouseDragged(event -> dragSelection(event));
+
+        unselectAllButton.setOnAction(event -> {
+            clearSelection();
+        });
+        // #endregion
+
+        // #region Help
+        loadFromInputHelp.setText(
+                "Load from inputs button enable the user to give a CSV file containing a list of inputs to emulate.\n" +
+                        "The file should have the first row as the name of each input, separated by a comma \";\".\n" +
+                        "Each line contains either \"1\" or \"0\" for each columns, also separated by a comma.\n" +
+                        "The file should have the first row as the name of each input, separated by a comma \";\".\n" +
+                        "Each line contains either \"1\" or \"0\" for each columns, also separated by a comma. It should look something like this:\n\n"
+                        +
+                        "A;B;C\n" +
+                        "1;0;0\n" +
+                        "1;0;1\n" +
+                        "0;1;0\n");
+        // #endregion
     }
 
     private void resizeGrid() {
@@ -111,23 +194,38 @@ public class Editor extends VBox {
         }
     }
 
-    private void dragSelection(MouseEvent event) {
-        if (selectionRectangle == null) {
-            selectionRectangle = new Rectangle();
-            selectionStart = new Point2D(event.getX(), event.getY());
-
-            selectionRectangle.setLayoutX(event.getX());
-            selectionRectangle.setLayoutY(event.getY());
-
-            selectionRectangle.setFill(Color.BLUE);
-            selectionRectangle.setStroke(Color.BLUEVIOLET);
-            selectionRectangle.strokeWidthProperty().set(3);
-            selectionRectangle.setOpacity(0.3);
-
-            container.getChildren().add(selectionRectangle);
-            selectionRectangle.toFront();
+    private void pressSelection(MouseEvent event) {
+        // press is not on a blank space
+        if (!gridPane.equals(event.getTarget())) {
+            return;
         }
 
+        if (selectionRectangle != null) {
+            endSelection(event);
+        }
+
+        clearSelection();
+
+        selectionRectangle = new Rectangle();
+        selectionStart = new Point2D(event.getX(), event.getY());
+
+        selectionRectangle.setLayoutX(event.getX());
+        selectionRectangle.setLayoutY(event.getY());
+
+        selectionRectangle.setFill(Color.BLUE);
+        selectionRectangle.setStroke(Color.BLUEVIOLET);
+        selectionRectangle.strokeWidthProperty().set(3);
+        selectionRectangle.setOpacity(0.3);
+
+        container.getChildren().add(selectionRectangle);
+        selectionRectangle.toFront();
+    }
+
+    private void dragSelection(MouseEvent event) {
+        // drag detected but not a selection
+        if (selectionRectangle == null) {
+            return;
+        }
         double width = event.getX() - selectionStart.getX();
         double height = event.getY() - selectionStart.getY();
 
@@ -152,6 +250,11 @@ public class Editor extends VBox {
         selectionRectangle = null;
     }
 
+    private void clearSelection() {
+        selectedNodes.clear();
+    }
+
+    // #region Gate spawn
     @FXML
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
@@ -198,6 +301,10 @@ public class Editor extends VBox {
     public void clickSplitter(ActionEvent event) {
         System.out.println("Click Splitter!");
     }
+<<<<<<< HEAD
 
 
+=======
+    // #endregion
+>>>>>>> 79493de34e220bdfeb289f231210bc356af857ea
 }
