@@ -26,6 +26,7 @@ public class Display extends Output {
     /**
      * Create a new display with default base of 2 and maximum cable bus size of 1.
      *
+     * @throws Exception Should not throw.
      * @see #Display(int, int)
      */
     public Display() throws Exception {
@@ -36,21 +37,21 @@ public class Display extends Output {
      * Create a new display with an user defined base and maximum cable bus size.
      * Throws an exception if the base value is smaller than 2 or greater than 16.
      *
-     * @param inputSize
-     * @param base
-     * @throws Exception
+     * @param inputSize The size of the input of the display.
+     * @param base      The radix used to convert base number.
+     * @throws Exception Throws if base is not between 2 and 16 included.
      */
     public Display(int inputSize, int base) throws Exception {
         super(new int[] { inputSize });
-        if (base < 2 || base > 16)
-            throw new Exception("Base is out of bound");
-        this.outputBase = base;
+        setBaseOutput(base);
+        ;
     }
 
     /**
      * Return the value of the cable value matching the selected base format.
      *
-     * @return The string equivalent of the cable value in the selected base format (Base 2: 3 returns "11" and 1 returns "01").
+     * @return The string equivalent of the cable value in the selected base format
+     *         (Base 2: 3 returns "11" and 1 returns "01").
      */
     public String getOutput() {
         final int maxOutput = Utils.pow2(this.getInputBus()[0]) - 1;
@@ -84,11 +85,15 @@ public class Display extends Output {
     /**
      * Set the base of this display to the desired base.
      *
-     * @param base
+     * @param base The radix used to convert base number.
+     * @throws Exception Throws if base is not between 2 and 16 included.
      */
-    public void setBaseOutput(int base) {
+    public void setBaseOutput(int base) throws Exception {
+        if (base < 2 || base > 16)
+            throw new Exception("Base is out of bound");
         this.outputBase = base;
     }
+    // #endregion
 
     // #region Getters
     /**
@@ -99,4 +104,5 @@ public class Display extends Output {
     public int getBaseOutput() {
         return outputBase;
     }
+    // #endregion
 }

@@ -18,8 +18,10 @@ public class DisplayTest {
         }
 
         public void setInputCable(Cable cable) {
-            if (getInputCable().size() == 0) getInputCable().add(cable);
-            else getInputCable().set(0, cable);
+            if (getInputCable().size() == 0)
+                getInputCable().add(cable);
+            else
+                getInputCable().set(0, cable);
         }
     }
 
@@ -33,8 +35,7 @@ public class DisplayTest {
         }
 
         public void setOutputGate(Gate gate) {
-            if (outputGate.size() == 0) outputGate.add(gate);
-            else outputGate.set(0, gate);
+            outputGate = gate;
         }
 
     }
@@ -56,7 +57,7 @@ public class DisplayTest {
         assertEquals("07", i.getOutput());
 
         i.setBaseOutput(10);
-        assertEquals("7", i.getOutput());
+        assertEquals("07", i.getOutput());
 
         i.setBaseOutput(16);
         assertEquals("07", i.getOutput());

@@ -141,7 +141,7 @@ public class GateTest {
         g.disconnect(c);
 
         assertNull(g.getOutputCable().get(0));
-        assertNull(c.getInputGate().get(0));
+        assertNull(c.getInputGate());
     }
 
     @Test
