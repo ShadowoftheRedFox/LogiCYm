@@ -7,7 +7,8 @@ import com.pjava.src.components.Gate;
 import com.pjava.src.errors.BusSizeException;
 
 /**
- * Split a single input into multiple input of the same bus size.
+ * Split a single input into multiple input of the same bus size. The
+ * NodeMerger is not made since Or gate serve the same exact purpose.
  */
 public class NodeSplitter extends Gate {
     /**

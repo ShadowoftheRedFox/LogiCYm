@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.pjava.src.components.Cable;
+import com.pjava.src.components.cables.NodeSplitter;
 import com.pjava.src.components.gates.Not;
 import com.pjava.src.components.gates.Or;
 import com.pjava.src.components.input.Clock;
@@ -22,6 +23,7 @@ public class CycliTest {
         Not not1 = new Not();
         Not not2 = new Not();
 
+        NodeSplitter outSplitter = new NodeSplitter();
         Not notOut = new Not();
 
         R.connect(or1);
@@ -30,10 +32,11 @@ public class CycliTest {
         or1.connect(not1);
         or2.connect(not2);
 
-        not1.connect(or2);
+        not1.connect(outSplitter);
+        outSplitter.connect(or2);
         not2.connect(or1);
 
-        Cable out = not1.connect(notOut);
+        Cable out = outSplitter.connect(notOut);
 
         Cyclic cycle = new Cyclic();
         assertEquals(false, cycle.isCyclic(R),
@@ -45,7 +48,7 @@ public class CycliTest {
         assertEquals(true, cycle.isCyclic(or1),
                 () -> "Cyclic.isCyclic(R) expected to be true, received false");
         final int Or1size = cycle.getElementInCyle().size();
-        assertEquals(8, Or1size,
+        assertEquals(10, Or1size,
                 () -> "Cycle.getElementInCyle().size() after Cyclic.isCyclic(R) expected to be 8, received "
                         + Or1size);
         final int Or1InputSize = cycle.getCycleInput().size();

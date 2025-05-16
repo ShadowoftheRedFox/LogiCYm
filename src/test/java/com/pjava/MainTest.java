@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.pjava.src.components.Cable;
 import com.pjava.src.components.gates.And;
 import com.pjava.src.components.gates.Not;
 import com.pjava.src.components.gates.Or;
@@ -58,14 +57,14 @@ public class MainTest {
         Not not1 = new Not();
         Not not2 = new Not();
 
-        Cable _0 = R.connect(or1);
-        Cable _1 = S.connect(or2);
+        R.connect(or1);
+        S.connect(or2);
 
-        Cable _2 = or1.connect(not1);
-        Cable _3 = or2.connect(not2);
+        or1.connect(not1);
+        or2.connect(not2);
 
-        Cable _4 = not1.connect(or2);
-        Cable _5 = not2.connect(or1);
+        not1.connect(or2);
+        not2.connect(or1);
 
         R.updateState();
         S.updateState();

@@ -87,4 +87,5 @@ public abstract class Output extends Gate {
         // no output
         return null;
     }
+
 }
