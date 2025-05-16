@@ -12,7 +12,6 @@ import javafx.scene.shape.Arc;
 import javafx.scene.shape.Rectangle;
 
 public class UIAnd extends UIGate {
-
     @FXML
     private Pin input1Controller;
     @FXML

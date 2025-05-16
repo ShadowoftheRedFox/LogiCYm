@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import com.pjava.src.UI.SceneManager;
 import com.pjava.src.UI.components.UIAnd;
 import com.pjava.src.UI.components.UIElement;
+import com.pjava.src.UI.components.UINot;
+import com.pjava.src.UI.components.UIOr;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,8 +19,6 @@ import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
@@ -163,11 +163,15 @@ public class Editor extends VBox {
     @FXML
     public void clickOr(ActionEvent event) {
         System.out.println("Click Or!");
+        Node or = UIOr.create(getClass());
+        container.getChildren().add(or);
     }
 
     @FXML
     public void clickNot(ActionEvent event) {
         System.out.println("Click Not!");
+        Node not = UINot.create(getClass());
+        container.getChildren().add(not);
     }
 
     @FXML
