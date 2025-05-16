@@ -37,7 +37,6 @@ public class DisplayTest {
         public void setOutputGate(Gate gate) {
             outputGate = gate;
         }
-
     }
 
     @Test
@@ -61,6 +60,5 @@ public class DisplayTest {
 
         i.setBaseOutput(16);
         assertEquals("07", i.getOutput());
-
     }
 }

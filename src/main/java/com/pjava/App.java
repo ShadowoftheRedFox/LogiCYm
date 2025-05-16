@@ -43,7 +43,7 @@ public class App extends Application {
         this.manager.addScreen("ploof", new PloofController(this.manager));
 
         scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
-        stage.setTitle("Hello JavaFX and Maven");
+        stage.setTitle("LogiCYm");
         stage.setScene(scene);
         stage.show();
 

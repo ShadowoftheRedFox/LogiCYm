@@ -44,7 +44,6 @@ public class Display extends Output {
     public Display(int inputSize, int base) throws Exception {
         super(new int[] { inputSize });
         setBaseOutput(base);
-        ;
     }
 
     /**
@@ -89,8 +88,9 @@ public class Display extends Output {
      * @throws Exception Throws if base is not between 2 and 16 included.
      */
     public void setBaseOutput(int base) throws Exception {
-        if (base < 2 || base > 16)
+        if (base < 2 || base > 16) {
             throw new Exception("Base is out of bound");
+        }
         this.outputBase = base;
     }
     // #endregion
