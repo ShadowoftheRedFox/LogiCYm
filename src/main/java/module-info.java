@@ -6,6 +6,7 @@ module com.pjava {
     // (it's a requirement by javafx and how the structure has been made)
     requires transitive javafx.controls;
     requires javafx.fxml;
+    requires org.json;
 
     // export our package
     exports com.pjava;
