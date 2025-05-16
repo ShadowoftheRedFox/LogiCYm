@@ -5,11 +5,10 @@ import com.pjava.src.components.gates.Not;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polygon;
 
 public class UINot extends UIGate {
     @FXML
@@ -22,9 +21,7 @@ public class UINot extends UIGate {
     @FXML
     private VBox output1;
     @FXML
-    private Polygon body1;
-    @FXML
-    private Circle body2;
+    private ImageView body1;
 
     @FXML
     private AnchorPane self;
@@ -51,9 +48,6 @@ public class UINot extends UIGate {
         body1.setOnMousePressed(event -> pressed(event));
         body1.setOnMouseReleased(event -> released(event));
         body1.setOnMouseDragged(event -> dragged(event));
-        body2.setOnMousePressed(event -> pressed(event));
-        body2.setOnMouseReleased(event -> released(event));
-        body2.setOnMouseDragged(event -> dragged(event));
     }
 
     @Override

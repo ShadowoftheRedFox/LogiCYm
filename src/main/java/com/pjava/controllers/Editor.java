@@ -18,6 +18,8 @@ import javafx.geometry.HPos;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -27,14 +29,74 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 
 public class Editor extends VBox {
     @FXML
-    public GridPane gridPane;
+    private GridPane gridPane;
     @FXML
-    public ScrollPane viewScroll;
+    private ScrollPane viewScroll;
     @FXML
-    public AnchorPane container;
+    private AnchorPane container;
+
+    // #region Menu items
+    @FXML
+    private MenuItem copyButton;
+
+    @FXML
+    private MenuItem cutButton;
+
+    @FXML
+    private MenuItem deleteButton;
+
+    @FXML
+    private MenuItem disableSimulationButton;
+
+    @FXML
+    private MenuItem enableSimulationButton;
+
+    @FXML
+    private Text loadFromInputHelp;
+
+    @FXML
+    private MenuItem loadInputsButton;
+
+    @FXML
+    private MenuItem newFileButton;
+
+    @FXML
+    private MenuItem openFileButton;
+
+    @FXML
+    private Menu openRecentButton;
+
+    @FXML
+    private MenuItem pasteButton;
+
+    @FXML
+    private MenuItem preferencesButton;
+
+    @FXML
+    private MenuItem quitButton;
+
+    @FXML
+    private MenuItem redoButton;
+
+    @FXML
+    private MenuItem saveAsButton;
+
+    @FXML
+    private MenuItem saveButton;
+
+    @FXML
+    private MenuItem selectAllButton;
+
+    @FXML
+    private MenuItem undoButton;
+
+    @FXML
+    private MenuItem unselectAllButton;
+    // #endregion
 
     private SceneManager manager;
 
@@ -76,9 +138,29 @@ public class Editor extends VBox {
 
         resizeGrid();
 
+        // #region Listeners
         container.setOnMousePressed(event -> pressSelection(event));
         container.setOnMouseReleased(event -> endSelection(event));
         container.setOnMouseDragged(event -> dragSelection(event));
+
+        unselectAllButton.setOnAction(event -> {
+            clearSelection();
+        });
+        // #endregion
+
+        // #region Help
+        loadFromInputHelp.setText(
+                "Load from inputs button enable the user to give a CSV file containing a list of inputs to emulate.\n" +
+                        "The file should have the first row as the name of each input, separated by a comma \";\".\n" +
+                        "Each line contains either \"1\" or \"0\" for each columns, also separated by a comma.\n" +
+                        "The file should have the first row as the name of each input, separated by a comma \";\".\n" +
+                        "Each line contains either \"1\" or \"0\" for each columns, also separated by a comma. It should look something like this:\n\n"
+                        +
+                        "A;B;C\n" +
+                        "1;0;0\n" +
+                        "1;0;1\n" +
+                        "0;1;0\n");
+        // #endregion
     }
 
     private void resizeGrid() {
@@ -122,7 +204,7 @@ public class Editor extends VBox {
             endSelection(event);
         }
 
-        selectedNodes.clear();
+        clearSelection();
 
         selectionRectangle = new Rectangle();
         selectionStart = new Point2D(event.getX(), event.getY());
@@ -166,6 +248,10 @@ public class Editor extends VBox {
         // TODO look for selected elements with selectedNodes
         container.getChildren().remove(selectionRectangle);
         selectionRectangle = null;
+    }
+
+    private void clearSelection() {
+        selectedNodes.clear();
     }
 
     @FXML
