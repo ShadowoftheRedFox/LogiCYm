@@ -119,7 +119,7 @@ public class Editor extends VBox {
     }
 
     @FXML
-    public void initialize() {
+    private void initialize() {
         manager.getScene().widthProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth,
@@ -254,6 +254,7 @@ public class Editor extends VBox {
         selectedNodes.clear();
     }
 
+    // #region Gate spawn
     @FXML
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
@@ -300,4 +301,5 @@ public class Editor extends VBox {
     public void clickSplitter(ActionEvent event) {
         System.out.println("Click Splitter!");
     }
+    // #endregion
 }
