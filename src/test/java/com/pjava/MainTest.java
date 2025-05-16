@@ -10,10 +10,10 @@ import org.junit.jupiter.api.Test;
 
 import com.pjava.src.components.Cable;
 import com.pjava.src.components.Gate;
-import com.pjava.src.components.Schema;
 import com.pjava.src.components.gates.And;
 import com.pjava.src.components.gates.Not;
 import com.pjava.src.components.gates.Or;
+import com.pjava.src.components.gates.Schema;
 import com.pjava.src.components.input.Clock;
 import com.pjava.src.components.input.Ground;
 import com.pjava.src.components.input.Power;
@@ -66,7 +66,6 @@ public class MainTest {
         or.connect(display2);
 
         System.out.println(created.getInputNumber() + " " + created.getInputCable());
-        System.out.println(created.getInputBus().length + " " + p4.getOutputBus().length);
 
         gates2.add(created);
         gates2.add(p3);

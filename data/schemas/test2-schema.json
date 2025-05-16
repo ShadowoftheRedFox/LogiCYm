@@ -6,6 +6,7 @@
    "outputBusSize": [],
    "outputTo": [],
    "inputFrom": [],
+   "filename": "test2",
    "powered": false,
    "inputBusSize": [],
    "type": "Schema",
