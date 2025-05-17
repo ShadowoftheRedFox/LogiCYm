@@ -99,13 +99,13 @@ public abstract class Utils {
      *
      * @see #runtimeID()
      */
-    static int id = 0;
+    static int id = 1;
 
     /**
      * Create a unique id, though it's garanted to be unique during the same run.
      * Also can overflow if the id gets bigger than the {@code Integer.MAX_VALUE}
      *
-     * @return The unnique ID, starting from 0.
+     * @return The unique ID, starting from 1.
      */
     public static int runtimeID() {
         return id++;

@@ -8,7 +8,6 @@ module com.pjava {
     requires javafx.fxml;
     requires transitive org.json;
 
-
     // export our package
     exports com.pjava;
     exports com.pjava.src.components;
