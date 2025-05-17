@@ -107,6 +107,11 @@ public class CircuitTest{
 
             System.out.println("\nResult :");
             circuit3.load(circuit3.toJson());
+            j = 0;
+            for(String i : circuit3.get_allGates().keySet()){
+                System.out.println(String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.get_allGates().get(i).toJson()));
+                j++;
+            }
 
         } catch (Exception e) {
             System.err.println(e);
@@ -119,19 +124,17 @@ public class CircuitTest{
     @SuppressWarnings("CallToPrintStackTrace")
     void test5(){
         System.out.println("\ntest 5 :");
-        Circuit circuit3 = new Circuit();
+        Circuit circuit4 = new Circuit();
         try{
-
-
+            circuit4.loadFromFile("save/save3");
         }
         catch(Exception e){
             System.err.println(e);
         }
-        //circuit3.loadFromFile("save/save3");
 
         int j = 0;
-        for(String i : circuit3.get_allGates().keySet()){
-            System.out.println(String.format("%d : %s : %s", j, i, circuit3.get_allGates().get(i).toJson()));
+        for(String i : circuit4.get_allGates().keySet()){
+            System.out.println(String.format("%d : %s : %s", j, i, circuit4.get_allGates().get(i).toJson()));
             j++;
         }
 

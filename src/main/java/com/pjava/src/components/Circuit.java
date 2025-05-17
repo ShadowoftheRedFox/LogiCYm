@@ -20,7 +20,7 @@ import com.pjava.src.components.input.Lever;
 import com.pjava.src.components.input.Power;
 
 
-// TODO : startSimulation()
+
 
 
 public class Circuit{
@@ -134,6 +134,7 @@ public class Circuit{
             case "Clock":
             newGate = new Clock();
             break;
+            // TODO : case "Schema":
             default:
                 throw new Exception(String.format("No match found for the string '%s'", type));
         }
@@ -265,14 +266,13 @@ public class Circuit{
             }
 
             // print the result for test purpose
-            /*
-            System.out.println("Circuit Loaded with succes:");
-            int j = 0;
-            for(String i : tempCircuit.get_allGates().keySet()){
-                System.out.println(String.format("%d : key = %s : GateJSON = %s", j, i, tempCircuit.get_allGates().get(i).toJson()));
-                j++;
-            }
-            */
+
+            // System.out.println("Circuit Loaded with succes:");
+            // int j = 0;
+            // for(String i : tempCircuit.get_allGates().keySet()){
+            //     System.out.println(String.format("%d : key = %s : GateJSON = %s", j, i, tempCircuit.get_allGates().get(i).toJson()));
+            //     j++;
+            // }
 
         } catch (JSONException e) {
             System.err.println("Error circuit can't be launch " + e.getMessage());
