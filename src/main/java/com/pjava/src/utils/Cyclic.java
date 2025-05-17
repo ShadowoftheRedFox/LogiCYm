@@ -242,6 +242,10 @@ public class Cyclic {
                     });
                 }
             });
+
+            // TODO detect unstable system by calling updateState(false) on each elements
+            // look for the amount of change of a given gate
+            // if it changes more than 100 times (cuz why not), system is unstable
         }
 
         return res;
