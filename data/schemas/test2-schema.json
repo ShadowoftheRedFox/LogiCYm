@@ -10,25 +10,25 @@
    "powered": false,
    "inputBusSize": [],
    "type": "Schema",
-   "uuid": 121
+   "uuid": 155
   },
   {
    "outputBusSize": [2],
-   "outputTo": [112],
+   "outputTo": [146],
    "inputFrom": [],
    "powered": true,
    "inputBusSize": [],
    "type": "Power",
-   "uuid": 107
+   "uuid": 141
   },
   {
    "outputBusSize": [2],
    "outputTo": [0],
-   "inputFrom": [107],
+   "inputFrom": [141],
    "powered": false,
    "inputBusSize": [2],
    "type": "Or",
-   "uuid": 112
+   "uuid": 146
   }
  ]
 }

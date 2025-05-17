@@ -1,18 +1,23 @@
 package com.pjava.src.components.gates;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-import org.json.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import com.pjava.src.components.Cable;
 import com.pjava.src.components.Gate;
-import com.pjava.src.components.input.*;
-import com.pjava.src.components.output.*;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import com.pjava.src.components.input.Button;
+import com.pjava.src.components.input.Clock;
+import com.pjava.src.components.input.Ground;
+import com.pjava.src.components.input.Lever;
+import com.pjava.src.components.input.Power;
+import com.pjava.src.components.output.Display;
 
 /**
  * The schema gate is a group of invisibale gate. It emulates this group, to
@@ -25,7 +30,7 @@ public class Schema extends Gate {
     /**
      * Gates that are inside the schema.
      */
-    private ArrayList<Gate> selectedGates = new ArrayList<Gate>();
+    private ArrayList<Gate> selectedGates = new ArrayList<>();
     /**
      * Name of the schema. Will be save under the name "NAME-schema.json".
      */
@@ -34,11 +39,11 @@ public class Schema extends Gate {
     /**
      * List of the bus size that compose the input of this gate.
      */
-    private ArrayList<Integer> externalInput = new ArrayList<>();
+    final private ArrayList<Integer> externalInput = new ArrayList<>();
     /**
      * List of the bus size that compose the output of this gate.
      */
-    private ArrayList<Integer> externalOutput = new ArrayList<>();
+    final private ArrayList<Integer> externalOutput = new ArrayList<>();
 
     /**
      * Load a schema with the given name.a
@@ -77,8 +82,8 @@ public class Schema extends Gate {
      *                               a wrong name.
      */
     public void exportSchema() throws FileNotFoundException {
-        ArrayList<Gate> excludedOutputs = new ArrayList<Gate>();
-        ArrayList<Gate> excludedInputs = new ArrayList<Gate>();
+        ArrayList<Gate> excludedOutputs = new ArrayList<>();
+        ArrayList<Gate> excludedInputs = new ArrayList<>();
 
         // we get the the input and output of the selected gates, which in the end will
         // be the inputs and outputs of the schema
@@ -127,7 +132,7 @@ public class Schema extends Gate {
 
         // create our json constructor
         JSONObject schemaObject = new JSONObject();
-        ArrayList<JSONObject> gatesArray = new ArrayList<JSONObject>();
+        ArrayList<JSONObject> gatesArray = new ArrayList<>();
 
         // represent the inputs/outputs bus of the schema
         schemaObject.put("externalInput", externalInput);
@@ -136,65 +141,65 @@ public class Schema extends Gate {
         // save to json format each gate
         selectedGates.forEach(gate -> {
             // json constructor of the gate
-            JSONObject gateInfoObject = new JSONObject();
-            // array of inputs/outputs of the gate that are connected
-            ArrayList<Integer> inputArray = new ArrayList<Integer>();
-            ArrayList<Integer> outputArray = new ArrayList<Integer>();
-            // array of the inputs/outputs bus sizes
-            ArrayList<Integer> inputBusSizeArray = new ArrayList<Integer>();
-            ArrayList<Integer> outputBusSizeArray = new ArrayList<Integer>();
+            JSONObject gateInfoObject = gate.toJson();
+            // // array of inputs/outputs of the gate that are connected
+            // ArrayList<Integer> inputArray = new ArrayList<>();
+            // ArrayList<Integer> outputArray = new ArrayList<>();
+            // // array of the inputs/outputs bus sizes
+            // ArrayList<Integer> inputBusSizeArray = new ArrayList<>();
+            // ArrayList<Integer> outputBusSizeArray = new ArrayList<>();
 
-            // BUG This code can possibly not work in the linkage between external gates
-            // (input and output).
-            int i = 0, j = 0;
-            for (Cable inputCable : gate.getInputCable()) {
-                if (inputCable != null) {
-                    if (!excludedInputs.contains(inputCable.getInputGate()))
-                        inputArray.add(inputCable.getInputGate().uuid());
-                    else {
-                        inputArray.add(i);
-                        i--;
-                    }
-                    inputBusSizeArray.add(inputCable.getBusSize());
-                }
-            }
-            for (Cable outputCable : gate.getOutputCable()) {
-                if (outputCable != null) {
-                    if (!excludedOutputs.contains(outputCable.getOutputGate()))
-                        outputArray.add(outputCable.getOutputGate().uuid());
-                    else {
-                        outputArray.add(j);
-                        j--;
-                    }
-                    outputBusSizeArray.add(outputCable.getBusSize());
-                }
-            }
+            // // BUG This code can possibly not work in the linkage between external gates
+            // // (input and output).
+            // int i = 0, j = 0;
+            // for (Cable inputCable : gate.getInputCable()) {
+            //     if (inputCable != null) {
+            //         if (!excludedInputs.contains(inputCable.getInputGate()))
+            //             inputArray.add(inputCable.getInputGate().uuid());
+            //         else {
+            //             inputArray.add(i);
+            //             i--;
+            //         }
+            //         inputBusSizeArray.add(inputCable.getBusSize());
+            //     }
+            // }
+            // for (Cable outputCable : gate.getOutputCable()) {
+            //     if (outputCable != null) {
+            //         if (!excludedOutputs.contains(outputCable.getOutputGate()))
+            //             outputArray.add(outputCable.getOutputGate().uuid());
+            //         else {
+            //             outputArray.add(j);
+            //             j--;
+            //         }
+            //         outputBusSizeArray.add(outputCable.getBusSize());
+            //     }
+            // }
 
-            // "print" the collected data with the name of the field
-            gateInfoObject.put("outputTo", outputArray);
-            gateInfoObject.put("inputFrom", inputArray);
-            gateInfoObject.put("outputBusSize", outputBusSizeArray);
-            gateInfoObject.put("inputBusSize", inputBusSizeArray);
-            gateInfoObject.put("powered", gate.getPowered());
-            gateInfoObject.put("uuid", gate.uuid());
-            gateInfoObject.put("type", gate.getClass().getSimpleName());
-            // special case
-            if (gate instanceof Schema) {
-                gateInfoObject.put("filename", name);
-            }
-            if (gate instanceof Clock) {
-                gateInfoObject.put("cycleSpeed", ((Clock) gate).getCycleSpeed());
-            }
-            if (gate instanceof Button) {
-                gateInfoObject.put("inverted", ((Button) gate).getInverted());
-                gateInfoObject.put("delay", ((Button) gate).getDelay());
-            }
-            if (gate instanceof Lever) {
-                gateInfoObject.put("flipped", ((Lever) gate).getState(0));
-            }
-            if (gate instanceof Display) {
-                gateInfoObject.put("base", ((Display) gate).getBaseOutput());
-            }
+            // // "print" the collected data with the name of the field
+            // gateInfoObject.put("outputTo", outputArray);
+            // gateInfoObject.put("inputFrom", inputArray);
+            // gateInfoObject.put("outputBusSize", outputBusSizeArray);
+            // gateInfoObject.put("inputBusSize", inputBusSizeArray);
+            // gateInfoObject.put("powered", gate.getPowered());
+            // gateInfoObject.put("uuid", gate.uuid());
+            // gateInfoObject.put("type", gate.getClass().getSimpleName());
+            // // special case
+            // if (gate instanceof Schema) {
+            //     gateInfoObject.put("filename", name);
+            // }
+            // if (gate instanceof Clock) {
+            //     gateInfoObject.put("cycleSpeed", ((Clock) gate).getCycleSpeed());
+            // }
+            // if (gate instanceof Button) {
+            //     gateInfoObject.put("inverted", ((Button) gate).getInverted());
+            //     gateInfoObject.put("delay", ((Button) gate).getDelay());
+            // }
+            // if (gate instanceof Lever) {
+            //     gateInfoObject.put("flipped", ((Lever) gate).getState(0));
+            // }
+            // if (gate instanceof Display) {
+            //     gateInfoObject.put("base", ((Display) gate).getBaseOutput());
+            // }
 
             gatesArray.add(gateInfoObject);
         });
@@ -240,7 +245,7 @@ public class Schema extends Gate {
             }
 
             System.out.println(gateData.toString());
-            Integer ploof = inputBusSize.size() != 0 ? inputBusSize.get(0) : outputBusSize.get(0);
+            Integer ploof = !inputBusSize.isEmpty() ? inputBusSize.get(0) : outputBusSize.get(0);
 
             switch (gateData.get("type").toString()) {
                 case "And":
@@ -321,3 +326,11 @@ public class Schema extends Gate {
     }
     // #endregion
 }
+
+
+// TODO : schema extend gate
+// TODO : Schéma à 2 listes de Cable de plus que les Gates normeaux, pour les connexion 'internes' : input et output
+// TODO : cable spéciaux d'entrée et de sortie de schéma
+
+// TODO : override Gate.connect() to connect inner gates with exterior gates.
+// TODO : override Gate.updateState() for it to directly

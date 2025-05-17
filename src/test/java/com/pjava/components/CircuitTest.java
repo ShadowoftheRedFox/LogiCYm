@@ -3,6 +3,8 @@ package com.pjava.components;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.json.JSONObject;
+
 import com.pjava.src.components.Gate;
 import com.pjava.src.components.Circuit;
 import com.pjava.src.components.gates.*;
@@ -77,11 +79,12 @@ public class CircuitTest{
             circuit2.addNewGate("Lever");
             circuit2.addNewGate("Button");
             circuit2.addNewGate("Clock");
+
+            circuit2.save("save4");
         }catch(Exception e) {
             e.printStackTrace();
         }
 
-        circuit2.save("save4");
     }
 
 
@@ -91,15 +94,22 @@ public class CircuitTest{
         Circuit circuit3 = new Circuit();
 
         try {
-            circuit3.addNewGate("Power");
-            circuit3.addNewGate("Ground");
-            circuit3.addNewGate("Lever");
-            circuit3.addNewGate("Button");
-            circuit3.addNewGate("Clock");
+            circuit3.addNewGate("Power", "p1");
+            circuit3.addNewGate("Ground", "g1");
+            circuit3.addNewGate("Lever", "l1");
+            circuit3.addNewGate("Not", "n1");
+
+            int j = 0;
+            for(String i : circuit3.get_allGates().keySet()){
+                System.out.println(String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.get_allGates().get(i).toJson()));
+                j++;
+            }
+
+            circuit3.connectGate("p1","n1", 0, 0);
 
             System.out.println("Expected :");
 
-            int j = 0;
+            j = 0;
             for(String i : circuit3.get_allGates().keySet()){
                 System.out.println(String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.get_allGates().get(i).toJson()));
                 j++;

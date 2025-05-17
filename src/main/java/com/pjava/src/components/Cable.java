@@ -34,6 +34,10 @@ public class Cable extends Element {
      */
     protected Gate outputGate = null;
 
+    protected int inputPort = -1;
+
+    protected int outputPort = -1;
+
     /**
      * Create a new cable with the specified bus size.
      *
@@ -146,6 +150,14 @@ public class Cable extends Element {
     public Gate getOutputGate() {
         return outputGate;
     }
+
+    public int getInputPort() {
+        return inputPort;
+    }
+
+    public int getOutputPort() {
+        return inputPort;
+    }
     // #endregion
 
     // #region Setters
@@ -171,6 +183,22 @@ public class Cable extends Element {
         }
 
         this.busSize = busSize;
+    }
+
+    public void setInputPort(int portIndex) throws IndexOutOfBoundsException{
+        if(portIndex < 0){
+            throw  new IndexOutOfBoundsException("negative index");
+        }
+
+        this.inputPort = portIndex;
+    }
+
+    public void setOutputPort(int portIndex) throws IndexOutOfBoundsException {
+        if (portIndex < 0) {
+            throw new IndexOutOfBoundsException("Negative index.");
+        }
+
+        this.outputPort = portIndex;
     }
     // #endregion
 }

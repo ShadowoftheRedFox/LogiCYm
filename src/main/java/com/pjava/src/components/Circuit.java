@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import com.pjava.src.components.gates.And;
 import com.pjava.src.components.gates.Not;
 import com.pjava.src.components.gates.Or;
+import com.pjava.src.components.gates.Schema;
 import com.pjava.src.components.input.Button;
 import com.pjava.src.components.input.Clock;
 import com.pjava.src.components.input.Ground;
@@ -28,15 +29,25 @@ public class Circuit{
     //#region Attributes
 
     /**
-    * List of all the gates of a circuit
+     * Name of the circuit.
+     * Will be save under the name "NAME-circuit.json".
+     */
+    private String name;
+
+    /**
+    * Map of all the gates of a circuit
+    * Key : uuid or custom label
+    * Value : Gate
     */
-    //public ArrayList<Gate> allGates = new ArrayList<Gate>();
     private HashMap<String,Gate> allGates = new HashMap<>();
 
     // /**
     // * List of all the input gates of a circuit
     // */
     // private ArrayList<Input> circuitInput = new ArrayList<Input>();
+
+    Circuit.inputGate.get(0);
+
 
     // /**
     // * List of all the output gates of a circuit
@@ -45,12 +56,31 @@ public class Circuit{
 
     //#endregion
 
-
     public Circuit(){
+        this("Nom_Genere_Automatiquement_ahah");
     }
 
+    public Circuit(String name){
+        this.set_name(name);
+
+    }
+
+    //#region Setter
+
+    public void set_name(String name) {
+        if (name == null || name.isBlank()) {
+            name = "Nom_Genere_Automatiquement_ahah";
+        }
+        this.name = name;
+    }
+
+    //#endregion
 
     //#region Getter
+
+    public String get_name() {
+        return this.name;
+    }
 
     public HashMap<String,Gate> get_allGates(){
         return this.allGates;
@@ -60,29 +90,6 @@ public class Circuit{
 
 
     //#region .addGate()
-
-    /**
-     * Add a gate to the circuit
-     *
-     * @param gate
-     * @param label
-     * @return The gate added
-     * @throws Exception
-     */
-    public Gate addGate(Gate gate, String label) throws Exception{
-
-        if(label.equals("")){
-            throw new Exception(String.format("label can't be empty"));
-        }
-
-        if(allGates.containsKey(label)){
-            throw new Exception(String.format("This label is already taken : '%s'", label));
-        }
-
-        this.allGates.put(label,gate);
-
-        return gate;
-    }
 
     /**
      * Set the label as Gate.uuid
@@ -95,9 +102,41 @@ public class Circuit{
         return addGate(gate, gate.uuid().toString());
     }
 
+    /**
+     * Add a gate to the circuit
+     *
+     * @param gate
+     * @param label
+     * @return The gate added
+     * @throws Exception
+     */
+    public Gate addGate(Gate gate, String label) throws Exception{
+
+        if(label == null || label.isBlank()){
+            throw new Exception(String.format("label can't be empty"));
+        }
+
+        if(allGates.containsKey(label)){
+            throw new Exception(String.format("This label is already taken : '%s'", label));
+        }
+
+        this.allGates.put(label,gate);
+
+        return gate;
+    }
+
     //#endregion
 
     //#region .addNewGate()
+
+    /**
+     * @param type
+     * @return The gate created
+     * @throws Exception
+     */
+    public Gate addNewGate(String type) throws Exception{
+        return addNewGate(type, "");
+    }
 
     /**
      * create a gate and add it to the circuit using {@code addGate()}
@@ -134,12 +173,14 @@ public class Circuit{
             case "Clock":
             newGate = new Clock();
             break;
-            // TODO : case "Schema":
+            case "Schema":
+            newGate = new Schema(label);
+            break;
             default:
                 throw new Exception(String.format("No match found for the string '%s'", type));
         }
 
-        if(label.equals("")){
+        if(label == null || label.isBlank()){
             this.addGate(newGate);
         }
         else{
@@ -147,15 +188,6 @@ public class Circuit{
         }
 
         return newGate;
-    }
-
-    /**
-     * @param type
-     * @return The gate created
-     * @throws Exception
-     */
-    public Gate addNewGate(String type) throws Exception{
-        return addNewGate(type, "");
     }
 
     //#endregion
@@ -170,10 +202,10 @@ public class Circuit{
      * @return The cable created
      */
     public Cable connectGate(String fromGate, String toGate, int fromPort, int toPort) throws Exception{
-        if(this.allGates.containsKey(fromGate)){
+        if(!this.allGates.containsKey(fromGate)){
             throw new Exception(String.format("Key not found : %s", fromGate));
         }
-        if(this.allGates.containsKey(toGate)){
+        if(!this.allGates.containsKey(toGate)){
             throw new Exception(String.format("Key not found : %s", toGate));
         }
 
@@ -211,18 +243,30 @@ public class Circuit{
 
     //#region .save()
 
-    public void save(String fileName) throws Error{
+    /**
+     *
+     * @param pathFromData "file1/fale1.1" will save to "data/file1/file1.1/CIRCUITNAME.json"
+     * @throws Exception
+     */
+    public void save(String pathFromData) throws Exception{
+        if((pathFromData != null) && (!pathFromData.isBlank()) && (pathFromData.startsWith("/"))){
+            pathFromData = "/" + pathFromData;
+        }
 
-        fileName = "save/" + fileName;
+        String path = String.format("data%s/%s", pathFromData, this.name) ;
 
-        try(FileWriter writer = new FileWriter(fileName)){
+        try(FileWriter writer = new FileWriter(path)){
             JSONObject circuit_Json = this.toJson();
             writer.write(circuit_Json.toString(1));
-            System.out.println("Circuit save with succes in:" + fileName);
+            System.out.println("Circuit save with succes in:" + path);
         }
         catch(IOException e){
-            System.err.println("Error " + fileName +" can't be saved : " + e.getMessage());
+            System.err.println("Error " + path +" can't be saved : " + e.getMessage());
         }
+    }
+
+    public void save() throws Exception{
+        this.save("");
     }
 
     //#endregion

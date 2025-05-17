@@ -1,31 +1,32 @@
 {
  "externalInput": [2],
  "externalOutput": [2],
+ "internalInputGate": [138],
  "Gates": [
   {
    "outputBusSize": [2],
-   "outputTo": [111],
+   "outputTo": [145],
    "inputFrom": [0],
    "powered": true,
    "inputBusSize": [2],
    "type": "Not",
-   "uuid": 109
+   "uuid": 143
   },
   {
    "outputBusSize": [2],
-   "outputTo": [111],
+   "outputTo": [145],
    "inputFrom": [],
    "powered": true,
    "inputBusSize": [],
    "type": "Ground",
-   "uuid": 110
+   "uuid": 144
   },
   {
    "outputBusSize": [2],
-   "outputTo": [113],
+   "outputTo": [147],
    "inputFrom": [
-    110,
-    109
+    144,
+    143
    ],
    "powered": true,
    "inputBusSize": [
@@ -33,16 +34,16 @@
     2
    ],
    "type": "And",
-   "uuid": 111
+   "uuid": 145
   },
   {
    "outputBusSize": [2],
    "outputTo": [0],
-   "inputFrom": [111],
+   "inputFrom": [145],
    "powered": true,
    "inputBusSize": [2],
    "type": "Not",
-   "uuid": 113
+   "uuid": 147
   }
  ]
 }

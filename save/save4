@@ -3,15 +3,22 @@
   "outputBus": [1],
   "powered": true,
   "inputBus": [],
-  "type": "Button",
+  "type": "Lever",
   "uuid": 33
  },
  {
   "outputBus": [1],
   "powered": true,
   "inputBus": [],
-  "type": "Clock",
+  "type": "Button",
   "uuid": 34
+ },
+ {
+  "outputBus": [1],
+  "powered": true,
+  "inputBus": [],
+  "type": "Clock",
+  "uuid": 35
  },
  {
   "outputBus": [1],
@@ -21,7 +28,7 @@
    1
   ],
   "type": "And",
-  "uuid": 27
+  "uuid": 28
  },
  {
   "outputBus": [1],
@@ -31,34 +38,27 @@
    1
   ],
   "type": "Or",
-  "uuid": 28
+  "uuid": 29
  },
  {
   "outputBus": [1],
   "powered": false,
   "inputBus": [1],
   "type": "Not",
-  "uuid": 29
- },
- {
-  "outputBus": [1],
-  "powered": true,
-  "inputBus": [],
-  "type": "Power",
   "uuid": 30
  },
  {
   "outputBus": [1],
   "powered": true,
   "inputBus": [],
-  "type": "Ground",
+  "type": "Power",
   "uuid": 31
  },
  {
   "outputBus": [1],
   "powered": true,
   "inputBus": [],
-  "type": "Lever",
+  "type": "Ground",
   "uuid": 32
  }
 ]}
