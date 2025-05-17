@@ -1,23 +1,30 @@
-package com.pjava.src.UI.components;
+package com.pjava.src.UI.components.gates;
 
+import com.pjava.src.UI.components.Pin;
+import com.pjava.src.UI.components.UIElement;
+import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.gates.And;
-import com.pjava.src.components.gates.Not;
+import com.pjava.src.components.gates.Or;
+
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
-public class UINot extends UIGate {
+public class UIOr extends UIGate {
     @FXML
     private Pin input1Controller;
+    @FXML
+    private Pin input2Controller;
     @FXML
     private Pin output1Controller;
 
     @FXML
     private VBox input1;
+    @FXML
+    private VBox input2;
     @FXML
     private VBox output1;
     @FXML
@@ -26,17 +33,8 @@ public class UINot extends UIGate {
     @FXML
     private AnchorPane self;
 
-    public static Node create(Class<?> getClass) {
-        return UIElement.create(getClass, "UINot");
-    }
-
-    public static UIOr getController(Node node) {
-        Object controller = null;
-        do {
-            controller = node.getProperties().get("controller");
-            node = node.getParent();
-        } while (controller == null && node != null);
-        return (UIOr) controller;
+    public static UIOr create() {
+        return (UIOr) UIElement.create("UIOr");
     }
 
     @FXML
@@ -51,12 +49,12 @@ public class UINot extends UIGate {
     }
 
     @Override
-    public Not getLogic() {
-        return (Not) super.getLogic();
+    public Or getLogic() {
+        return (Or) super.getLogic();
     }
 
-    public void setLogic(Not not) {
-        super.setLogic(not);
+    public void setLogic(Or or) {
+        super.setLogic(or);
     }
 
     private void pressed(MouseEvent event) {

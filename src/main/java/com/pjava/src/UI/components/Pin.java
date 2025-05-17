@@ -47,6 +47,7 @@ public class Pin extends VBox {
         setColor(color);
         container.setOnMousePressed(event -> pressed(event));
         container.setOnMouseReleased(event -> released(event));
+        container.setOnMouseDragged(event -> dragged(event));
     }
 
     private void pressed(MouseEvent event) {
@@ -68,6 +69,10 @@ public class Pin extends VBox {
 
     private void released(MouseEvent event) {
         changeColor(color.saturate());
+    }
+
+    private void dragged(MouseEvent event) {
+        setCablingMode(true);
     }
 
     /**
@@ -152,11 +157,9 @@ public class Pin extends VBox {
         }
     }
 
-
     public static void setCableConnectionListener(CableConnectionListener listener) {
         cableListener = listener;
     }
-
 
     public interface CableConnectionListener {
         void onCableConnection(Pin source, Pin target);

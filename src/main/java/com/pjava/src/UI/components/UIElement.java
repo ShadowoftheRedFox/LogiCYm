@@ -19,10 +19,15 @@ public abstract class UIElement {
 
     public static final int baseSize = 50;
 
-    public static Node create(Class<?> getClass, String fxml) {
-        FXMLLoader loader = new FXMLLoader(getClass.getResource("/fxml/components/" + fxml + ".fxml"));
+    private Node element = null;
+
+    public static UIElement create(String fxml) {
+        FXMLLoader loader = new FXMLLoader(UIElement.class.getResource("/fxml/components/" + fxml + ".fxml"));
         try {
-            return loader.load();
+            Node result = loader.load();
+            UIElement controller = loader.getController();
+            controller.element = result;
+            return controller;
         } catch (IOException e) {
             throw new Error(e);
         }
@@ -47,6 +52,10 @@ public abstract class UIElement {
 
     public Color getColor() {
         return color;
+    }
+
+    public Node getNode() {
+        return element;
     }
     // #endregion
 

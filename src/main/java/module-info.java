@@ -23,4 +23,8 @@ module com.pjava {
     // classes from our package
     opens com.pjava.controllers to javafx.fxml;
     opens com.pjava.src.UI.components to javafx.fxml;
+    opens com.pjava.src.UI.components.gates to javafx.fxml;
+    // opens com.pjava.src.UI.components.cables to javafx.fxml;
+    // opens com.pjava.src.UI.components.input to javafx.fxml;
+    // opens com.pjava.src.UI.components.output to javafx.fxml;
 }

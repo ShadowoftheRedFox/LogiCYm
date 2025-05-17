@@ -22,23 +22,14 @@ public class UICable extends UIElement {
     private UIElement sourceElement;
     private UIElement targetElement;
 
-    public static Node create(Class<?> getClass) {
-        return UIElement.create(getClass, "UICable");
-    }
-
-    public static UICable getController(Node node) {
-        Object controller = null;
-        do {
-            controller = node.getProperties().get("controller");
-            node = node.getParent();
-        } while (controller == null && node != null);
-        return (UICable) controller;
+    public static UICable create() {
+        return (UICable) UIElement.create("UICable");
     }
 
     @FXML
     private void initialize() {
         try {
-            setLogic(new Cable(1)); //busSize can be changed
+            setLogic(new Cable(1)); // busSize can be changed
         } catch (BusSizeException e) {
             e.printStackTrace();
         }
@@ -55,7 +46,7 @@ public class UICable extends UIElement {
         }
 
         // 1 input to 1 output
-        if (source.isInput() && target.isInput() || !source.isInput() && !target.isInput()) {
+        if ((source.isInput() && target.isInput()) || (!source.isInput() && !target.isInput())) {
             return;
         }
 

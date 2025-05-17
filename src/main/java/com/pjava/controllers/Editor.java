@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.pjava.src.UI.SceneManager;
-import com.pjava.src.UI.components.UIAnd;
 import com.pjava.src.UI.components.UIElement;
-import com.pjava.src.UI.components.UINot;
-import com.pjava.src.UI.components.UIOr;
+import com.pjava.src.UI.components.gates.UIAnd;
+import com.pjava.src.UI.components.gates.UINot;
+import com.pjava.src.UI.components.gates.UIOr;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -258,23 +258,22 @@ public class Editor extends VBox {
     @FXML
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
-        Node and = UIAnd.create(getClass());
-        // UIAnd uiand = UIAnd.getController(and);
-        container.getChildren().add(and);
+        UIAnd and = UIAnd.create();
+        container.getChildren().add(and.getNode());
     }
 
     @FXML
     public void clickOr(ActionEvent event) {
         System.out.println("Click Or!");
-        Node or = UIOr.create(getClass());
-        container.getChildren().add(or);
+        UIOr or = UIOr.create();
+        container.getChildren().add(or.getNode());
     }
 
     @FXML
     public void clickNot(ActionEvent event) {
         System.out.println("Click Not!");
-        Node not = UINot.create(getClass());
-        container.getChildren().add(not);
+        UINot not = UINot.create();
+        container.getChildren().add(not.getNode());
     }
 
     @FXML

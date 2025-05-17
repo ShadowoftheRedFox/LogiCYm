@@ -1,17 +1,19 @@
-package com.pjava.src.UI.components;
+package com.pjava.src.UI.components.gates;
 
+import com.pjava.src.UI.components.Pin;
+import com.pjava.src.UI.components.UIElement;
+import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.gates.And;
-import com.pjava.src.components.gates.Or;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.Rectangle;
 
-public class UIOr extends UIGate {
+public class UIAnd extends UIGate {
     @FXML
     private Pin input1Controller;
     @FXML
@@ -26,22 +28,15 @@ public class UIOr extends UIGate {
     @FXML
     private VBox output1;
     @FXML
-    private ImageView body1;
+    private Arc body1;
+    @FXML
+    private Rectangle body2;
 
     @FXML
     private AnchorPane self;
 
-    public static Node create(Class<?> getClass) {
-        return UIElement.create(getClass, "UIOr");
-    }
-
-    public static UIOr getController(Node node) {
-        Object controller = null;
-        do {
-            controller = node.getProperties().get("controller");
-            node = node.getParent();
-        } while (controller == null && node != null);
-        return (UIOr) controller;
+    public static UIAnd create() {
+        return (UIAnd) UIElement.create("UIAnd");
     }
 
     @FXML
@@ -53,15 +48,18 @@ public class UIOr extends UIGate {
         body1.setOnMousePressed(event -> pressed(event));
         body1.setOnMouseReleased(event -> released(event));
         body1.setOnMouseDragged(event -> dragged(event));
+        body2.setOnMousePressed(event -> pressed(event));
+        body2.setOnMouseReleased(event -> released(event));
+        body2.setOnMouseDragged(event -> dragged(event));
     }
 
     @Override
-    public Or getLogic() {
-        return (Or) super.getLogic();
+    public And getLogic() {
+        return (And) super.getLogic();
     }
 
-    public void setLogic(Or or) {
-        super.setLogic(or);
+    private void setLogic(And and) {
+        super.setLogic(and);
     }
 
     private void pressed(MouseEvent event) {
