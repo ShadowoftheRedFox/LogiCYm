@@ -38,6 +38,8 @@ public class Editor extends VBox {
     private ScrollPane viewScroll;
     @FXML
     private AnchorPane container;
+    @FXML
+    private VBox infosContainer;
 
     // #region Menu items
     @FXML
@@ -163,6 +165,7 @@ public class Editor extends VBox {
         // #endregion
     }
 
+    // #region Functions
     private void resizeGrid() {
         final double paneWidth = viewScroll.getWidth();
         final double paneHeight = viewScroll.getHeight();
@@ -254,12 +257,25 @@ public class Editor extends VBox {
         selectedNodes.clear();
     }
 
+    private void replaceInfos(Node content) {
+        // clear container
+        infosContainer.getChildren().clear();
+        if (content != null) {
+            // add content to the container
+            infosContainer.getChildren().add(content);
+        }
+    }
+    // #endregion
+
     // #region Gate spawn
     @FXML
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
         UIAnd and = UIAnd.create();
         container.getChildren().add(and.getNode());
+        and.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(and.getInfos().getSelf());
+        });
     }
 
     @FXML

@@ -110,10 +110,10 @@
           <AnchorPane maxWidth="300.0" minHeight="160.0" minWidth="100.0" prefHeight="160.0" prefWidth="100.0" SplitPane.resizableWithParent="false">
                <children>
                   <ScrollPane hbarPolicy="NEVER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <content>
-                      <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefWidth="10000.0">
+                     <content>
+                        <VBox spacing="10.0">
                            <children>
-                              <Accordion AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <Accordion VBox.vgrow="ALWAYS">
                                 <panes>
                                   <TitledPane text="Portes">
                                     <content>
@@ -128,7 +128,8 @@
                                                       <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickDisplay" text="Display" />
                                                    </children>
                                                 </VBox>
-                                             </children></AnchorPane>
+                                             </children>
+                                          </AnchorPane>
                                     </content>
                                   </TitledPane>
                                   <TitledPane text="Cables">
@@ -142,7 +143,8 @@
                                                       <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickMerger" text="Merger" />
                                                    </children>
                                                 </VBox>
-                                             </children></AnchorPane>
+                                             </children>
+                                          </AnchorPane>
                                     </content>
                                   </TitledPane>
                                   <TitledPane text="Schémas">
@@ -152,9 +154,10 @@
                                   </TitledPane>
                                 </panes>
                               </Accordion>
+                              <VBox fx:id="infosContainer" VBox.vgrow="ALWAYS" />
                            </children>
-                        </AnchorPane>
-                    </content>
+                        </VBox>
+                     </content>
                   </ScrollPane>
                </children>
             </AnchorPane>

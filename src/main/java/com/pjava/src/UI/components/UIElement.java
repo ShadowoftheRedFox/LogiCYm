@@ -2,6 +2,7 @@ package com.pjava.src.UI.components;
 
 import java.io.IOException;
 
+import com.pjava.controllers.InfosController;
 import com.pjava.src.UI.Rotation;
 import com.pjava.src.components.Element;
 
@@ -22,17 +23,29 @@ public abstract class UIElement {
 
     public static final int baseSize = 50;
 
-    private Node element = null;
-
     @FXML
     protected AnchorPane self;
 
+    private InfosController infos = null;
+
     public static UIElement create(String fxml) {
-        FXMLLoader loader = new FXMLLoader(UIElement.class.getResource("/fxml/components/" + fxml + ".fxml"));
         try {
-            Node result = loader.load();
+            // load the gate's fxml
+            FXMLLoader loader = new FXMLLoader(UIElement.class.getResource("/fxml/components/" + fxml + ".fxml"));
+            loader.load();
+            // and get the controller instance
             UIElement controller = loader.getController();
-            controller.element = result;
+
+            // create a gate infos instance
+            FXMLLoader infosLoader = new FXMLLoader(
+                    UIElement.class.getResource("/fxml/components/ComponentInfos.fxml"));
+            Node infosNode = infosLoader.load();
+            // and add it to the gate controller
+            controller.infos = infosLoader.getController();
+            controller.infos.setSelf(infosNode);
+            controller.infos.setOrigin(controller);
+
+            // return the controller
             return controller;
         } catch (IOException e) {
             throw new Error(e);
@@ -88,7 +101,11 @@ public abstract class UIElement {
     }
 
     public Node getNode() {
-        return element;
+        return self;
+    }
+
+    public InfosController getInfos() {
+        return infos;
     }
     // #endregion
 
