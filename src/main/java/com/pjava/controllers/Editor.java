@@ -2,12 +2,18 @@ package com.pjava.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.pjava.src.UI.SceneManager;
-import com.pjava.src.UI.components.UIElement;
+import com.pjava.src.UI.components.Pin;
 import com.pjava.src.UI.components.gates.UIAnd;
+import com.pjava.src.UI.components.UICable;
+import com.pjava.src.UI.components.UIElement;
+import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
+import com.pjava.src.UI.components.Pin.CableConnectionListener;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,6 +24,8 @@ import javafx.geometry.HPos;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.text.Text;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
@@ -29,18 +37,18 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
+import javafx.scene.shape.Line;
+
 
 public class Editor extends VBox {
     @FXML
-    private GridPane gridPane;
+    public GridPane gridPane;
     @FXML
-    private ScrollPane viewScroll;
+    public ScrollPane viewScroll;
     @FXML
     private AnchorPane container;
     @FXML
     private VBox infosContainer;
-
     // #region Menu items
     @FXML
     private MenuItem copyButton;
@@ -100,12 +108,30 @@ public class Editor extends VBox {
     private MenuItem unselectAllButton;
     // #endregion
 
+    // #region Menu items
+    @FXML
+    public Button cableBtn;
+    /**
+     * scenemanager
+     */
     private SceneManager manager;
 
+    /**
+     * Rectangle
+     */
     private Rectangle selectionRectangle = null;
     private Point2D selectionStart = null;
 
+    /**
+     * list of nodes selected
+     */
     private ArrayList<Node> selectedNodes = new ArrayList<Node>();
+
+    /**
+     * the cabling mode is when you can link gates
+     */
+    private boolean cablingMode = false;
+    private Map<Pin, UIGate> pinToGateMap = new HashMap<>();
 
     public Editor(SceneManager manager) {
         this.manager = manager;
@@ -121,7 +147,7 @@ public class Editor extends VBox {
     }
 
     @FXML
-    private void initialize() {
+    public void initialize() {
         manager.getScene().widthProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth,
@@ -140,8 +166,6 @@ public class Editor extends VBox {
 
         resizeGrid();
 
-        // #region Listeners
-        container.setOnMousePressed(event -> pressSelection(event));
         container.setOnMouseReleased(event -> endSelection(event));
         container.setOnMouseDragged(event -> dragSelection(event));
 
@@ -163,6 +187,50 @@ public class Editor extends VBox {
                         "1;0;1\n" +
                         "0;1;0\n");
         // #endregion
+               // Définir l'écouteur de connexions de câbles
+               Pin.setCableConnectionListener(new CableConnectionListener() {
+                @Override
+                public void onCableConnection(Pin source, Pin target) {
+                    createCableBetweenPins(source, target);
+                }
+            });
+        }
+
+        /**
+         * Crée un câble entre deux pins
+         */
+        private void createCableBetweenPins(Pin source, Pin target) {
+            // Vérifier si les pins sont associés à des gates
+            UIGate sourceGate = (UIGate)source.originController;
+            UIGate targetGate = (UIGate)target.originController;
+
+            if (sourceGate == null || targetGate == null) {
+                System.out.println("Pin non associé à une gate");
+                return;
+            }
+
+            // Créer le câble en tant que Node
+            UICable cableController = UICable.create();
+            Node cableNode = cableController.getNode();
+
+            // Ajouter le câble au conteneur
+            container.getChildren().add(cableNode);
+
+            // Connecter le câble
+            cableController.connect(source, target, sourceGate, targetGate);
+
+            // Ajouter le câble aux gates connectées
+            sourceGate.addConnectedCable(cableController);
+            targetGate.addConnectedCable(cableController);
+            Line cable= new Line();
+            cable.setLayoutX(source.getCenter().getX());
+            cable.setLayoutY(source.getCenter().getY());
+            cable.setEndX(target.getCenter().getX());
+            cable.setEndY(target.getCenter().getY());
+
+            cable.strokeWidthProperty().set(5);
+            cable.setFill(Color.RED);
+            container.getChildren().add(cable);
     }
 
     // #region Functions
@@ -197,38 +265,23 @@ public class Editor extends VBox {
         }
     }
 
-    private void pressSelection(MouseEvent event) {
-        // press is not on a blank space
-        if (!gridPane.equals(event.getTarget())) {
-            return;
-        }
-
-        if (selectionRectangle != null) {
-            endSelection(event);
-        }
-
-        clearSelection();
-
-        selectionRectangle = new Rectangle();
-        selectionStart = new Point2D(event.getX(), event.getY());
-
-        selectionRectangle.setLayoutX(event.getX());
-        selectionRectangle.setLayoutY(event.getY());
-
-        selectionRectangle.setFill(Color.BLUE);
-        selectionRectangle.setStroke(Color.BLUEVIOLET);
-        selectionRectangle.strokeWidthProperty().set(3);
-        selectionRectangle.setOpacity(0.3);
-
-        container.getChildren().add(selectionRectangle);
-        selectionRectangle.toFront();
-    }
-
     private void dragSelection(MouseEvent event) {
-        // drag detected but not a selection
         if (selectionRectangle == null) {
-            return;
+            selectionRectangle = new Rectangle();
+            selectionStart = new Point2D(event.getX(), event.getY());
+
+            selectionRectangle.setLayoutX(event.getX());
+            selectionRectangle.setLayoutY(event.getY());
+
+            selectionRectangle.setFill(Color.BLUE);
+            selectionRectangle.setStroke(Color.BLUEVIOLET);
+            selectionRectangle.strokeWidthProperty().set(3);
+            selectionRectangle.setOpacity(0.3);
+
+            container.getChildren().add(selectionRectangle);
+            selectionRectangle.toFront();
         }
+
         double width = event.getX() - selectionStart.getX();
         double height = event.getY() - selectionStart.getY();
 
@@ -271,26 +324,53 @@ public class Editor extends VBox {
     @FXML
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
-        UIAnd and = UIAnd.create();
-        container.getChildren().add(and.getNode());
-        and.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(and.getInfos().getSelf());
+        UIAnd andController = (UIAnd) UIElement.create("UIAnd");
+        Node and = andController.getNode();
+        container.getChildren().add(and);
+
+        // Ajouter les pins de cette gate à la map pour le cablage
+        registerGatePins(andController);
+        andController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(andController.getInfos().getSelf());
         });
     }
 
     @FXML
     public void clickOr(ActionEvent event) {
         System.out.println("Click Or!");
-        UIOr or = UIOr.create();
-        container.getChildren().add(or.getNode());
+        UIOr orController = (UIOr) UIElement.create("UIOr");
+        Node or = orController.getNode();
+        container.getChildren().add(or);
+
+        // Ajouter les pins de cette gate à la map pour le cablage
+        registerGatePins(orController);
     }
 
     @FXML
     public void clickNot(ActionEvent event) {
         System.out.println("Click Not!");
-        UINot not = UINot.create();
-        container.getChildren().add(not.getNode());
+        UINot notController = (UINot) UIElement.create("UINot");
+        Node not = notController.getNode();
+        container.getChildren().add(not);
+
+        // Ajouter les pins de cette gate à la map pour le cablage
+        registerGatePins(notController);
     }
+
+    /**
+     * Enregistre les pins d'une porte logique dans la map pour faciliter la création de câbles
+     */
+    private void registerGatePins(UIGate gate) {
+        // Supposant que UIGate a des méthodes pour obtenir ses pins d'entrée et de sortie
+        for (Pin pin : gate.getInputPins()) {
+            pinToGateMap.put(pin, gate);
+        }
+        for (Pin pin : gate.getOutputPins()) {
+            pinToGateMap.put(pin, gate);
+        }
+    }
+
+
 
     @FXML
     public void clickClock(ActionEvent event) {
@@ -305,6 +385,13 @@ public class Editor extends VBox {
     @FXML
     public void clickCable(ActionEvent event) {
         System.out.println("Click Cable!");
+        // Activer/désactiver le mode câblage
+        cablingMode = !cablingMode;
+        Pin.setCablingMode(cablingMode);
+
+        // Mettre à jour l'apparence du bouton
+        Button btn = (Button) event.getSource();
+        btn.setStyle(cablingMode ? "-fx-background-color: lightblue;" : "");
     }
 
     @FXML
@@ -316,5 +403,4 @@ public class Editor extends VBox {
     public void clickSplitter(ActionEvent event) {
         System.out.println("Click Splitter!");
     }
-    // #endregion
 }

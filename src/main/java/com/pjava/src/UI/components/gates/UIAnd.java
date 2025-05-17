@@ -45,6 +45,10 @@ public class UIAnd extends UIGate {
         body2.setOnMousePressed(event -> pressed(event));
         body2.setOnMouseReleased(event -> released(event));
         body2.setOnMouseDragged(event -> dragged(event));
+
+        input1Controller.originController = this;
+        input2Controller.originController = this;
+        output1Controller.originController = this;
     }
 
     @Override
@@ -55,4 +59,62 @@ public class UIAnd extends UIGate {
     private void setLogic(And and) {
         super.setLogic(and);
     }
+<<<<<<< Updated upstream
+=======
+
+    private void pressed(MouseEvent event) {
+        System.out.println(getClass().getSimpleName() + " pressed");
+    }
+
+    private void released(MouseEvent event) {
+        System.out.println(getClass().getSimpleName() + " released");
+    }
+    private void dragged(MouseEvent event) {
+        double posX = event.getX() + self.getLayoutX();
+        double posY = event.getY() + self.getLayoutY();
+
+        // prevent out of bound
+        if (posX < 0) {
+            posX = 0;
+        }
+        if (posY < 0) {
+            posY = 0;
+        }
+
+        // Stocker la position précédente
+        double oldX = self.getLayoutX();
+        double oldY = self.getLayoutY();
+
+        // move
+        self.setLayoutX(posX - (posX % UIElement.baseSize));
+        self.setLayoutY(posY - (posY % UIElement.baseSize));
+
+        setPosition(new Point2D(posX / 50, posY / 50));
+
+        // Si le déplacement est significatif, vérifier et déconnecter les câbles qui s'étirent trop
+        double deltaX = Math.abs(self.getLayoutX() - oldX);
+        double deltaY = Math.abs(self.getLayoutY() - oldY);
+
+
+
+        // Mettre à jour les câbles connectés qui restent
+        updateConnectedCables();
+    }
+    @Override
+    public Pin getPinInput(int index) {
+        switch(index){
+            case 0: return input1Controller;
+            case 1: return input2Controller;
+            default : return null;
+        }
+    }
+    @Override
+    public Pin getPinOutput(int index) {
+        switch(index){
+            case 0: return output1Controller;
+            default : return null;
+        }
+    }
+
+>>>>>>> Stashed changes
 }

@@ -24,6 +24,15 @@ public class UICable extends UIElement {
 
     public static UICable create() {
         return (UICable) UIElement.create("UICable");
+    }//uicable.getnode
+
+    public static UICable getController(Node node) {
+        Object controller = null;
+        do {
+            controller = node.getProperties().get("controller");
+            node = node.getParent();
+        } while (controller == null && node != null);
+        return (UICable) controller;
     }
 
     @FXML
@@ -78,8 +87,8 @@ public class UICable extends UIElement {
         }
 
         // calculating position
-        Point2D sourcePos = calculatePinPosition(sourcePin);
-        Point2D targetPos = calculatePinPosition(targetPin);
+        Point2D sourcePos = getCenter(sourcePin);
+        Point2D targetPos = getCenter(targetPin);
 
         // updating
         cableLine.setStartX(sourcePos.getX());
@@ -88,7 +97,7 @@ public class UICable extends UIElement {
         cableLine.setEndY(targetPos.getY());
     }
 
-    private Point2D calculatePinPosition(Pin pin) {
+    private Point2D getCenter(Pin pin) {
         Node pinNode = pin;
         double x = pinNode.getLayoutX();
         double y = pinNode.getLayoutY();
@@ -141,4 +150,5 @@ public class UICable extends UIElement {
     public UIElement getTargetElement() {
         return targetElement;
     }
+
 }

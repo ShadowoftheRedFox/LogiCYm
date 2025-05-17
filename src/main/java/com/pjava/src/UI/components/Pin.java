@@ -3,10 +3,12 @@ package com.pjava.src.UI.components;
 import com.pjava.src.errors.BusSizeException;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
+
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -42,6 +44,8 @@ public class Pin extends VBox {
     @FXML
     private VBox container;
 
+    public UIElement originController = null;
+
     @FXML
     private void initialize() {
         setColor(color);
@@ -50,6 +54,11 @@ public class Pin extends VBox {
         container.setOnMouseDragged(event -> dragged(event));
     }
 
+    /**
+     * if the user is in cabling mode (by pressing the "cable" button),
+     * the two next input and output pins will be connected
+     * @param event On click
+     */
     private void pressed(MouseEvent event) {
         changeColor(color.desaturate());
 
@@ -67,6 +76,10 @@ public class Pin extends VBox {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     private void released(MouseEvent event) {
         changeColor(color.saturate());
     }
@@ -164,4 +177,17 @@ public class Pin extends VBox {
     public interface CableConnectionListener {
         void onCableConnection(Pin source, Pin target);
     }
+
+
+    public Point2D getCenter() {
+
+        double x = pinCenter.getLayoutX();
+        double y = pinCenter.getLayoutY();
+
+        x += pinCenter.getWidth() / 2;
+        y += pinCenter.getHeight() / 2;
+
+        return new Point2D(x, y);
+    }
+
 }

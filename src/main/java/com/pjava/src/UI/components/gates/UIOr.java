@@ -50,4 +50,19 @@ public class UIOr extends UIGate {
     public void setLogic(Or or) {
         super.setLogic(or);
     }
+    @Override
+    public Pin getPinInput(int index) {
+        switch(index){
+            case 0: return input1Controller;
+            case 1: return input2Controller;
+            default : return null;
+        }
+    }
+    @Override
+    public Pin getPinOutput(int index) {
+        switch(index){
+            case 0: return output1Controller;
+            default : return null;
+        }
+    }
 }

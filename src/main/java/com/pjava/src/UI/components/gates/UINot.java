@@ -27,15 +27,6 @@ public class UINot extends UIGate {
         return (UINot) UIElement.create("UINot");
     }
 
-    public static UIOr getController(Node node) {
-        Object controller = null;
-        do {
-            controller = node.getProperties().get("controller");
-            node = node.getParent();
-        } while (controller == null && node != null);
-        return (UIOr) controller;
-    }
-
     @FXML
     private void initialize() {
         System.out.println("Initialisation!");

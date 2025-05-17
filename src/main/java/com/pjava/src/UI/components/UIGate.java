@@ -11,6 +11,8 @@ import javafx.geometry.Point2D;
 public abstract class UIGate extends UIElement {
     private int width = 0;
     private int height = 0;
+    protected List<Pin> inputPins = new ArrayList<>();
+    protected List<Pin> outputPins = new ArrayList<>();
     private List<UICable> connectedCables = new ArrayList<>();
 
     // #region Getters
@@ -32,6 +34,14 @@ public abstract class UIGate extends UIElement {
         this.height = height;
     }
     // #endregion
+
+    public List<Pin> getInputPins() {
+        return inputPins;
+    }
+
+    public List<Pin> getOutputPins() {
+        return outputPins;
+    }
 
     public void addConnectedCable(UICable cable) {
         if (!connectedCables.contains(cable)) {
@@ -74,4 +84,9 @@ public abstract class UIGate extends UIElement {
     public Element getLogic() {
         return (Element) super.getLogic();
     }
+
+    public abstract Pin getPinInput(int index);
+    public abstract Pin getPinOutput(int index);
+
+
 }
