@@ -5,9 +5,12 @@ import java.io.IOException;
 import com.pjava.src.UI.Rotation;
 import com.pjava.src.components.Element;
 
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 
 public abstract class UIElement {
@@ -21,6 +24,9 @@ public abstract class UIElement {
 
     private Node element = null;
 
+    @FXML
+    protected AnchorPane self;
+
     public static UIElement create(String fxml) {
         FXMLLoader loader = new FXMLLoader(UIElement.class.getResource("/fxml/components/" + fxml + ".fxml"));
         try {
@@ -32,6 +38,33 @@ public abstract class UIElement {
             throw new Error(e);
         }
     };
+
+    protected void pressed(MouseEvent event) {
+        System.out.println(getClass().getSimpleName() + " pressed");
+    }
+
+    protected void released(MouseEvent event) {
+        System.out.println(getClass().getSimpleName() + " released");
+    }
+
+    protected void dragged(MouseEvent event) {
+        double posX = event.getX() + self.getLayoutX();
+        double posY = event.getY() + self.getLayoutY();
+
+        // prevent out of bound
+        if (posX < 0) {
+            posX = 0;
+        }
+        if (posY < 0) {
+            posY = 0;
+        }
+
+        // move
+        self.setLayoutX(posX - (posX % UIElement.baseSize));
+        self.setLayoutY(posY - (posY % UIElement.baseSize));
+
+        setPosition(new Point2D(posX / 50, posY / 50));
+    }
 
     // #region Getters
     public String getName() {
