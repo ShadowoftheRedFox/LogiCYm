@@ -131,8 +131,15 @@ public class Editor extends VBox {
      * the cabling mode is when you can link gates
      */
     private boolean cablingMode = false;
+    /**
+     * maps were all the pins are
+     */
     private Map<Pin, UIGate> pinToGateMap = new HashMap<>();
 
+    /**
+     * it setup the view section
+     * @param manager
+     */
     public Editor(SceneManager manager) {
         this.manager = manager;
 
@@ -328,7 +335,6 @@ public class Editor extends VBox {
         Node and = andController.getNode();
         container.getChildren().add(and);
 
-        // Ajouter les pins de cette gate à la map pour le cablage
         registerGatePins(andController);
         andController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(andController.getInfos().getSelf());
@@ -342,7 +348,6 @@ public class Editor extends VBox {
         Node or = orController.getNode();
         container.getChildren().add(or);
 
-        // Ajouter les pins de cette gate à la map pour le cablage
         registerGatePins(orController);
     }
 
@@ -353,15 +358,14 @@ public class Editor extends VBox {
         Node not = notController.getNode();
         container.getChildren().add(not);
 
-        // Ajouter les pins de cette gate à la map pour le cablage
         registerGatePins(notController);
     }
 
     /**
-     * Enregistre les pins d'une porte logique dans la map pour faciliter la création de câbles
+     * register the pins in the map
+     * @param gate the gate related to the pins
      */
     private void registerGatePins(UIGate gate) {
-        // Supposant que UIGate a des méthodes pour obtenir ses pins d'entrée et de sortie
         for (Pin pin : gate.getInputPins()) {
             pinToGateMap.put(pin, gate);
         }

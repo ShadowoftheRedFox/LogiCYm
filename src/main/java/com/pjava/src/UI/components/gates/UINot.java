@@ -6,7 +6,6 @@ import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.gates.And;
 import com.pjava.src.components.gates.Not;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
@@ -23,6 +22,10 @@ public class UINot extends UIGate {
     @FXML
     private ImageView body1;
 
+    /**
+     * creates the And Gate in Fxml
+     * @return fmxl And Gate
+     */
     public static UINot create() {
         return (UINot) UIElement.create("UINot");
     }
@@ -43,7 +46,27 @@ public class UINot extends UIGate {
         return (Not) super.getLogic();
     }
 
+    /**
+     * sets logic from the not gate (in component)
+     * @param not a not gate
+     */
     public void setLogic(Not not) {
         super.setLogic(not);
     }
-}
+
+
+
+    @Override
+    public Pin getPinInput(int index) {
+        switch(index){
+            case 0: return input1Controller;
+            default : return null;
+        }
+    }
+    @Override
+    public Pin getPinOutput(int index) {
+        switch(index){
+            case 0: return output1Controller;
+            default : return null;
+        }
+    }}

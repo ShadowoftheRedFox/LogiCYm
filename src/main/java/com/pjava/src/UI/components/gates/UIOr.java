@@ -27,6 +27,11 @@ public class UIOr extends UIGate {
     @FXML
     private ImageView body1;
 
+
+    /**
+     * creates an Or gate in fxml
+     * @return an UIElement of an OR gate
+     */
     public static UIOr create() {
         return (UIOr) UIElement.create("UIOr");
     }
@@ -47,6 +52,10 @@ public class UIOr extends UIGate {
         return (Or) super.getLogic();
     }
 
+    /**
+     * set the logic of a Or Gate
+     * @param or a Or gate
+     */
     public void setLogic(Or or) {
         super.setLogic(or);
     }

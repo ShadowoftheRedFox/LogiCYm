@@ -11,21 +11,32 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 public class UICable extends UIElement {
+
     @FXML
     private Line cableLine;
 
     @FXML
     private AnchorPane self;
-
+    /*
+     * there will be two Pins, the source one from the sourceElement and the second one the targer Pin from the targetElement
+     */
     private Pin sourcePin;
     private Pin targetPin;
     private UIElement sourceElement;
     private UIElement targetElement;
-
+    /**
+     * create an cable in FXML
+     * @return an cable
+     */
     public static UICable create() {
         return (UICable) UIElement.create("UICable");
-    }//uicable.getnode
+    }
 
+    /**
+     *
+     * @param node (a cable)
+     * @return the controller controlling the cable
+     */
     public static UICable getController(Node node) {
         Object controller = null;
         do {
@@ -48,7 +59,13 @@ public class UICable extends UIElement {
     public Cable getLogic() {
         return (Cable) super.getLogic();
     }
-
+    /**
+     *  it creates a connection between the two pin as well as putting the target pin green.
+     * @param source (pin source)
+     * @param target (pin target)
+     * @param sourceElem (gate source)
+     * @param targetElem (gate target)
+     */
     public void connect(Pin source, Pin target, UIElement sourceElem, UIElement targetElem) {
         if (source == null || target == null || sourceElem == null || targetElem == null) {
             return;
@@ -81,14 +98,17 @@ public class UICable extends UIElement {
         target.setColor(Color.GREEN);
     }
 
+    /**
+     * check the new position then take the center to determine the new cablelines ends and starts
+     */
     public void updateCablePosition() {
         if (sourcePin == null || targetPin == null) {
             return;
         }
 
         // calculating position
-        Point2D sourcePos = getCenter(sourcePin);
-        Point2D targetPos = getCenter(targetPin);
+        Point2D sourcePos = sourcePin.getCenter();
+        Point2D targetPos = targetPin.getCenter();
 
         // updating
         cableLine.setStartX(sourcePos.getX());
@@ -96,27 +116,9 @@ public class UICable extends UIElement {
         cableLine.setEndX(targetPos.getX());
         cableLine.setEndY(targetPos.getY());
     }
-
-    private Point2D getCenter(Pin pin) {
-        Node pinNode = pin;
-        double x = pinNode.getLayoutX();
-        double y = pinNode.getLayoutY();
-
-        // chekcing the roots
-        Node parent = pinNode.getParent();
-        while (parent != null && !(parent instanceof AnchorPane)) {
-            x += parent.getLayoutX();
-            y += parent.getLayoutY();
-            parent = parent.getParent();
-        }
-
-        // ajusting the center
-        x += pin.getWidth() / 2;
-        y += pin.getHeight() / 2;
-
-        return new Point2D(x, y);
-    }
-
+    /**
+     * reset the cable
+     */
     public void disconnect() {
         if (targetPin != null) {
             // if disconnected => black again
@@ -134,19 +136,31 @@ public class UICable extends UIElement {
         cableLine.setEndX(0);
         cableLine.setEndY(0);
     }
-
+/**
+ * gets the pin source
+ * @return pin source
+ */
     public Pin getSourcePin() {
         return sourcePin;
     }
-
+/**
+ * gets the target pin
+ * @return pin targer
+ */
     public Pin getTargetPin() {
         return targetPin;
     }
-
+/**
+ * gets the source element
+ * @return source element
+ */
     public UIElement getSourceElement() {
         return sourceElement;
     }
-
+/**
+ * gets the target element
+ * @return target element
+ */
     public UIElement getTargetElement() {
         return targetElement;
     }
