@@ -143,7 +143,6 @@ public abstract class Element {
 
     /**
      * Convert the main informations of an element to JSON
-     * This function must be overriden by heriting classes to be precised
      *
      * @return JSONObject
      */

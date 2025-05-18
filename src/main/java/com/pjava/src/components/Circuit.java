@@ -1,6 +1,7 @@
 package com.pjava.src.components;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,6 +36,11 @@ public class Circuit{
     private String name;
 
     /**
+     * class variable that incrément for each new circuit created
+     */
+    private static int nbCircuit = 0;
+
+    /**
     * Map of all the gates of a circuit
     * Key : uuid or custom label
     * Value : Gate
@@ -45,8 +51,7 @@ public class Circuit{
     // * List of all the input gates of a circuit
     // */
     // private ArrayList<Input> circuitInput = new ArrayList<Input>();
-
-    Circuit.inputGate.get(0);
+    // // Circuit.inputGate.get(0);
 
 
     // /**
@@ -57,12 +62,12 @@ public class Circuit{
     //#endregion
 
     public Circuit(){
-        this("Nom_Genere_Automatiquement_ahah");
+        this(String.format("circuit_%d", nbCircuit));
     }
 
     public Circuit(String name){
         this.set_name(name);
-
+        nbCircuit++;
     }
 
     //#region Setter
@@ -227,14 +232,14 @@ public class Circuit{
 
     public JSONObject toJson() {
         // adding gates within the circuit to a JSON array
-        JSONArray gate_Array = new JSONArray();
+        JSONArray gate_JsonArray = new JSONArray();
         for(Gate gate : allGates.values()){
-            gate_Array.put(gate.toJson());
+            gate_JsonArray.put(gate.toJson());
         }
 
         // Creating the JSON object
         JSONObject circuit_Json = new JSONObject();
-        circuit_Json.put("Gate",gate_Array);
+        circuit_Json.put("Gate", gate_JsonArray);
 
         return circuit_Json;
     }
@@ -244,44 +249,109 @@ public class Circuit{
     //#region .save()
 
     /**
-     *
-     * @param pathFromData "file1/fale1.1" will save to "data/file1/file1.1/CIRCUITNAME.json"
+     * Shorthand for {@link #save(String folderPath)}
      * @throws Exception
      */
-    public void save(String pathFromData) throws Exception{
-        if((pathFromData != null) && (!pathFromData.isBlank()) && (pathFromData.startsWith("/"))){
-            pathFromData = "/" + pathFromData;
-        }
-
-        String path = String.format("data%s/%s", pathFromData, this.name) ;
-
-        try(FileWriter writer = new FileWriter(path)){
-            JSONObject circuit_Json = this.toJson();
-            writer.write(circuit_Json.toString(1));
-            System.out.println("Circuit save with succes in:" + path);
-        }
-        catch(IOException e){
-            System.err.println("Error " + path +" can't be saved : " + e.getMessage());
-        }
-    }
-
     public void save() throws Exception{
         this.save("");
     }
 
+    /**
+     * Shorthand for {@link #save(String folderPath, String fileName)}
+     * @throws Exception
+     */
+    public void save(String folderPath) throws Exception{
+        this.save(folderPath, this.name);
+    }
+
+    /**
+     * Save the Json schema of the circuit at the given localisation from './data/'
+     * The file name will be the name of the circuit
+     *
+     * see below folderPath exemple
+     * ""           -> "./data/"
+     * file         -> "./data/file/"
+     * /file        -> "./data/file/"
+     * data/file    -> "./data/file/"
+     * /data/file   -> "./data/file/"
+     * ./data/file  -> "./data/file/"
+     *
+     * @param folderPath
+     * @throws Exception
+     */
+    @SuppressWarnings("CallToPrintStackTrace")
+    public void save(String folderPath, String fileName) throws Exception{
+        // Formating folderPath
+        if((folderPath != null) && (!folderPath.isBlank())){
+            folderPath = folderPath.replace(".", "");
+
+            if(!folderPath.startsWith("/")){
+                folderPath = "/" + folderPath;
+            }
+        }
+        else{
+            folderPath = "";
+        }
+
+        if(!folderPath.startsWith("/data")){
+            folderPath = "/data" + folderPath;
+        }
+
+        if(!folderPath.endsWith("/")){
+            folderPath = folderPath + "/";
+        }
+
+        folderPath = "." + folderPath;
+
+        // Formating fileName
+        if(fileName.endsWith(".json")){
+            fileName = fileName.substring(0, fileName.length()-5);
+        }
+
+        // Creating filePath :
+        String filePath = String.format("%s%s.json", folderPath, fileName) ;
+        filePath = filePath.replace("/", File.separator);
+
+
+        // We create the designed file
+        try {
+            File file = new File(filePath);
+            if(file.getParentFile().mkdirs() || file.createNewFile()){
+                System.out.println(String.format("'%s' created", filePath));
+            }
+            else{
+                System.out.println(String.format("'%s' allready exist", filePath));
+            }
+        } catch (NullPointerException | IOException e){
+            e.printStackTrace();
+        }
+
+        // We write in the designed file
+        try{
+            FileWriter writer = new FileWriter(filePath);
+            writer.write(this.toJson().toString(1));
+            writer.close();
+
+            System.out.println("Circuit saved with success in: " + filePath);
+        }
+        catch(IOException e){
+            System.err.println("Error " + filePath +" can't be saved : " + e.getMessage());
+        }
+    }
+
     //#endregion
 
-    //#region .load()
+    //#region .addGatesFromJson()
 
-    public void load(JSONObject circuit_Json) throws Exception{
+    public void addGatesFromJson(JSONObject circuit_Json) throws Exception{
         Circuit tempCircuit = new Circuit();
 
         try {
-            JSONArray gate_Array = circuit_Json.getJSONArray("Gate");
+            JSONArray gate_JsonArray = circuit_Json.getJSONArray("Gate");
 
             // 1 : We create new gates from those we find in the json Object and we set their old uuid as a label
-            for (int i = 0; i < gate_Array.length(); i++){
-                JSONObject gate_Json = gate_Array.getJSONObject(i);
+            for (int i = 0; i < gate_JsonArray.length(); i++){
+                JSONObject gate_Json = gate_JsonArray.getJSONObject(i);
 
                 String type = gate_Json.getString("type");
                 String oldId = String.valueOf(gate_Json.getInt("uuid"));
@@ -290,17 +360,17 @@ public class Circuit{
 
             // 2 : Once all the gate are created, we connect them thanks to their old uuid
             // Though, cables will now use their new 'uuid'
-            for (int i = 0; i < gate_Array.length(); i++){
-                JSONObject gate_Json = gate_Array.getJSONObject(i);
+            for (int i = 0; i < gate_JsonArray.length(); i++){
+                JSONObject gate_Json = gate_JsonArray.getJSONObject(i);
 
-                String baseOldId = String.valueOf(gate_Json.getInt("uuid"));
+                String baseGateOldId = String.valueOf(gate_Json.getInt("uuid"));
 
-                JSONArray output_Array = gate_Json.getJSONArray("outputTo");
-                for(int baseOutputIndex = 0; baseOutputIndex < output_Array.length(); baseOutputIndex++){
-                    String targetOldId = String.valueOf(output_Array.getJSONArray(baseOutputIndex).getInt(0));
-                    int targetInputIndex = output_Array.getJSONArray(baseOutputIndex).getInt(1);
+                JSONArray output_JsonArray = gate_Json.getJSONArray("outputTo");
+                for(int baseGateOutputIndex = 0; baseGateOutputIndex < output_JsonArray.length(); baseGateOutputIndex++){
+                    String targetGateOldId = String.valueOf(output_JsonArray.getJSONArray(baseGateOutputIndex).getInt(0));
+                    int targetGateInputIndex = output_JsonArray.getJSONArray(baseGateOutputIndex).getInt(1);
 
-                    tempCircuit.connectGate(baseOldId, targetOldId, baseOutputIndex, targetInputIndex);
+                    tempCircuit.connectGate(baseGateOldId, targetGateOldId, baseGateOutputIndex, targetGateInputIndex);
                 }
             }
 
@@ -308,16 +378,6 @@ public class Circuit{
             for(Gate gate : tempCircuit.allGates.values()){
                 this.addGate(gate);
             }
-
-            // print the result for test purpose
-
-            // System.out.println("Circuit Loaded with succes:");
-            // int j = 0;
-            // for(String i : tempCircuit.get_allGates().keySet()){
-            //     System.out.println(String.format("%d : key = %s : GateJSON = %s", j, i, tempCircuit.get_allGates().get(i).toJson()));
-            //     j++;
-            // }
-
         } catch (JSONException e) {
             System.err.println("Error circuit can't be launch " + e.getMessage());
         }
@@ -325,21 +385,56 @@ public class Circuit{
 
     //#endregion
 
-    //#region .loadFromFile()
+    //#region .addGatesFromFile()
 
-    public void loadFromFile(String filePath) throws Exception{
+    /**
+     * Load the Json schema of the circuit at the given localisation from './data/'
+     * It then calls {@link #addGatesFromJson(JSONObject)} to finish the job.
+     *
+     * @param filePath
+     * @throws Exception
+     */
+    public void addGatesFromFile(String filePath) throws Exception{
+        // We format filePath
+        if((filePath != null) && (!filePath.isBlank())){
+            filePath = filePath.replace(".", "");
+
+            if(!filePath.startsWith("/")){
+                filePath = "/" + filePath;
+            }
+        }
+        else{
+            throw new Exception("Empty filePath");
+        }
+
+        if(!filePath.startsWith("/data")){
+            filePath = "/data" + filePath;
+        }
+
+        filePath = "." + filePath;
+
+        if(filePath.endsWith("json")){
+            filePath = filePath.substring(0, filePath.length()-4);
+        }
+
+        filePath = filePath + ".json";
+
+        filePath = filePath.replace("/", File.separator);
+
+
+        // We then read and create a json object from the file
         StringBuilder content = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))){
             String line;
             while ((line = reader.readLine()) != null) {
                 content.append(line);
             }
-            JSONObject circuit_Json = new JSONObject(content.toString());
-            this.load(circuit_Json);
-        }catch (IOException e){
-            System.err.println("Error circuit can't be launch " + e.getMessage());
-        }
 
+            JSONObject circuit_Json = new JSONObject(content.toString());
+            this.addGatesFromJson(circuit_Json);
+        } catch (IOException e){
+            System.err.println(String.format("Problem while reading '%s' : ", filePath, e.getMessage()));
+        }
     }
 
     //#endregion

@@ -805,6 +805,9 @@ public abstract class Gate extends Element {
     }
     // #endregion
 
+    /**
+     * {@inheritDoc Element#toJson()}
+     */
     @Override
     public JSONObject toJson() {
         JSONObject json = super.toJson();
