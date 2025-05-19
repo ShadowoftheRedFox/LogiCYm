@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+
+<AnchorPane fx:id="self" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="247.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Rectangle fx:id="body2" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="200.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="200.0" />
+      <ImageView fx:id="body1" fitHeight="96.0" fitWidth="107.0" layoutX="54.0" layoutY="52.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../img/button.png" />
+         </image>
+      </ImageView>
+      <fx:include fx:id="output" layoutX="165.0" rotate="180.0" scaleX="0.3" scaleY="0.3" source="Pin.fxml" />
+   </children>
+</AnchorPane>
