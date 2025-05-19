@@ -21,6 +21,11 @@ public class OutputTest {
         public boolean setOutputBusTest2() {
             return setOutputBus(new int[] {});
         }
+
+        @Override
+        public TestOutput clone() {
+            return null;
+        }
     }
 
     @Test

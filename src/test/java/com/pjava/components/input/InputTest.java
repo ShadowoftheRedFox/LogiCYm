@@ -27,6 +27,11 @@ public class InputTest {
         public boolean setInputBusTest2() {
             return setInputBus(new int[] {});
         }
+
+        @Override
+        public TestInput clone() {
+            return null;
+        }
     }
 
     @Test

@@ -76,6 +76,11 @@ public class GateTest {
                 throws BusSizeException, IndexOutOfBoundsException, NullPointerException {
             return super.setOutputBus(busSize, index);
         }
+
+        @Override
+        public TestGate clone() {
+            return null;
+        }
     }
 
     @Test

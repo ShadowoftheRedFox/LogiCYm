@@ -1,11 +1,13 @@
 package com.pjava.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 import com.pjava.src.components.Cable;
-import com.pjava.src.components.cables.NodeSplitter;
+import com.pjava.src.components.cables.CableSplitter;
 import com.pjava.src.components.gates.Not;
 import com.pjava.src.components.gates.Or;
 import com.pjava.src.components.input.Clock;
@@ -23,7 +25,7 @@ public class CycliTest {
         Not not1 = new Not();
         Not not2 = new Not();
 
-        NodeSplitter outSplitter = new NodeSplitter();
+        CableSplitter outSplitter = new CableSplitter();
         Not notOut = new Not();
 
         R.connect(or1);
@@ -62,5 +64,29 @@ public class CycliTest {
         assertEquals(out, cycle.getCycleOutput().get(0),
                 () -> "Cycle.getCycleOutput().get(0) after Cyclic.isCyclic(R) expected to be Cable out, received "
                         + cycle.getCycleOutput().get(0));
+    }
+
+    @Test
+    void isUnstable() throws Exception {
+        class TestNot extends Not {
+            @Override
+            public void setPowered(boolean powered) {
+                super.setPowered(powered);
+            }
+        }
+        TestNot not1 = new TestNot();
+        TestNot not2 = new TestNot();
+
+        not1.connect(not2);
+        not2.connect(not1);
+
+        not1.setPowered(true);
+        not2.setPowered(true);
+
+        Cyclic cycle = new Cyclic();
+
+        assertNull(cycle.getUnstable());
+        assertTrue(cycle.isCyclic(not1));
+        assertEquals(true, cycle.getUnstable());
     }
 }

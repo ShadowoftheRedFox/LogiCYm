@@ -41,4 +41,23 @@ public class Power extends Input {
         value.set(0);
         return value;
     }
+
+    /**
+     * Create an exact copy of this power instance in a new one. Connected
+     * referenced cables are not cloned.
+     *
+     * @return The newly cloned power.
+     */
+    @Override
+    public Power clone() {
+        try {
+            Power clone = new Power(getInputBus()[0]);
+            clone.setInputCable(getInputCable());
+            clone.setOutputCable(getOutputCable());
+            clone.setPowered(getPowered());
+            return clone;
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
 }

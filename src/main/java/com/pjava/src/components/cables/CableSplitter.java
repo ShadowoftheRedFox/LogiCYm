@@ -10,7 +10,7 @@ import com.pjava.src.errors.BusSizeException;
  * Split a single input into multiple input of the same bus size. The
  * NodeMerger is not made since Or gate serve the same exact purpose.
  */
-public class NodeSplitter extends Gate {
+public class CableSplitter extends Gate {
     /**
      * Create a new splitter gate with buses of size 1 and with 2 outputs.
      *
@@ -18,7 +18,7 @@ public class NodeSplitter extends Gate {
      *                   {@link #setOutputBus(int[])}.
      * @see Gate
      */
-    public NodeSplitter() throws Exception {
+    public CableSplitter() throws Exception {
         this(2, 1);
     }
 
@@ -31,7 +31,7 @@ public class NodeSplitter extends Gate {
      *                   {@link #setOutputBus(int[])}.
      * @see Gate
      */
-    public NodeSplitter(int busSize) throws Exception {
+    public CableSplitter(int busSize) throws Exception {
         this(2, busSize);
     }
 
@@ -39,17 +39,17 @@ public class NodeSplitter extends Gate {
      * Create a new splitter gate with the given buses size and number of
      * outputs.
      *
-     * @param busNumber The amount of outputs.
-     * @param busSize   The size of the bus.
+     * @param outputBusNumber The amount of outputs.
+     * @param busSize         The size of the bus.
      * @throws Exception                Throw exceptions from either
      *                                  {@link #setInputBus(int[])} or
      *                                  {@link #setOutputBus(int[])}.
      * @throws IllegalArgumentException Throw when bus number is below 0.
      * @see Gate
      */
-    public NodeSplitter(int busNumber, int busSize) throws Exception {
+    public CableSplitter(int outputBusNumber, int busSize) throws Exception {
         super(new int[] { busSize },
-                Collections.nCopies(busNumber, busSize).stream().mapToInt(Integer::intValue).toArray());
+                Collections.nCopies(outputBusNumber, busSize).stream().mapToInt(Integer::intValue).toArray());
     }
 
 
@@ -100,5 +100,25 @@ public class NodeSplitter extends Gate {
     public void changeBusSize(int busSize) throws BusSizeException {
         setInputBus(Collections.nCopies(getInputNumber(), busSize).stream().mapToInt(Integer::intValue).toArray());
         setOutputBus(Collections.nCopies(getOutputNumber(), busSize).stream().mapToInt(Integer::intValue).toArray());
+    }
+
+    /**
+     * Create an exact copy of this display instance in a new one. Connected
+     * referenced cables are not cloned.
+     *
+     * @return The newly cloned display.
+     */
+    @Override
+    public CableSplitter clone() {
+        try {
+            CableSplitter clone = new CableSplitter(getOutputNumber(), getInputBus()[0]);
+            clone.setInputCable(getInputCable());
+            clone.setOutputCable(getOutputCable());
+            clone.state = (BitSet) state.clone();
+            clone.setPowered(getPowered());
+            return clone;
+        } catch (Exception e) {
+            throw new Error(e);
+        }
     }
 }

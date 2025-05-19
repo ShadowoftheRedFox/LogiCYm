@@ -41,4 +41,24 @@ public class Not extends Gate {
 
         return result;
     }
+
+    /**
+     * Create an exact copy of this not instance in a new one. Connected
+     * referenced cables are not cloned.
+     *
+     * @return The newly cloned not.
+     */
+    @Override
+    public Not clone() {
+        try {
+            Not clone = new Not(getInputBus()[0]);
+            clone.setInputCable(getInputCable());
+            clone.setOutputCable(getOutputCable());
+            clone.state = (BitSet) state.clone();
+            clone.setPowered(getPowered());
+            return clone;
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
 }
