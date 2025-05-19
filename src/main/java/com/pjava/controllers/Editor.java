@@ -138,7 +138,7 @@ public class Editor extends VBox {
 
     /**
      * it setup the view section
-     * 
+     *
      * @param manager
      */
     public Editor(SceneManager manager) {
@@ -372,6 +372,9 @@ public class Editor extends VBox {
         container.getChildren().add(or);
 
         registerGatePins(orController);
+        orController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(orController.getInfos().getSelf());
+        });
     }
 
     @FXML
@@ -382,11 +385,14 @@ public class Editor extends VBox {
         container.getChildren().add(not);
 
         registerGatePins(notController);
+        notController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(notController.getInfos().getSelf());
+        });
     }
 
     /**
      * register the pins in the map
-     * 
+     *
      * @param gate the gate related to the pins
      */
     private void registerGatePins(UIGate gate) {
