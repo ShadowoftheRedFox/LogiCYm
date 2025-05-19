@@ -178,4 +178,8 @@ public class UICable extends UIElement {
         return targetElement;
     }
 
+    public Line getLine() {
+        return cableLine;
+    }
+
 }

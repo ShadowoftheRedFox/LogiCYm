@@ -133,7 +133,9 @@ public abstract class UIGate extends UIElement {
      * @param index which one do you want (0 to N)
      * @return the pin selected
      */
-    public abstract Pin getPinInput(int index);
+    public Pin getPinInput(int index) {
+        return inputPins.get(index);
+    }
 
     /**
      * to get a single pinOutput
@@ -141,6 +143,7 @@ public abstract class UIGate extends UIElement {
      * @param index which one do you want (from 0 to N)
      * @return the Output pin selected
      */
-    public abstract Pin getPinOutput(int index);
-
+    public Pin getPinOutput(int index) {
+        return outputPins.get(index);
+    }
 }

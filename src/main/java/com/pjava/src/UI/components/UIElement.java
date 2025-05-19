@@ -69,7 +69,7 @@ public abstract class UIElement {
             Node infosNode = infosLoader.load();
             // and add it to the gate controller
             controller.infos = infosLoader.getController();
-            controller.infos.setSelf(infosNode);
+            controller.infos.setNode(infosNode);
             controller.infos.setOrigin(controller);
 
             // return the controller

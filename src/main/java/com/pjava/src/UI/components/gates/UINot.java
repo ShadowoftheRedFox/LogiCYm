@@ -24,6 +24,7 @@ public class UINot extends UIGate {
 
     /**
      * creates the And Gate in Fxml
+     *
      * @return fmxl And Gate
      */
     public static UINot create() {
@@ -39,6 +40,9 @@ public class UINot extends UIGate {
         body1.setOnMousePressed(event -> pressed(event));
         body1.setOnMouseReleased(event -> released(event));
         body1.setOnMouseDragged(event -> dragged(event));
+
+        inputPins.add(input1Controller);
+        outputPins.add(output1Controller);
     }
 
     @Override
@@ -48,25 +52,10 @@ public class UINot extends UIGate {
 
     /**
      * sets logic from the not gate (in component)
+     *
      * @param not a not gate
      */
     public void setLogic(Not not) {
         super.setLogic(not);
     }
-
-
-
-    @Override
-    public Pin getPinInput(int index) {
-        switch(index){
-            case 0: return input1Controller;
-            default : return null;
-        }
-    }
-    @Override
-    public Pin getPinOutput(int index) {
-        switch(index){
-            case 0: return output1Controller;
-            default : return null;
-        }
-    }}
+}

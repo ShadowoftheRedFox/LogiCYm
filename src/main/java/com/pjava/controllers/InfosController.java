@@ -18,7 +18,7 @@ public class InfosController {
         this.origin = origin;
     }
 
-    public void setSelf(Node node) {
+    public void setNode(Node node) {
         self = node;
     }
 
@@ -26,7 +26,7 @@ public class InfosController {
         return origin;
     }
 
-    public Node getSelf() {
+    public Node getNode() {
         return self;
     }
 }

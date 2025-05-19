@@ -27,9 +27,9 @@ public class UIOr extends UIGate {
     @FXML
     private ImageView body1;
 
-
     /**
      * creates an Or gate in fxml
+     *
      * @return an UIElement of an OR gate
      */
     public static UIOr create() {
@@ -45,6 +45,10 @@ public class UIOr extends UIGate {
         body1.setOnMousePressed(event -> pressed(event));
         body1.setOnMouseReleased(event -> released(event));
         body1.setOnMouseDragged(event -> dragged(event));
+
+        inputPins.add(input1Controller);
+        inputPins.add(input2Controller);
+        outputPins.add(output1Controller);
     }
 
     @Override
@@ -54,24 +58,10 @@ public class UIOr extends UIGate {
 
     /**
      * set the logic of a Or Gate
+     *
      * @param or a Or gate
      */
     public void setLogic(Or or) {
         super.setLogic(or);
-    }
-    @Override
-    public Pin getPinInput(int index) {
-        switch(index){
-            case 0: return input1Controller;
-            case 1: return input2Controller;
-            default : return null;
-        }
-    }
-    @Override
-    public Pin getPinOutput(int index) {
-        switch(index){
-            case 0: return output1Controller;
-            default : return null;
-        }
     }
 }

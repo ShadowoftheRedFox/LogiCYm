@@ -35,6 +35,7 @@ public class UIAnd extends UIGate {
 
     /**
      * creates the And Gate in Fxml
+     *
      * @return fmxl And Gate
      */
     public static UIAnd create() {
@@ -57,6 +58,10 @@ public class UIAnd extends UIGate {
         input1Controller.originController = this;
         input2Controller.originController = this;
         output1Controller.originController = this;
+
+        inputPins.add(input1Controller);
+        inputPins.add(input2Controller);
+        outputPins.add(output1Controller);
     }
 
     @Override
@@ -66,27 +71,10 @@ public class UIAnd extends UIGate {
 
     /**
      * set the logic to the and gate its supposed to have
+     *
      * @param and a And gate(FXML)
      */
     private void setLogic(And and) {
         super.setLogic(and);
     }
-
-
-    @Override
-    public Pin getPinInput(int index) {
-        switch(index){
-            case 0: return input1Controller;
-            case 1: return input2Controller;
-            default : return null;
-        }
-    }
-    @Override
-    public Pin getPinOutput(int index) {
-        switch(index){
-            case 0: return output1Controller;
-            default : return null;
-        }
-    }
-
 }

@@ -1,10 +1,15 @@
 package com.pjava.src.UI.components;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import com.pjava.src.errors.BusSizeException;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
@@ -29,10 +34,6 @@ public class Pin extends VBox {
 
     // Référence au mode de câblage actuel
     private static boolean cablingMode = false;
-    // Pin source temporaire pour les connexions en cours
-    private static Pin tempSourcePin = null;
-    // Événement pour la création de câbles
-    private static CableConnectionListener cableListener = null;
 
     @FXML
     private Rectangle pinCenter;
@@ -46,6 +47,8 @@ public class Pin extends VBox {
 
     public UIElement originController = null;
 
+    private ArrayList<EventHandler<? super MouseEvent>> pressedListener = new ArrayList<EventHandler<? super MouseEvent>>();
+
     @FXML
     private void initialize() {
         setColor(color);
@@ -57,38 +60,31 @@ public class Pin extends VBox {
     /**
      * if the user is in cabling mode (by pressing the "cable" button),
      * the two next input and output pins will be connected
-     * 
+     *
      * @param event On click
      */
     private void pressed(MouseEvent event) {
         changeColor(color.desaturate());
 
-        if (cablingMode) {
-            // check if its in cablingMode or not
-            if (tempSourcePin == null) {
-                tempSourcePin = this;
-            } else if (tempSourcePin != this) {
-                // finishing the connection with another cable
-                if (cableListener != null) {
-                    cableListener.onCableConnection(tempSourcePin, this);
-                }
-                tempSourcePin = null;
-            }
-        }
+        // call all listener
+        pressedListener.forEach(callback -> {
+            callback.handle(event);
+        });
     }
 
     /**
      * when the pins is released, it changes color
-     * 
+     *
      * @param event released events
      */
     private void released(MouseEvent event) {
         changeColor(color.saturate());
+        setCablingMode(false);
     }
 
     /**
      * when a pin is dragges, it enable the cabling mode
-     * 
+     *
      * @param event the dragged mouse event
      */
     private void dragged(MouseEvent event) {
@@ -111,7 +107,7 @@ public class Pin extends VBox {
 
     /**
      * changes the color of the pins
-     * 
+     *
      * @param color the color you want to put
      */
     private void changeColor(Color color) {
@@ -175,40 +171,44 @@ public class Pin extends VBox {
     /**
      * Activate the cablingmode
      */
-    public static void setCablingMode(boolean enabled) {
+    public void setCablingMode(boolean enabled) {
         cablingMode = enabled;
-        if (!enabled) {
-            tempSourcePin = null;
-        }
     }
 
-    /**
-     * Listeners to know if a cable is connected or not
-     * 
-     * @param listener
-     */
-    public static void setCableConnectionListener(CableConnectionListener listener) {
-        cableListener = listener;
-    }
-
-    public interface CableConnectionListener {
-        void onCableConnection(Pin source, Pin target);
+    public boolean getCablingMode() {
+        return cablingMode;
     }
 
     /**
      * give the center of a 2d point
-     * 
+     *
      * @return point2D center (x,y)
      */
     public Point2D getCenter() {
-
-        double x = pinCenter.getLayoutX() + originController.getNode().getLayoutX();
+        double x = originController.getNode().getLayoutX();
         double y = pinCenter.getLayoutY() + originController.getNode().getLayoutY();
 
+        // if pin is an output, it's on the otehr side of the origin
+        if (!isInput) {
+            x += ((AnchorPane) originController.getNode()).getWidth();
+        }
+
         x += pinCenter.getWidth() / 2;
-        y += pinCenter.getHeight() / 2;
 
         return new Point2D(x, y);
     }
 
+    public void setOnPressed(EventHandler<? super MouseEvent> value) {
+        if (!pressedListener.contains(value)) {
+            pressedListener.add(value);
+        }
+    }
+
+    public boolean removeOnPressed(EventHandler<? super MouseEvent> value) {
+        return pressedListener.remove(value);
+    }
+
+    public Iterator<EventHandler<? super MouseEvent>> onPressed() {
+        return pressedListener.iterator();
+    }
 }

@@ -2,8 +2,6 @@ package com.pjava.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.pjava.src.UI.SceneManager;
 import com.pjava.src.UI.components.Pin;
@@ -14,7 +12,6 @@ import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
 import com.pjava.src.UI.components.input.UIButton;
-import com.pjava.src.UI.components.Pin.CableConnectionListener;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -127,15 +124,14 @@ public class Editor extends VBox {
      * list of nodes selected
      */
     private ArrayList<Node> selectedNodes = new ArrayList<Node>();
+    private ArrayList<UICable> cableLines = new ArrayList<UICable>();
 
     /**
      * the cabling mode is when you can link gates
      */
     private boolean cablingMode = false;
-    /**
-     * maps were all the pins are
-     */
-    private Map<Pin, UIGate> pinToGateMap = new HashMap<>();
+    private Pin lastInputPinPressed = null;
+    private Pin lastOutputPinPressed = null;
 
     /**
      * it setup the view section
@@ -203,26 +199,23 @@ public class Editor extends VBox {
                         "1;0;1\n" +
                         "0;1;0\n");
         // #endregion
-        // Définir l'écouteur de connexions de câbles
-        Pin.setCableConnectionListener(new CableConnectionListener() {
-            @Override
-            public void onCableConnection(Pin source, Pin target) {
-                createCableBetweenPins(source, target);
-            }
-        });
     }
 
     /**
      * Crée un câble entre deux pins
      */
     private void createCableBetweenPins(Pin source, Pin target) {
+        if (source == null || target == null) {
+            System.out.println("no pin pair selected");
+            return;
+        }
+
         // Vérifier si les pins sont associés à des gates
         UIGate sourceGate = (UIGate) source.originController;
         UIGate targetGate = (UIGate) target.originController;
 
         if (sourceGate == null || targetGate == null) {
-            System.out.println("Pin non associé à une gate");
-            return;
+            throw new Error("Stand alone pin");
         }
 
         // Créer le câble en tant que Node
@@ -236,17 +229,27 @@ public class Editor extends VBox {
         cableController.connect(source, target, sourceGate, targetGate);
 
         // Ajouter le câble aux gates connectées
+        // TODO cable to pins, not to gate
+        // TODO english comments
         sourceGate.addConnectedCable(cableController);
         targetGate.addConnectedCable(cableController);
-        Line cable = new Line();
+        Line cable = cableController.getLine();
         cable.setLayoutX(source.getCenter().getX());
         cable.setLayoutY(source.getCenter().getY());
         cable.setEndX(target.getCenter().getX());
         cable.setEndY(target.getCenter().getY());
 
         cable.strokeWidthProperty().set(5);
-        cable.setFill(Color.RED);
+        cable.setStroke(Color.RED);
         container.getChildren().add(cable);
+        cableLines.add(cableController);
+
+        System.out.println("cabling from "
+                + cable.getLayoutX() + ":" + cable.getLayoutY() + " to "
+                + cable.getEndX() + ":" + cable.getEndY());
+
+        lastInputPinPressed = null;
+        lastOutputPinPressed = null;
     }
 
     // #region Functions
@@ -359,9 +362,9 @@ public class Editor extends VBox {
         Node and = andController.getNode();
         container.getChildren().add(and);
 
-        registerGatePins(andController);
+        pinsListener(andController);
         andController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(andController.getInfos().getSelf());
+            replaceInfos(andController.getInfos().getNode());
         });
     }
 
@@ -372,9 +375,9 @@ public class Editor extends VBox {
         Node or = orController.getNode();
         container.getChildren().add(or);
 
-        registerGatePins(orController);
+        pinsListener(orController);
         orController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(orController.getInfos().getSelf());
+            replaceInfos(orController.getInfos().getNode());
         });
     }
 
@@ -385,9 +388,9 @@ public class Editor extends VBox {
         Node not = notController.getNode();
         container.getChildren().add(not);
 
-        registerGatePins(notController);
+        pinsListener(notController);
         notController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(notController.getInfos().getSelf());
+            replaceInfos(notController.getInfos().getNode());
         });
     }
 
@@ -398,22 +401,29 @@ public class Editor extends VBox {
         Node button = buttonController.getNode();
         container.getChildren().add(button);
 
-        registerGatePins(buttonController);
+        pinsListener(buttonController);
         buttonController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(buttonController.getInfos().getSelf());
+            replaceInfos(buttonController.getInfos().getNode());
         });
     }
+
     /**
-     * register the pins in the map
+     * register the pins for later connection
      *
      * @param gate the gate related to the pins
      */
-    private void registerGatePins(UIGate gate) {
+    private void pinsListener(UIGate gate) {
         for (Pin pin : gate.getInputPins()) {
-            pinToGateMap.put(pin, gate);
+            pin.setOnPressed(event -> {
+                lastInputPinPressed = pin;
+                createCableBetweenPins(lastInputPinPressed, lastOutputPinPressed);
+            });
         }
         for (Pin pin : gate.getOutputPins()) {
-            pinToGateMap.put(pin, gate);
+            pin.setOnPressed(event -> {
+                lastOutputPinPressed = pin;
+                createCableBetweenPins(lastInputPinPressed, lastOutputPinPressed);
+            });
         }
     }
 
@@ -432,7 +442,6 @@ public class Editor extends VBox {
         System.out.println("Click Cable!");
         // Activer/désactiver le mode câblage
         cablingMode = !cablingMode;
-        Pin.setCablingMode(cablingMode);
 
         // Mettre à jour l'apparence du bouton
         Button btn = (Button) event.getSource();

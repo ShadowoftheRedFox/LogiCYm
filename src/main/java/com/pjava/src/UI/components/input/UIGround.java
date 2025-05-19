@@ -33,6 +33,8 @@ public class UIGround extends UIGate {
         body2.setOnMousePressed(event -> pressed(event));
         body2.setOnMouseReleased(event -> released(event));
         body2.setOnMouseDragged(event -> dragged(event));
+
+        outputPins.add(outputController);
     }
 
     @Override
@@ -47,15 +49,5 @@ public class UIGround extends UIGate {
     @Override
     public Pin getPinInput(int index) {
         return null;
-    }
-
-    @Override
-    public Pin getPinOutput(int index) {
-        switch (index) {
-            case 0:
-                return outputController;
-            default:
-                return null;
-        }
     }
 }
