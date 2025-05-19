@@ -18,22 +18,22 @@ public abstract class Gate extends Element {
     /**
      * Give the number and size of the available input ports.
      */
-    private int[] inputBus = new int[]{};
+    protected int[] inputBus = new int[]{};
 
     /**
      * Give the number and size of the available output ports.
      */
-    private int[] outputBus = new int[]{};
+    protected int[] outputBus = new int[]{};
 
     /**
      * The input cables. Must have the same length as {@link #inputBus}.
      */
-    private ArrayList<Cable> inputCable = new ArrayList<Cable>();
+    protected ArrayList<Cable> inputCable = new ArrayList<Cable>();
 
     /**
      * The output cables. Must have the same length as {@link #outputBus}.
      */
-    private ArrayList<Cable> outputCable = new ArrayList<Cable>();
+    protected ArrayList<Cable> outputCable = new ArrayList<Cable>();
 
     /**
      * Create a new default gate, with two input with 1 as bus size, and one bus
@@ -42,8 +42,6 @@ public abstract class Gate extends Element {
     public Gate() {
         this(new int[]{1, 1}, new int[]{1});
     }
-
-    ;
 
     /**
      * Create a new gate with customisable bus input and output.
@@ -317,9 +315,9 @@ public abstract class Gate extends Element {
             throw new IndexOutOfBoundsException(
                     "Expected 0 <= thisOutputIndex < " + this.outputBus.length + ", received " + thisOutputIndex);
         }
-        if (arg0InputIndex < 0 || this.outputBus.length <= arg0InputIndex) {
+        if (arg0InputIndex < 0 || arg0.outputBus.length <= arg0InputIndex) {
             throw new IndexOutOfBoundsException(
-                    "Expected 0 <= arg0InputIndex < " + this.outputBus.length + ", received " + arg0InputIndex);
+                    "Expected 0 <= arg0InputIndex < " + arg0.outputBus.length + ", received " + arg0InputIndex);
         }
 
         if (this.outputBus[thisOutputIndex] != arg0.inputBus[arg0InputIndex]) {

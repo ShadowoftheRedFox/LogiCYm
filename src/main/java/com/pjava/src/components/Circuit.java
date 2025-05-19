@@ -94,7 +94,7 @@ public class Circuit{
     //#endregion
 
 
-    //#region .addGate()
+    //#region .addGate
 
     /**
      * Set the label as Gate.uuid
@@ -132,7 +132,9 @@ public class Circuit{
 
     //#endregion
 
-    //#region .addNewGate()
+    //#region .addNewGate
+    // TODO : needs more parameters to customise gate creation (busSize, delay, etc..)
+
 
     /**
      * @param type
@@ -197,7 +199,133 @@ public class Circuit{
 
     //#endregion
 
-    //#region .connectGate()
+    //#region .addGatesFromJson
+
+    public void addGatesFromJson(JSONObject circuit_Json) throws Exception{
+        this.addGatesFromJson( circuit_Json, null);
+    }
+
+    public void addGatesFromJson(JSONObject circuit_Json, Schema schema) throws Exception{
+        Circuit tempCircuit = new Circuit();
+
+        try {
+            JSONArray gate_JsonArray = circuit_Json.getJSONArray("Gate");
+
+            // 1 : We create new gates from those we find in the json Object and we set their old uuid as a label
+            for (int i = 0; i < gate_JsonArray.length(); i++){
+                JSONObject gate_Json = gate_JsonArray.getJSONObject(i);
+
+                String type = gate_Json.getString("type");
+                String oldId = String.valueOf(gate_Json.getInt("uuid"));
+                tempCircuit.addNewGate(type, oldId);
+            }
+
+            // 2 : Once all the gate are created, we connect them thanks to their old uuid
+            // Though, cables will now use their new 'uuid'
+            for (int i = 0; i < gate_JsonArray.length(); i++){
+                JSONObject gate_Json = gate_JsonArray.getJSONObject(i);
+
+                String baseGateOldId = String.valueOf(gate_Json.getInt("uuid"));
+
+                JSONArray output_JsonArray = gate_Json.getJSONArray("outputTo");
+                for(int baseGateOutputIndex = 0; baseGateOutputIndex < output_JsonArray.length(); baseGateOutputIndex++){
+                    String targetGateOldId = String.valueOf(output_JsonArray.getJSONArray(baseGateOutputIndex).getInt(0));
+                    int targetGateInputIndex = output_JsonArray.getJSONArray(baseGateOutputIndex).getInt(1);
+
+                    // the target gate is outside the selection_Json
+                    if(targetGateOldId.equals("-1")){
+                        // we are in a schema and want to connect a cable between the inner circuit and the schema gate (output)
+                        if(schema != null){
+                            schema.connectInnerOutput(tempCircuit.get_allGates().get(baseGateOldId), baseGateOutputIndex, targetGateInputIndex);
+                        }
+
+                        continue;
+                    }
+
+                    tempCircuit.connectGate(baseGateOldId, targetGateOldId, baseGateOutputIndex, targetGateInputIndex);
+                }
+
+                // we are in a schema and want to connect a cable between the inner circuit and the schema gate (input this time)
+                if(schema != null){
+                    JSONArray input_JsonArray = gate_Json.getJSONArray("inputFrom");
+                    for(int baseGateInputIndex = 0; baseGateInputIndex < input_JsonArray.length(); baseGateInputIndex++){
+                        String targetGateOldId = String.valueOf(input_JsonArray.getJSONArray(baseGateInputIndex).getInt(0));
+                        int targetGateOutputIndex = input_JsonArray.getJSONArray(baseGateInputIndex).getInt(1);
+
+                        // the target gate must be outside of the selection_Json
+                        if(targetGateOldId.equals("-1")){
+                            schema.connectInnerInput(tempCircuit.get_allGates().get(baseGateOldId), baseGateInputIndex, targetGateOutputIndex);
+                        }
+                    }
+                }
+            }
+
+            // 3 : We fuse the temporary ciruit with the main one
+            for(Gate gate : tempCircuit.allGates.values()){
+                this.addGate(gate);
+            }
+        } catch (JSONException e) {
+            System.err.println("Error circuit can't be launch " + e.getMessage());
+        }
+    }
+
+    //#endregion
+
+    //#region .addGatesFromFile
+
+    /**
+     * Load the Json schema of the circuit at the given localisation from './data/'
+     * It then calls {@link #addGatesFromJson(JSONObject)} to finish the job.
+     *
+     * @param filePath
+     * @throws Exception
+     */
+    public void addGatesFromFile(String filePath) throws Exception{
+        // We format filePath
+        if((filePath != null) && (!filePath.isBlank())){
+            filePath = filePath.replace(".", "");
+
+            if(!filePath.startsWith("/")){
+                filePath = "/" + filePath;
+            }
+        }
+        else{
+            throw new Exception("Empty filePath");
+        }
+
+        if(!filePath.startsWith("/data")){
+            filePath = "/data" + filePath;
+        }
+
+        filePath = "." + filePath;
+
+        if(filePath.endsWith("json")){
+            filePath = filePath.substring(0, filePath.length()-4);
+        }
+
+        filePath = filePath + ".json";
+
+        filePath = filePath.replace("/", File.separator);
+
+
+        // We then read and create a json object from the file
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))){
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line);
+            }
+
+            JSONObject circuit_Json = new JSONObject(content.toString());
+            this.addGatesFromJson(circuit_Json);
+        } catch (IOException e){
+            System.err.println(String.format("Problem while reading '%s' : ", filePath, e.getMessage()));
+        }
+    }
+
+    //#endregion
+
+    //#region .connectGate
 
     /**
      * @param fromGate The gate whose output port you want to connect
@@ -228,7 +356,7 @@ public class Circuit{
 
     //#endregion
 
-    //#region .toJson()
+    //#region .toJson
 
     public JSONObject toJson() {
         // adding gates within the circuit to a JSON array
@@ -246,7 +374,7 @@ public class Circuit{
 
     //#endregion
 
-    //#region .save()
+    //#region .save
 
     /**
      * Shorthand for {@link #save(String folderPath)}
@@ -336,104 +464,6 @@ public class Circuit{
         }
         catch(IOException e){
             System.err.println("Error " + filePath +" can't be saved : " + e.getMessage());
-        }
-    }
-
-    //#endregion
-
-    //#region .addGatesFromJson()
-
-    public void addGatesFromJson(JSONObject circuit_Json) throws Exception{
-        Circuit tempCircuit = new Circuit();
-
-        try {
-            JSONArray gate_JsonArray = circuit_Json.getJSONArray("Gate");
-
-            // 1 : We create new gates from those we find in the json Object and we set their old uuid as a label
-            for (int i = 0; i < gate_JsonArray.length(); i++){
-                JSONObject gate_Json = gate_JsonArray.getJSONObject(i);
-
-                String type = gate_Json.getString("type");
-                String oldId = String.valueOf(gate_Json.getInt("uuid"));
-                tempCircuit.addNewGate(type, oldId);
-            }
-
-            // 2 : Once all the gate are created, we connect them thanks to their old uuid
-            // Though, cables will now use their new 'uuid'
-            for (int i = 0; i < gate_JsonArray.length(); i++){
-                JSONObject gate_Json = gate_JsonArray.getJSONObject(i);
-
-                String baseGateOldId = String.valueOf(gate_Json.getInt("uuid"));
-
-                JSONArray output_JsonArray = gate_Json.getJSONArray("outputTo");
-                for(int baseGateOutputIndex = 0; baseGateOutputIndex < output_JsonArray.length(); baseGateOutputIndex++){
-                    String targetGateOldId = String.valueOf(output_JsonArray.getJSONArray(baseGateOutputIndex).getInt(0));
-                    int targetGateInputIndex = output_JsonArray.getJSONArray(baseGateOutputIndex).getInt(1);
-
-                    tempCircuit.connectGate(baseGateOldId, targetGateOldId, baseGateOutputIndex, targetGateInputIndex);
-                }
-            }
-
-            // 3 : We fuse the temporary ciruit with the main one
-            for(Gate gate : tempCircuit.allGates.values()){
-                this.addGate(gate);
-            }
-        } catch (JSONException e) {
-            System.err.println("Error circuit can't be launch " + e.getMessage());
-        }
-    }
-
-    //#endregion
-
-    //#region .addGatesFromFile()
-
-    /**
-     * Load the Json schema of the circuit at the given localisation from './data/'
-     * It then calls {@link #addGatesFromJson(JSONObject)} to finish the job.
-     *
-     * @param filePath
-     * @throws Exception
-     */
-    public void addGatesFromFile(String filePath) throws Exception{
-        // We format filePath
-        if((filePath != null) && (!filePath.isBlank())){
-            filePath = filePath.replace(".", "");
-
-            if(!filePath.startsWith("/")){
-                filePath = "/" + filePath;
-            }
-        }
-        else{
-            throw new Exception("Empty filePath");
-        }
-
-        if(!filePath.startsWith("/data")){
-            filePath = "/data" + filePath;
-        }
-
-        filePath = "." + filePath;
-
-        if(filePath.endsWith("json")){
-            filePath = filePath.substring(0, filePath.length()-4);
-        }
-
-        filePath = filePath + ".json";
-
-        filePath = filePath.replace("/", File.separator);
-
-
-        // We then read and create a json object from the file
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))){
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line);
-            }
-
-            JSONObject circuit_Json = new JSONObject(content.toString());
-            this.addGatesFromJson(circuit_Json);
-        } catch (IOException e){
-            System.err.println(String.format("Problem while reading '%s' : ", filePath, e.getMessage()));
         }
     }
 

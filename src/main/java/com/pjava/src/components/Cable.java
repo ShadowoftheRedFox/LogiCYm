@@ -22,7 +22,7 @@ public class Cable extends Element {
      * @see Utils#isPower2(int)
      * @see Utils#pow2(int)
      */
-    private int busSize = 1;
+    private Integer busSize = 1;
 
     /**
      * The input gate.
@@ -183,6 +183,16 @@ public class Cable extends Element {
         }
 
         this.busSize = busSize;
+    }
+
+    public void setInputGate(Gate gate) throws Exception{
+        if(gate == null) throw new Exception("null input gate");
+        this.inputGate = gate;
+    }
+
+    public void setOutputGate(Gate gate) throws Exception{
+        if(gate == null) throw new Exception("null output gate");
+        this.outputGate = gate;
     }
 
     public void setInputPort(int portIndex) throws IndexOutOfBoundsException{
