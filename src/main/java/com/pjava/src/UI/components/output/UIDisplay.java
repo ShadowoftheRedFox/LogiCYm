@@ -49,4 +49,19 @@ public class UIDisplay extends UIGate{
     private void setLogic(Display display) {
         super.setLogic(display);
     }
+
+    @Override
+    public Pin getPinInput(int index) {
+        return null;
+    }
+
+    @Override
+    public Pin getPinOutput(int index) {
+        switch (index) {
+            case 0:
+                return outputController;
+            default:
+                return null;
+        }
+    }
 }

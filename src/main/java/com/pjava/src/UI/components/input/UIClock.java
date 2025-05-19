@@ -49,4 +49,19 @@ public class UIClock extends UIGate{
     private void setLogic(Clock clock) {
         super.setLogic(clock);
     }
+
+    @Override
+    public Pin getPinInput(int index) {
+        return null;
+    }
+
+    @Override
+    public Pin getPinOutput(int index) {
+        switch (index) {
+            case 0:
+                return outputController;
+            default:
+                return null;
+        }
+    }
 }
