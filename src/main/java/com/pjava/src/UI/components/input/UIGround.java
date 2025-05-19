@@ -34,6 +34,8 @@ public class UIGround extends UIGate {
         body2.setOnMouseReleased(event -> released(event));
         body2.setOnMouseDragged(event -> dragged(event));
 
+        outputController.originController = this;
+
         outputPins.add(outputController);
     }
 

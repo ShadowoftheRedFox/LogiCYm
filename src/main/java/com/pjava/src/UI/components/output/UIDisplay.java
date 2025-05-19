@@ -12,11 +12,11 @@ import javafx.scene.text.Text;
 
 public class UIDisplay extends UIGate {
     @FXML
-    private Pin outputController;
+    private Pin intputController;
     @FXML
     private Rectangle body1;
     @FXML
-    private VBox output;
+    private VBox input;
     @FXML
     private Text text;
     @FXML
@@ -29,13 +29,17 @@ public class UIDisplay extends UIGate {
             setLogic(new Display());
         } catch (Exception e) {
         }
-        outputController.setAsInput(false);
+        intputController.setAsInput(false);
         body1.setOnMousePressed(event -> pressed(event));
         body1.setOnMouseReleased(event -> released(event));
         body1.setOnMouseDragged(event -> dragged(event));
         text.setOnMousePressed(event -> pressed(event));
         text.setOnMouseReleased(event -> released(event));
         text.setOnMouseDragged(event -> dragged(event));
+
+        intputController.originController = this;
+
+        inputPins.add(intputController);
     }
 
     @Override
@@ -48,17 +52,7 @@ public class UIDisplay extends UIGate {
     }
 
     @Override
-    public Pin getPinInput(int index) {
-        return null;
-    }
-
-    @Override
     public Pin getPinOutput(int index) {
-        switch (index) {
-            case 0:
-                return outputController;
-            default:
-                return null;
-        }
+        return null;
     }
 }

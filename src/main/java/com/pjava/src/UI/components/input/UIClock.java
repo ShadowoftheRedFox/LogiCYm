@@ -36,6 +36,10 @@ public class UIClock extends UIGate {
         body2.setOnMousePressed(event -> pressed(event));
         body2.setOnMouseReleased(event -> released(event));
         body2.setOnMouseDragged(event -> dragged(event));
+
+        outputController.originController = this;
+
+        outputPins.add(outputController);
     }
 
     @Override

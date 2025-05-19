@@ -46,6 +46,10 @@ public class UIOr extends UIGate {
         body1.setOnMouseReleased(event -> released(event));
         body1.setOnMouseDragged(event -> dragged(event));
 
+        input1Controller.originController = this;
+        input2Controller.originController = this;
+        output1Controller.originController = this;
+
         inputPins.add(input1Controller);
         inputPins.add(input2Controller);
         outputPins.add(output1Controller);

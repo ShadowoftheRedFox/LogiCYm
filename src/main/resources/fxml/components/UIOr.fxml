@@ -13,9 +13,9 @@
                 <Image url="@../../img/OR.png" />
             </image>
         </ImageView>
-        <fx:include fx:id="intput1" layoutX="-30.0" layoutY="-50.0" scaleX="0.3" scaleY="0.3"
+        <fx:include fx:id="input1" layoutX="-30.0" layoutY="-50.0" scaleX="0.3" scaleY="0.3"
             source="Pin.fxml" />
-        <fx:include fx:id="intput2" layoutX="-30.0" layoutY="40.0" scaleX="0.3" scaleY="0.3"
+        <fx:include fx:id="input2" layoutX="-30.0" layoutY="40.0" scaleX="0.3" scaleY="0.3"
             source="Pin.fxml" />
         <fx:include fx:id="output1" layoutX="160.0" rotate="180.0" scaleX="0.3" scaleY="0.3"
             source="Pin.fxml" />
