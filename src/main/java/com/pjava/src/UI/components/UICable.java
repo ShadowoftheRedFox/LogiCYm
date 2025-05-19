@@ -5,7 +5,6 @@ import com.pjava.src.errors.BusSizeException;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -17,33 +16,31 @@ public class UICable extends UIElement {
 
     @FXML
     private AnchorPane self;
-    /*
-     * there will be two Pins, the source one from the sourceElement and the second one the targer Pin from the targetElement
-     */
-    private Pin sourcePin;
-    private Pin targetPin;
-    private UIElement sourceElement;
-    private UIElement targetElement;
+
     /**
-     * create an cable in FXML
-     * @return an cable
+     * The source pin controller.
+     */
+    private Pin sourcePin = null;
+    /**
+     * The target pin controller.
+     */
+    private Pin targetPin = null;
+    /**
+     * The gate controller that owns the {@link #sourcePin}.
+     */
+    private UIGate sourceElement = null;
+    /**
+     * The gate controller that owns the {@link #targetPin}.
+     */
+    private UIGate targetElement = null;
+
+    /**
+     * Create a new cable instance.
+     *
+     * @return The new cable instance.
      */
     public static UICable create() {
         return (UICable) UIElement.create("UICable");
-    }
-
-    /**
-     *
-     * @param node (a cable)
-     * @return the controller controlling the cable
-     */
-    public static UICable getController(Node node) {
-        Object controller = null;
-        do {
-            controller = node.getProperties().get("controller");
-            node = node.getParent();
-        } while (controller == null && node != null);
-        return (UICable) controller;
     }
 
     @FXML
@@ -59,30 +56,43 @@ public class UICable extends UIElement {
     public Cable getLogic() {
         return (Cable) super.getLogic();
     }
+
     /**
-     *  it creates a connection between the two pin as well as putting the target pin green.
-     * @param source (pin source)
-     * @param target (pin target)
-     * @param sourceElem (gate source)
-     * @param targetElem (gate target)
+     * It creates a connection between the two pin as well as putting the target pin
+     * green.
+     *
+     * @param source     A source pin.
+     * @param target     A target pin.
+     * @param sourceElem The controller that owns the source pin.
+     * @param targetElem The controller that owns the target pin.
+     * @throws NullPointerException Throws if any of the parameters is null.
      */
-    public void connect(Pin source, Pin target, UIElement sourceElem, UIElement targetElem) {
-        if (source == null || target == null || sourceElem == null || targetElem == null) {
-            return;
+    public void connect(Pin source, Pin target, UIGate sourceElem, UIGate targetElem) {
+        if (source == null) {
+            throw new NullPointerException("Expected source to be an instance of Pin, received null");
+        }
+        if (target == null) {
+            throw new NullPointerException("Expected target to be an instance of Pin, received null");
+        }
+        if (sourceElem == null) {
+            throw new NullPointerException("Expected sourceElem to be an instance of UIGate, received null");
+        }
+        if (targetElem == null) {
+            throw new NullPointerException("Expected targetElem to be an instance of UIGate, received null");
         }
 
-        // 1 input to 1 output
+        // fails if we connect an input to input or an output to an output
         if ((source.isInput() && target.isInput()) || (!source.isInput() && !target.isInput())) {
             return;
         }
 
-        // checking if its an output
+        // swapping depending on the pin role
         if (source.isInput()) {
             Pin temp = source;
             source = target;
             target = temp;
 
-            UIElement tempElem = sourceElem;
+            UIGate tempElem = sourceElem;
             sourceElem = targetElem;
             targetElem = tempElem;
         }
@@ -96,72 +106,75 @@ public class UICable extends UIElement {
 
         // if its connected it becomes green
         target.setColor(Color.GREEN);
+        source.setColor(Color.GREEN);
     }
 
     /**
-     * check the new position then take the center to determine the new cablelines ends and starts
+     * check the new position then take the center to determine the new cablelines
+     * ends and starts
      */
     public void updateCablePosition() {
-        if (sourcePin == null || targetPin == null) {
-            return;
+        // calculating position then update position
+        if (sourcePin != null) {
+            Point2D sourcePos = sourcePin.getCenter();
+            cableLine.setStartX(sourcePos.getX());
+            cableLine.setStartY(sourcePos.getY());
         }
-
-        // calculating position
-        Point2D sourcePos = sourcePin.getCenter();
-        Point2D targetPos = targetPin.getCenter();
-
-        // updating
-        cableLine.setStartX(sourcePos.getX());
-        cableLine.setStartY(sourcePos.getY());
-        cableLine.setEndX(targetPos.getX());
-        cableLine.setEndY(targetPos.getY());
+        if (targetPin != null) {
+            Point2D targetPos = targetPin.getCenter();
+            cableLine.setEndX(targetPos.getX());
+            cableLine.setEndY(targetPos.getY());
+        }
     }
+
     /**
      * reset the cable
      */
     public void disconnect() {
-        if (targetPin != null) {
-            // if disconnected => black again
-            targetPin.setAsInput(true);
-        }
-
         sourcePin = null;
         targetPin = null;
         sourceElement = null;
         targetElement = null;
 
-        // let the cable go
-        cableLine.setStartX(0);
-        cableLine.setStartY(0);
-        cableLine.setEndX(0);
-        cableLine.setEndY(0);
+        // hide the cable
+        cableLine.setVisible(false);
     }
-/**
- * gets the pin source
- * @return pin source
- */
+
+    /**
+     * Getter for {@link #sourcePin}.
+     *
+     * @return The starting pin.
+     */
     public Pin getSourcePin() {
         return sourcePin;
     }
-/**
- * gets the target pin
- * @return pin targer
- */
+
+    /**
+     * Getter for {@link #targetPin}.
+     *
+     * @return The target pin.
+     */
     public Pin getTargetPin() {
         return targetPin;
     }
-/**
- * gets the source element
- * @return source element
- */
-    public UIElement getSourceElement() {
+
+    /**
+     * Getter for {@link #sourceElement}, which is the controller where the
+     * {@link #sourcePin} is attached to.
+     *
+     * @return The gate controller.
+     */
+    public UIGate getSourceElement() {
         return sourceElement;
     }
-/**
- * gets the target element
- * @return target element
- */
-    public UIElement getTargetElement() {
+
+    /**
+     * Getter for {@link #targetElement}, which is the controller where the
+     * {@link #targetPin} is attached to.
+     *
+     * @return The gate controller.
+     */
+    public UIGate getTargetElement() {
         return targetElement;
     }
 
