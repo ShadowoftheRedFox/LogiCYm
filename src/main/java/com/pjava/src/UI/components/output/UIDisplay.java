@@ -1,20 +1,16 @@
 package com.pjava.src.UI.components.output;
 
-
 import com.pjava.src.UI.components.Pin;
-import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.output.Display;
 
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
-public class UIDisplay extends UIGate{
+public class UIDisplay extends UIGate {
     @FXML
     private Pin outputController;
     @FXML
@@ -46,6 +42,7 @@ public class UIDisplay extends UIGate{
     public Display getLogic() {
         return (Display) super.getLogic();
     }
+
     private void setLogic(Display display) {
         super.setLogic(display);
     }

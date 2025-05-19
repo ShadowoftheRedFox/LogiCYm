@@ -1,20 +1,16 @@
 package com.pjava.src.UI.components.input;
 
-
 import com.pjava.src.UI.components.Pin;
-import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.input.Clock;
 
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Rectangle;
 
-public class UIClock extends UIGate{
+public class UIClock extends UIGate {
     @FXML
     private Pin outputController;
     @FXML
@@ -46,6 +42,7 @@ public class UIClock extends UIGate{
     public Clock getLogic() {
         return (Clock) super.getLogic();
     }
+
     private void setLogic(Clock clock) {
         super.setLogic(clock);
     }
