@@ -1,4 +1,4 @@
-package com.pjava.src.UI.components.gates;
+package com.pjava.src.UI.components.cables;
 
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
