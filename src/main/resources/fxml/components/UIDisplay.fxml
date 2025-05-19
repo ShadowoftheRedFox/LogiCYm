@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<AnchorPane fx:id="self" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="271.0" prefWidth="326.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="self" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="271.0" prefWidth="326.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pjava.src.UI.components.output.UIDisplay">
    <children>
       <Rectangle fx:id="body1" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="200.0" layoutX="30.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="200.0" />
       <Text fx:id="text" layoutX="104.0" layoutY="127.0" strokeType="OUTSIDE" strokeWidth="0.0" text="1">

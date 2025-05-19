@@ -127,6 +127,9 @@
                                                                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickClock" text="Clock" />
                                                                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickDisplay" text="Display" />
                                                       <Button layoutX="10.0" layoutY="112.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickButton" text="Button" />
+                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickLever" text="Lever" />
+                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickPower" text="Power" />
+                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickGround" text="Ground" />
                                                                     </children>
                                                                 </VBox>
                                                             </children>

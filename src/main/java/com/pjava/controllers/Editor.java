@@ -11,7 +11,8 @@ import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
-import com.pjava.src.UI.components.input.UIButton;
+import com.pjava.src.UI.components.input.*;
+import com.pjava.src.UI.components.output.UIDisplay;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -407,6 +408,71 @@ public class Editor extends VBox {
         });
     }
 
+    @FXML
+    public void clickClock(ActionEvent event) {
+        System.out.println("Click clock!");
+        UIClock clockController = (UIClock) UIElement.create("UIClock");
+        Node clock = clockController.getNode();
+        container.getChildren().add(clock);
+
+        pinsListener(clockController);
+        clockController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(clockController.getInfos().getNode());
+        });
+    }
+
+    @FXML
+    public void clickLever(ActionEvent event) {
+        System.out.println("Click lever!");
+        UILever leverController = (UILever) UIElement.create("UILever");
+        Node lever = leverController.getNode();
+        container.getChildren().add(lever);
+
+        pinsListener(leverController);
+        leverController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(leverController.getInfos().getNode());
+        });
+    }
+
+    @FXML
+    public void clickPower(ActionEvent event) {
+        System.out.println("Click power!");
+        UIPower powerController = (UIPower) UIElement.create("UIPower");
+        Node power = powerController.getNode();
+        container.getChildren().add(power);
+
+        pinsListener(powerController);
+        powerController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(powerController.getInfos().getNode());
+        });
+    }
+
+    @FXML
+    public void clickGround(ActionEvent event) {
+        System.out.println("Click ground!");
+        UIGround groundController = (UIGround) UIElement.create("UIGround");
+        Node ground = groundController.getNode();
+        container.getChildren().add(ground);
+
+        pinsListener(groundController);
+        groundController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(groundController.getInfos().getNode());
+        });
+    }
+
+    @FXML
+    public void clickDisplay(ActionEvent event) {
+        System.out.println("Click display!");
+        UIDisplay displayController = (UIDisplay) UIElement.create("UIDisplay");
+        Node display = displayController.getNode();
+        container.getChildren().add(display);
+
+        pinsListener(displayController);
+        displayController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(displayController.getInfos().getNode());
+        });
+    }
+
     /**
      * register the pins for later connection
      *
@@ -426,17 +492,6 @@ public class Editor extends VBox {
             });
         }
     }
-
-    @FXML
-    public void clickClock(ActionEvent event) {
-        System.out.println("Click Clock!");
-    }
-
-    @FXML
-    public void clickDisplay(ActionEvent event) {
-        System.out.println("Click Display!");
-    }
-
     @FXML
     public void clickCable(ActionEvent event) {
         System.out.println("Click Cable!");
