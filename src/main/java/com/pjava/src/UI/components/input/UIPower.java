@@ -1,20 +1,16 @@
 package com.pjava.src.UI.components.input;
 
-
 import com.pjava.src.UI.components.Pin;
-import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.input.Power;
 
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Rectangle;
 
-public class UIPower extends UIGate{
+public class UIPower extends UIGate {
     @FXML
     private Pin outputController;
     @FXML
@@ -46,5 +42,20 @@ public class UIPower extends UIGate{
 
     private void setLogic(Power power) {
         super.setLogic(power);
+    }
+
+    @Override
+    public Pin getPinInput(int index) {
+        return null;
+    }
+
+    @Override
+    public Pin getPinOutput(int index) {
+        switch (index) {
+            case 0:
+                return outputController;
+            default:
+                return null;
+        }
     }
 }

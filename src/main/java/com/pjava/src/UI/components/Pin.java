@@ -57,6 +57,7 @@ public class Pin extends VBox {
     /**
      * if the user is in cabling mode (by pressing the "cable" button),
      * the two next input and output pins will be connected
+     * 
      * @param event On click
      */
     private void pressed(MouseEvent event) {
@@ -78,13 +79,16 @@ public class Pin extends VBox {
 
     /**
      * when the pins is released, it changes color
+     * 
      * @param event released events
      */
     private void released(MouseEvent event) {
         changeColor(color.saturate());
     }
+
     /**
      * when a pin is dragges, it enable the cabling mode
+     * 
      * @param event the dragged mouse event
      */
     private void dragged(MouseEvent event) {
@@ -107,6 +111,7 @@ public class Pin extends VBox {
 
     /**
      * changes the color of the pins
+     * 
      * @param color the color you want to put
      */
     private void changeColor(Color color) {
@@ -179,6 +184,7 @@ public class Pin extends VBox {
 
     /**
      * Listeners to know if a cable is connected or not
+     * 
      * @param listener
      */
     public static void setCableConnectionListener(CableConnectionListener listener) {
@@ -191,12 +197,13 @@ public class Pin extends VBox {
 
     /**
      * give the center of a 2d point
+     * 
      * @return point2D center (x,y)
      */
     public Point2D getCenter() {
 
-        double x = pinCenter.getLayoutX();
-        double y = pinCenter.getLayoutY();
+        double x = pinCenter.getLayoutX() + originController.getNode().getLayoutX();
+        double y = pinCenter.getLayoutY() + originController.getNode().getLayoutY();
 
         x += pinCenter.getWidth() / 2;
         y += pinCenter.getHeight() / 2;

@@ -1,19 +1,16 @@
 package com.pjava.src.UI.components.input;
 
 import com.pjava.src.UI.components.Pin;
-import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.input.Ground;
 
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Rectangle;
 
-public class UIGround extends UIGate{
+public class UIGround extends UIGate {
     @FXML
     private Pin outputController;
     @FXML
@@ -45,5 +42,20 @@ public class UIGround extends UIGate{
 
     private void setLogic(Ground ground) {
         super.setLogic(ground);
+    }
+
+    @Override
+    public Pin getPinInput(int index) {
+        return null;
+    }
+
+    @Override
+    public Pin getPinOutput(int index) {
+        switch (index) {
+            case 0:
+                return outputController;
+            default:
+                return null;
+        }
     }
 }

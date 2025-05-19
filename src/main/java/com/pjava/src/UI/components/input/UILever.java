@@ -1,23 +1,17 @@
 
 package com.pjava.src.UI.components.input;
 
-
 import com.pjava.src.UI.components.Pin;
-import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.input.Lever;
 
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 import javafx.scene.image.ImageView;
 
-public class UILever extends UIGate{
+public class UILever extends UIGate {
     @FXML
     private Pin outputController;
     @FXML
@@ -30,7 +24,7 @@ public class UILever extends UIGate{
     private AnchorPane self;
 
     @FXML
-    private void initialize(){
+    private void initialize() {
         System.out.println("Initialisation!");
         setLogic(new Lever());
         outputController.setAsInput(false);
@@ -49,5 +43,20 @@ public class UILever extends UIGate{
 
     private void setLogic(Lever lever) {
         super.setLogic(lever);
+    }
+
+    @Override
+    public Pin getPinInput(int index) {
+        return null;
+    }
+
+    @Override
+    public Pin getPinOutput(int index) {
+        switch (index) {
+            case 0:
+                return outputController;
+            default:
+                return null;
+        }
     }
 }
