@@ -13,6 +13,7 @@ import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
+import com.pjava.src.UI.components.input.UIButton;
 import com.pjava.src.UI.components.Pin.CableConnectionListener;
 
 import javafx.application.Platform;
@@ -390,6 +391,18 @@ public class Editor extends VBox {
         });
     }
 
+    @FXML
+    public void clickButton(ActionEvent event) {
+        System.out.println("Click Button!");
+        UIButton buttonController = (UIButton) UIElement.create("UIButton");
+        Node button = buttonController.getNode();
+        container.getChildren().add(button);
+
+        registerGatePins(buttonController);
+        buttonController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(buttonController.getInfos().getSelf());
+        });
+    }
     /**
      * register the pins in the map
      *

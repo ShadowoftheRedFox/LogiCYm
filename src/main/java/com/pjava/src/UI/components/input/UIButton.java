@@ -14,11 +14,11 @@ public class UIButton extends UIGate {
     @FXML
     private Pin outputController;
     @FXML
-    private Rectangle body1;
+    private Rectangle body2;
     @FXML
     private VBox output;
     @FXML
-    private ImageView body2;
+    private ImageView body1;
     @FXML
     private AnchorPane self;
 

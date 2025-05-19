@@ -28,4 +28,12 @@ module com.pjava {
     // opens com.pjava.src.UI.components.cables to javafx.fxml;
     // opens com.pjava.src.UI.components.input to javafx.fxml;
     // opens com.pjava.src.UI.components.output to javafx.fxml;
+
+
+        // Exportez le package vers javafx.fxml
+    exports com.pjava.src.UI.components.input to javafx.fxml;
+    exports com.pjava.src.UI.components.gates to javafx.fxml;
+    exports com.pjava.controllers to javafx.fxml;
+    opens com.pjava.src.UI.components.input to javafx.fxml;
+
 }

@@ -47,7 +47,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<fx:root prefHeight="400.0" prefWidth="640.0" type="VBox" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="400.0" prefWidth="640.0" type="VBox" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <MenuBar VBox.vgrow="NEVER">
             <menus>
@@ -126,6 +126,7 @@
                                                                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickNot" text="Not" />
                                                                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickClock" text="Clock" />
                                                                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickDisplay" text="Display" />
+                                                      <Button layoutX="10.0" layoutY="112.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickButton" text="Button" />
                                                                     </children>
                                                                 </VBox>
                                                             </children>
