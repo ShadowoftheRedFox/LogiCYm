@@ -10,7 +10,8 @@ import javafx.geometry.Point2D;
 
 public abstract class UIGate extends UIElement {
     /**
-     * width of the gate*/
+     * width of the gate
+     */
     private int width = 0;
     /** height of the gate */
     private int height = 0;
@@ -27,6 +28,7 @@ public abstract class UIGate extends UIElement {
     public int getWidth() {
         return width;
     }
+
     /**
      * @return return the height of the gate
      */
@@ -38,35 +40,44 @@ public abstract class UIGate extends UIElement {
     // #region Setters
     /**
      * to modifie the width
+     *
      * @param width (width of the gate you want to put)
      */
     protected void setWidth(int width) {
         this.width = width;
     }
+
     /**
      * to modifie the height
+     *
      * @param height (height of the gate you want to put)
      */
     protected void setHeight(int height) {
         this.height = height;
     }
+
     // #endregion
     /**
      * returns the list of pins input of the gate
-     * @return  (list of input pins)
+     *
+     * @return (list of input pins)
      */
     public List<Pin> getInputPins() {
         return inputPins;
     }
+
     /**
      * returns the list of pins output
+     *
      * @return ( list of output pins)
      */
     public List<Pin> getOutputPins() {
         return outputPins;
     }
+
     /**
-     *  its in the name
+     * its in the name
+     *
      * @param cable (a UICable)
      */
     public void addConnectedCable(UICable cable) {
@@ -77,6 +88,7 @@ public abstract class UIGate extends UIElement {
 
     /**
      * in the name
+     *
      * @param cable an UICable
      */
     public void removeConnectedCable(UICable cable) {
@@ -85,6 +97,7 @@ public abstract class UIGate extends UIElement {
 
     /**
      * to get the UICable connected
+     *
      * @return a UICable
      */
     public List<UICable> getConnectedCables() {
@@ -92,13 +105,14 @@ public abstract class UIGate extends UIElement {
     }
 
     /**
-     *  used to get all the cable connecte to the gate sended
+     * used to get all the cable connecte to the gate sended
+     *
      * @return List of Cable connected to a Gate
      */
     public List<Cable> getConnectedLogicCables() {
         List<Cable> cablesLogic = new ArrayList<>();
         for (UICable cable : connectedCables) {
-            cablesLogic.add(cable.getLogic());
+            cablesLogic.add((Cable) cable.getLogic());
         }
         return cablesLogic;
     }
@@ -112,18 +126,21 @@ public abstract class UIGate extends UIElement {
     public Element getLogic() {
         return (Element) super.getLogic();
     }
+
     /**
      * to get a single pinInput
-     * @param index  which one do you want (0 to N)
-     * @return  the pin selected
+     *
+     * @param index which one do you want (0 to N)
+     * @return the pin selected
      */
     public abstract Pin getPinInput(int index);
+
     /**
      * to get a single pinOutput
+     *
      * @param index which one do you want (from 0 to N)
      * @return the Output pin selected
      */
     public abstract Pin getPinOutput(int index);
-
 
 }

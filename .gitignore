@@ -30,4 +30,6 @@ target/
 
 # JFX scene builder folder
 SceneBuilder/
-*.json
+
+# app save files
+save/*.json

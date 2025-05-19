@@ -15,6 +15,7 @@ import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
 import com.pjava.src.UI.components.Pin.CableConnectionListener;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -38,7 +39,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Line;
-
 
 public class Editor extends VBox {
     @FXML
@@ -138,6 +138,7 @@ public class Editor extends VBox {
 
     /**
      * it setup the view section
+     * 
      * @param manager
      */
     public Editor(SceneManager manager) {
@@ -154,7 +155,7 @@ public class Editor extends VBox {
     }
 
     @FXML
-    public void initialize() {
+    private void initialize() {
         manager.getScene().widthProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth,
@@ -173,11 +174,18 @@ public class Editor extends VBox {
 
         resizeGrid();
 
+        // #region Listeners
+        container.setOnMousePressed(event -> pressSelection(event));
         container.setOnMouseReleased(event -> endSelection(event));
         container.setOnMouseDragged(event -> dragSelection(event));
 
         unselectAllButton.setOnAction(event -> {
             clearSelection();
+        });
+
+        quitButton.setOnAction(event -> {
+            // TODO popup to ask to save?
+            Platform.exit();
         });
         // #endregion
 
@@ -194,50 +202,50 @@ public class Editor extends VBox {
                         "1;0;1\n" +
                         "0;1;0\n");
         // #endregion
-               // Définir l'écouteur de connexions de câbles
-               Pin.setCableConnectionListener(new CableConnectionListener() {
-                @Override
-                public void onCableConnection(Pin source, Pin target) {
-                    createCableBetweenPins(source, target);
-                }
-            });
+        // Définir l'écouteur de connexions de câbles
+        Pin.setCableConnectionListener(new CableConnectionListener() {
+            @Override
+            public void onCableConnection(Pin source, Pin target) {
+                createCableBetweenPins(source, target);
+            }
+        });
+    }
+
+    /**
+     * Crée un câble entre deux pins
+     */
+    private void createCableBetweenPins(Pin source, Pin target) {
+        // Vérifier si les pins sont associés à des gates
+        UIGate sourceGate = (UIGate) source.originController;
+        UIGate targetGate = (UIGate) target.originController;
+
+        if (sourceGate == null || targetGate == null) {
+            System.out.println("Pin non associé à une gate");
+            return;
         }
 
-        /**
-         * Crée un câble entre deux pins
-         */
-        private void createCableBetweenPins(Pin source, Pin target) {
-            // Vérifier si les pins sont associés à des gates
-            UIGate sourceGate = (UIGate)source.originController;
-            UIGate targetGate = (UIGate)target.originController;
+        // Créer le câble en tant que Node
+        UICable cableController = UICable.create();
+        Node cableNode = cableController.getNode();
 
-            if (sourceGate == null || targetGate == null) {
-                System.out.println("Pin non associé à une gate");
-                return;
-            }
+        // Ajouter le câble au conteneur
+        container.getChildren().add(cableNode);
 
-            // Créer le câble en tant que Node
-            UICable cableController = UICable.create();
-            Node cableNode = cableController.getNode();
+        // Connecter le câble
+        cableController.connect(source, target, sourceGate, targetGate);
 
-            // Ajouter le câble au conteneur
-            container.getChildren().add(cableNode);
+        // Ajouter le câble aux gates connectées
+        sourceGate.addConnectedCable(cableController);
+        targetGate.addConnectedCable(cableController);
+        Line cable = new Line();
+        cable.setLayoutX(source.getCenter().getX());
+        cable.setLayoutY(source.getCenter().getY());
+        cable.setEndX(target.getCenter().getX());
+        cable.setEndY(target.getCenter().getY());
 
-            // Connecter le câble
-            cableController.connect(source, target, sourceGate, targetGate);
-
-            // Ajouter le câble aux gates connectées
-            sourceGate.addConnectedCable(cableController);
-            targetGate.addConnectedCable(cableController);
-            Line cable= new Line();
-            cable.setLayoutX(source.getCenter().getX());
-            cable.setLayoutY(source.getCenter().getY());
-            cable.setEndX(target.getCenter().getX());
-            cable.setEndY(target.getCenter().getY());
-
-            cable.strokeWidthProperty().set(5);
-            cable.setFill(Color.RED);
-            container.getChildren().add(cable);
+        cable.strokeWidthProperty().set(5);
+        cable.setFill(Color.RED);
+        container.getChildren().add(cable);
     }
 
     // #region Functions
@@ -272,23 +280,38 @@ public class Editor extends VBox {
         }
     }
 
-    private void dragSelection(MouseEvent event) {
-        if (selectionRectangle == null) {
-            selectionRectangle = new Rectangle();
-            selectionStart = new Point2D(event.getX(), event.getY());
-
-            selectionRectangle.setLayoutX(event.getX());
-            selectionRectangle.setLayoutY(event.getY());
-
-            selectionRectangle.setFill(Color.BLUE);
-            selectionRectangle.setStroke(Color.BLUEVIOLET);
-            selectionRectangle.strokeWidthProperty().set(3);
-            selectionRectangle.setOpacity(0.3);
-
-            container.getChildren().add(selectionRectangle);
-            selectionRectangle.toFront();
+    private void pressSelection(MouseEvent event) {
+        // press is not on a blank space
+        if (!gridPane.equals(event.getTarget())) {
+            return;
         }
 
+        if (selectionRectangle != null) {
+            endSelection(event);
+        }
+
+        clearSelection();
+
+        selectionRectangle = new Rectangle();
+        selectionStart = new Point2D(event.getX(), event.getY());
+
+        selectionRectangle.setLayoutX(event.getX());
+        selectionRectangle.setLayoutY(event.getY());
+
+        selectionRectangle.setFill(Color.BLUE);
+        selectionRectangle.setStroke(Color.BLUEVIOLET);
+        selectionRectangle.strokeWidthProperty().set(3);
+        selectionRectangle.setOpacity(0.3);
+
+        container.getChildren().add(selectionRectangle);
+        selectionRectangle.toFront();
+    }
+
+    private void dragSelection(MouseEvent event) {
+        // drag detected but not a selection
+        if (selectionRectangle == null) {
+            return;
+        }
         double width = event.getX() - selectionStart.getX();
         double height = event.getY() - selectionStart.getY();
 
@@ -363,6 +386,7 @@ public class Editor extends VBox {
 
     /**
      * register the pins in the map
+     * 
      * @param gate the gate related to the pins
      */
     private void registerGatePins(UIGate gate) {
@@ -373,8 +397,6 @@ public class Editor extends VBox {
             pinToGateMap.put(pin, gate);
         }
     }
-
-
 
     @FXML
     public void clickClock(ActionEvent event) {

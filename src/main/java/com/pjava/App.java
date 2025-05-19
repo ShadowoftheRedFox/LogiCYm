@@ -49,7 +49,7 @@ public class App extends Application {
 
         Image haerin = new Image("/img/haerin.jpg"); // silly
         scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
-        stage.setTitle("Hello JavaFX and Maven");
+        stage.setTitle("LogiCYm");
         stage.setScene(scene);
         stage.getIcons().add(haerin);
         stage.show();

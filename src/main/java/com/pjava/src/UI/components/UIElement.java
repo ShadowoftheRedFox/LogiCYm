@@ -51,6 +51,7 @@ public abstract class UIElement {
 
     /**
      * create a Gate with all the infos, gate will be stocked in the pc
+     *
      * @param fxml name of the element
      * @return the Gate
      */
@@ -80,6 +81,7 @@ public abstract class UIElement {
 
     /**
      * detect when a element is pressed
+     *
      * @param event mouseEvent
      */
     protected void pressed(MouseEvent event) {
@@ -88,6 +90,7 @@ public abstract class UIElement {
 
     /**
      * detect when the element is released , when u stop pressing the element
+     *
      * @param event mouseEvent
      */
     protected void released(MouseEvent event) {
@@ -96,6 +99,7 @@ public abstract class UIElement {
 
     /**
      * detect when you drag the element AND mouves the gate on the mouse's position
+     *
      * @param event mouseEvent
      */
     protected void dragged(MouseEvent event) {
@@ -120,6 +124,7 @@ public abstract class UIElement {
     // #region Getters
     /**
      * give the name of the Gate
+     *
      * @return name of the gate (string)
      */
     public String getName() {
@@ -128,42 +133,52 @@ public abstract class UIElement {
 
     /**
      * give the logic of the Gate
+     *
      * @return logic of the gate (Element)
      */
     public Element getLogic() {
         return logic;
     }
 
-        /**
+    /**
      * give the position of the Gate
+     *
      * @return position of the gate (point2D)
      */
     public Point2D getPosition() {
         return position;
     }
+
     /**
      * give the rotation of the Gate
+     *
      * @return angle of the gate (Rotation)
      */
     public Rotation getRotation() {
         return rotation;
     }
+
     /**
      * give the color of the Gate
+     *
      * @return color of the gate
      */
     public Color getColor() {
         return color;
     }
+
     /**
      * give the Gate(FXML) of the Gate
+     *
      * @return Gate of the gate (Node)
      */
     public Node getNode() {
         return self;
     }
+
     /**
      * give the Controller of the Gate
+     *
      * @return Controller of the gate (info)
      */
     public InfosController getInfos() {
@@ -174,13 +189,16 @@ public abstract class UIElement {
     // #region Setters
     /**
      * to modify the name of an element
+     *
      * @param name enter the name
      */
     public void setName(String name) {
         this.name = name;
     }
+
     /**
      * it changes the logic of an element
+     *
      * @param logic the new logic of the gate (component)
      * @throws NullPointerException if you dont send no logic
      */
@@ -193,20 +211,25 @@ public abstract class UIElement {
 
     /**
      * changes the position of an element
+     *
      * @param position the new position of the element
      */
     public void setPosition(Point2D position) {
         this.position = position;
     }
+
     /**
      * changes the rotation of the element
+     *
      * @param rotation the new angle of the element
      */
     public void setRotation(Rotation rotation) {
         this.rotation = rotation;
     }
+
     /**
      * changes the color of the element
+     *
      * @param color the new color of the element
      */
     public void setColor(Color color) {

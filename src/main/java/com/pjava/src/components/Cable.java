@@ -114,7 +114,6 @@ public class Cable extends Element {
                 outputGate.updatePower();
             }
         }
-
     }
 
     // #region Getters
