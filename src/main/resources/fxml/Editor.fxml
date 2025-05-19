@@ -48,133 +48,134 @@
 <?import javafx.scene.text.Text?>
 
 <fx:root prefHeight="400.0" prefWidth="640.0" type="VBox" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
-  <children>
-    <MenuBar VBox.vgrow="NEVER">
-      <menus>
-        <Menu mnemonicParsing="false" text="File">
-          <items>
-            <MenuItem fx:id="newFileButton" mnemonicParsing="false" text="New" />
-            <MenuItem fx:id="openFileButton" mnemonicParsing="false" text="Open…" />
-            <Menu fx:id="openRecentButton" mnemonicParsing="false" text="Open Recent" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem fx:id="saveButton" disable="true" mnemonicParsing="false" text="Save" />
-            <MenuItem fx:id="saveAsButton" mnemonicParsing="false" text="Save As…" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem fx:id="preferencesButton" mnemonicParsing="false" text="Preferences…" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem fx:id="quitButton" mnemonicParsing="false" text="Quit" />
-          </items>
-               <accelerator>
-                  <KeyCodeCombination alt="DOWN" code="ESCAPE" control="UP" meta="UP" shift="UP" shortcut="UP" />
-               </accelerator>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Edit">
-          <items>
-            <MenuItem fx:id="undoButton" disable="true" mnemonicParsing="false" text="Undo" />
-            <MenuItem fx:id="redoButton" disable="true" mnemonicParsing="false" text="Redo" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem fx:id="cutButton" disable="true" mnemonicParsing="false" text="Cut" />
-            <MenuItem fx:id="copyButton" disable="true" mnemonicParsing="false" text="Copy" />
-            <MenuItem fx:id="pasteButton" mnemonicParsing="false" text="Paste" />
-            <MenuItem fx:id="deleteButton" disable="true" mnemonicParsing="false" text="Delete" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem fx:id="selectAllButton" mnemonicParsing="false" text="Select All" />
-            <MenuItem fx:id="unselectAllButton" disable="true" mnemonicParsing="false" text="Unselect All" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Simulate">
-          <items>
-            <MenuItem fx:id="enableSimulationButton" mnemonicParsing="false" text="Enable simulation" />
-                  <MenuItem fx:id="disableSimulationButton" disable="true" mnemonicParsing="false" text="Disable simulation" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="loadInputsButton" mnemonicParsing="false" text="Load inputs" />
-          </items>
-        </Menu>
-            <Menu mnemonicParsing="false" text="Help">
-               <items>
-                  <Menu mnemonicParsing="false" text="Load from inputs">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text=" ">
-                           <graphic>
-                              <Text fx:id="loadFromInputHelp" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="JUSTIFY" wrappingWidth="200.0" />
-                           </graphic>
-                        </MenuItem>
-                     </items>
-                  </Menu>
-               </items>
-            </Menu>
-      </menus>
-    </MenuBar>
-      <SplitPane dividerPositions="0.1" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-        <items>
-          <AnchorPane maxWidth="300.0" minHeight="160.0" minWidth="100.0" prefHeight="160.0" prefWidth="100.0" SplitPane.resizableWithParent="false">
-               <children>
-                  <ScrollPane hbarPolicy="NEVER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <content>
-                      <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefWidth="10000.0">
-                           <children>
-                              <Accordion VBox.vgrow="ALWAYS">
-                                <panes>
-                                  <TitledPane text="Portes">
-                                    <content>
-                                      <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
-                                             <children>
-                                                <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="100.0">
-                                                   <children>
-                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickAnd" text="And" VBox.vgrow="NEVER" />
-                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickOr" text="Or" />
-                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickNot" text="Not" />
-                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickClock" text="Clock" />
-                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickDisplay" text="Display" />
-                                                   </children>
-                                                </VBox>
-                                             </children>
-                                          </AnchorPane>
-                                    </content>
-                                  </TitledPane>
-                                  <TitledPane text="Cables">
-                                    <content>
-                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                             <children>
-                                                <VBox prefHeight="200.0" prefWidth="100.0">
-                                                   <children>
-                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickCable" text="Cable" />
-                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickSplitter" text="Splitter" />
-                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickMerger" text="Merger" />
-                                                   </children>
-                                                </VBox>
-                                             </children>
-                                          </AnchorPane>
-                                    </content>
-                                  </TitledPane>
-                                  <TitledPane text="Schémas">
-                                    <content>
-                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                    </content>
-                                  </TitledPane>
-                                </panes>
-                              </Accordion>
-                              <VBox fx:id="infosContainer" VBox.vgrow="ALWAYS" />
-                           </children>
-                        </VBox>
-                     </content>
-                  </ScrollPane>
-               </children>
-            </AnchorPane>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-               <children>
-                  <ScrollPane fx:id="viewScroll" hbarPolicy="ALWAYS" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <content>
-                        <AnchorPane fx:id="container">
-                           <children>
-                              <GridPane fx:id="gridPane" alignment="CENTER" gridLinesVisible="true">
-                  </GridPane>
-                           </children>
-                        </AnchorPane>
-                     </content>
-                  </ScrollPane>
-               </children></AnchorPane>
-        </items>
-      </SplitPane>
-  </children>
+    <children>
+        <MenuBar VBox.vgrow="NEVER">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem fx:id="newFileButton" mnemonicParsing="false" text="New" />
+                        <MenuItem fx:id="openFileButton" mnemonicParsing="false" text="Open…" />
+                        <Menu fx:id="openRecentButton" mnemonicParsing="false" text="Open Recent" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="saveButton" disable="true" mnemonicParsing="false" text="Save" />
+                        <MenuItem fx:id="saveAsButton" mnemonicParsing="false" text="Save As…" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="preferencesButton" mnemonicParsing="false" text="Preferences…" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="quitButton" mnemonicParsing="false" text="Quit" />
+                    </items>
+                    <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="ESCAPE" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                    </accelerator>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem fx:id="undoButton" disable="true" mnemonicParsing="false" text="Undo" />
+                        <MenuItem fx:id="redoButton" disable="true" mnemonicParsing="false" text="Redo" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="cutButton" disable="true" mnemonicParsing="false" text="Cut" />
+                        <MenuItem fx:id="copyButton" disable="true" mnemonicParsing="false" text="Copy" />
+                        <MenuItem fx:id="pasteButton" mnemonicParsing="false" text="Paste" />
+                        <MenuItem fx:id="deleteButton" disable="true" mnemonicParsing="false" text="Delete" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="selectAllButton" mnemonicParsing="false" text="Select All" />
+                        <MenuItem fx:id="unselectAllButton" disable="true" mnemonicParsing="false" text="Unselect All" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Simulate">
+                    <items>
+                        <MenuItem fx:id="enableSimulationButton" mnemonicParsing="false" text="Enable simulation" />
+                        <MenuItem fx:id="disableSimulationButton" disable="true" mnemonicParsing="false" text="Disable simulation" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="loadInputsButton" mnemonicParsing="false" text="Load inputs" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <Menu mnemonicParsing="false" text="Load from inputs">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text=" ">
+                                    <graphic>
+                                        <Text fx:id="loadFromInputHelp" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="JUSTIFY" wrappingWidth="200.0" />
+                                    </graphic>
+                                </MenuItem>
+                            </items>
+                        </Menu>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+        <SplitPane dividerPositions="0.1" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+            <items>
+                <AnchorPane maxWidth="200.0" minHeight="160.0" minWidth="100.0" prefHeight="160.0" prefWidth="100.0">
+                    <children>
+                        <ScrollPane hbarPolicy="NEVER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <content>
+                                <VBox spacing="10.0">
+                                    <children>
+                                        <Accordion VBox.vgrow="ALWAYS">
+                                            <panes>
+                                                <TitledPane text="Portes">
+                                                    <content>
+                                                        <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                                            <children>
+                                                                <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="100.0">
+                                                                    <children>
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickAnd" text="And" VBox.vgrow="NEVER" />
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickOr" text="Or" />
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickNot" text="Not" />
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickClock" text="Clock" />
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickDisplay" text="Display" />
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </AnchorPane>
+                                                    </content>
+                                                </TitledPane>
+                                                <TitledPane text="Cables">
+                                                    <content>
+                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                            <children>
+                                                                <VBox prefHeight="200.0" prefWidth="100.0">
+                                                                    <children>
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickCable" text="Cable" />
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickSplitter" text="Splitter" />
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickMerger" text="Merger" />
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </AnchorPane>
+                                                    </content>
+                                                </TitledPane>
+                                                <TitledPane text="Schémas">
+                                                    <content>
+                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                    </content>
+                                                </TitledPane>
+                                            </panes>
+                                        </Accordion>
+                                        <VBox fx:id="infosContainer" VBox.vgrow="ALWAYS" />
+                                    </children>
+                                </VBox>
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                    <children>
+                        <ScrollPane fx:id="viewScroll" hbarPolicy="ALWAYS" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <content>
+                                <AnchorPane fx:id="container">
+                                    <children>
+                                        <GridPane fx:id="gridPane" alignment="CENTER" gridLinesVisible="true">
+                                        </GridPane>
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </AnchorPane>
+            </items>
+        </SplitPane>
+    </children>
 </fx:root>
