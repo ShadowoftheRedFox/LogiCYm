@@ -12,7 +12,7 @@ import javafx.scene.text.Text;
 
 public class UIDisplay extends UIGate {
     @FXML
-    private Pin intputController;
+    private Pin inputController;
     @FXML
     private Rectangle body1;
     @FXML
@@ -29,7 +29,6 @@ public class UIDisplay extends UIGate {
             setLogic(new Display());
         } catch (Exception e) {
         }
-        intputController.setAsInput(false);
         body1.setOnMousePressed(event -> pressed(event));
         body1.setOnMouseReleased(event -> released(event));
         body1.setOnMouseDragged(event -> dragged(event));
@@ -37,9 +36,9 @@ public class UIDisplay extends UIGate {
         text.setOnMouseReleased(event -> released(event));
         text.setOnMouseDragged(event -> dragged(event));
 
-        intputController.originController = this;
+        inputController.originController = this;
 
-        inputPins.add(intputController);
+        inputPins.add(inputController);
     }
 
     @Override
