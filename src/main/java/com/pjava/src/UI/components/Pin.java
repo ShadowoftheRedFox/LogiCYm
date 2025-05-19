@@ -185,15 +185,12 @@ public class Pin extends VBox {
      * @return point2D center (x,y)
      */
     public Point2D getCenter() {
-        double x = originController.getNode().getLayoutX();
-        double y = pinCenter.getLayoutY() + originController.getNode().getLayoutY();
-
-        // if pin is an output, it's on the otehr side of the origin
-        if (!isInput) {
-            x += ((AnchorPane) originController.getNode()).getWidth();
-        }
+        double x = container.getLayoutX() + originController.getNode().getLayoutX();
+        double y = container.getLayoutY() + originController.getNode().getLayoutY()
+                + (container.getHeight() + pinArc1.getRadiusY()) * container.getScaleY() + 10;
 
         x += pinCenter.getWidth() / 2;
+        y += pinCenter.getHeight() / 2;
 
         return new Point2D(x, y);
     }

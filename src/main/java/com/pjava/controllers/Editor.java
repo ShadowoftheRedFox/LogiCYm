@@ -220,10 +220,10 @@ public class Editor extends VBox {
 
         // Créer le câble en tant que Node
         UICable cableController = UICable.create();
-        Node cableNode = cableController.getNode();
+        // Node cableNode = cableController.getNode();
 
         // Ajouter le câble au conteneur
-        container.getChildren().add(cableNode);
+        // container.getChildren().add(cableNode);
 
         // Connecter le câble
         cableController.connect(source, target, sourceGate, targetGate);
@@ -233,19 +233,26 @@ public class Editor extends VBox {
         // TODO english comments
         sourceGate.addConnectedCable(cableController);
         targetGate.addConnectedCable(cableController);
-        Line cable = cableController.getLine();
-        cable.setLayoutX(source.getCenter().getX());
-        cable.setLayoutY(source.getCenter().getY());
+
+        Line cable = new Line();
+
+        cable.setLayoutX(0);
+        cable.setLayoutY(0);
+
+        cable.setStartX(source.getCenter().getX());
+        cable.setStartY(source.getCenter().getY());
         cable.setEndX(target.getCenter().getX());
         cable.setEndY(target.getCenter().getY());
 
         cable.strokeWidthProperty().set(5);
         cable.setStroke(Color.RED);
+        cable.setFill(Color.RED);
+
         container.getChildren().add(cable);
         cableLines.add(cableController);
 
         System.out.println("cabling from "
-                + cable.getLayoutX() + ":" + cable.getLayoutY() + " to "
+                + cable.getStartX() + ":" + cable.getStartY() + " to "
                 + cable.getEndX() + ":" + cable.getEndY());
 
         lastInputPinPressed = null;
@@ -416,13 +423,13 @@ public class Editor extends VBox {
         for (Pin pin : gate.getInputPins()) {
             pin.setOnPressed(event -> {
                 lastInputPinPressed = pin;
-                createCableBetweenPins(lastInputPinPressed, lastOutputPinPressed);
+                createCableBetweenPins(lastOutputPinPressed, lastInputPinPressed);
             });
         }
         for (Pin pin : gate.getOutputPins()) {
             pin.setOnPressed(event -> {
                 lastOutputPinPressed = pin;
-                createCableBetweenPins(lastInputPinPressed, lastOutputPinPressed);
+                createCableBetweenPins(lastOutputPinPressed, lastInputPinPressed);
             });
         }
     }

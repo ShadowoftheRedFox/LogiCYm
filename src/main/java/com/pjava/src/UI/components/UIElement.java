@@ -170,9 +170,9 @@ public abstract class UIElement {
     /**
      * give the Gate(FXML) of the Gate
      *
-     * @return Gate of the gate (Node)
+     * @return The main node body of the gate
      */
-    public Node getNode() {
+    public AnchorPane getNode() {
         return self;
     }
 

@@ -47,6 +47,7 @@ public class UICable extends UIElement {
     private void initialize() {
         try {
             setLogic(new Cable(1)); // busSize can be changed
+            cableLine.setVisible(false);
         } catch (BusSizeException e) {
             e.printStackTrace();
         }
