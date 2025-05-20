@@ -1,5 +1,7 @@
 package com.pjava.src.components.input;
 
+import org.json.JSONObject;
+
 import com.pjava.src.components.Gate;
 
 /**
@@ -9,6 +11,9 @@ import com.pjava.src.components.Gate;
  * Input cannot change power state and is always true.
  */
 public abstract class Input extends Gate {
+
+    private int schemaInputPort = -1;
+
     /**
      * Create a new Input with the given amount of outputs.
      *
@@ -84,4 +89,22 @@ public abstract class Input extends Gate {
     @Override
     protected final void setPowered(boolean powered) {
     }
+
+    @Override
+    public JSONObject toJson(){
+        JSONObject json = super.toJson();
+
+        json.put("schemaInputPort", schemaInputPort);
+
+        return json;
+    }
+
+    public void setSchemaInputPort(int port){
+        schemaInputPort = port;
+    }
+
+    public int getSchemaInputPort(){
+        return schemaInputPort;
+    }
+
 }

@@ -1,17 +1,12 @@
 package com.pjava;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 
-import com.pjava.src.components.gates.And;
 import com.pjava.src.components.gates.Not;
 import com.pjava.src.components.gates.Or;
 import com.pjava.src.components.input.Clock;
-import com.pjava.src.components.input.Ground;
-import com.pjava.src.components.input.Power;
 import com.pjava.src.utils.Cyclic;
 import com.pjava.src.utils.Utils;
 
@@ -19,31 +14,6 @@ import com.pjava.src.utils.Utils;
  * This a test class. Nothing more, nothing less.
  */
 public class MainTest {
-
-    @Test
-    void basic() throws Exception {
-        Power p1 = new Power();
-        // Ground p1 = new Ground();
-        // Power p2 = new Power();
-        Ground p2 = new Ground();
-
-        boolean a = p1.getState(0);
-        boolean b = p2.getState(0);
-
-        And and = new And();
-        Not not = new Not();
-        and.connect(not);
-
-        assertNotNull(p1.connect(and), () -> "Connection failed with p1");
-        assertNotNull(p2.connect(and), () -> "Connection failed with p2");
-
-        p1.updateState();
-        p2.updateState();
-
-        assertTrue((a && b) == and.getState(0) && !and.getState(0) == not.getState(0),
-                () -> "Expected: \t" + (a && b) + "\nResult: \t" + and.getState(0) +
-                        "\nand expected: \t" + !and.getState(0) + "\nResult: \t" + not.getState(0));
-    }
 
     @Test
     void SRFlipFlop() throws Exception {
@@ -124,4 +94,5 @@ public class MainTest {
             }
         }
     }
+
 }

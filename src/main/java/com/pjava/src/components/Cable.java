@@ -22,7 +22,7 @@ public class Cable extends Element {
      * @see Utils#isPower2(int)
      * @see Utils#pow2(int)
      */
-    private int busSize = 1;
+    private Integer busSize = 1;
 
     /**
      * The input gate.
@@ -33,6 +33,10 @@ public class Cable extends Element {
      * The output gate.
      */
     protected Gate outputGate = null;
+
+    protected int inputPort = -1;
+
+    protected int outputPort = -1;
 
     /**
      * Create a new cable with the specified bus size.
@@ -48,6 +52,7 @@ public class Cable extends Element {
      * This function is called when inputs state change.
      * Equivalent of {@code updateState(true)} ({@link #updateState(boolean)}).
      */
+    @Override
     public void updateState() {
         updateState(true);
     }
@@ -57,6 +62,7 @@ public class Cable extends Element {
      *
      * @param propagate Whether or not to propagate the changes to the outputs.
      */
+    @Override
     public void updateState(boolean propagate) {
         // early returns
         if (outputGate == null || getPowered() == false) {
@@ -103,6 +109,7 @@ public class Cable extends Element {
      * Should be called when input/output changes.
      * Update the power of himself and its output accordingly.
      */
+    @Override
     public void updatePower() {
         // send update to output when powered changed
         if ((inputGate == null && getPowered()) ||
@@ -143,6 +150,14 @@ public class Cable extends Element {
     public Gate getOutputGate() {
         return outputGate;
     }
+
+    public int getInputPort() {
+        return inputPort;
+    }
+
+    public int getOutputPort() {
+        return inputPort;
+    }
     // #endregion
 
     // #region Setters
@@ -168,6 +183,32 @@ public class Cable extends Element {
         }
 
         this.busSize = busSize;
+    }
+
+    public void setInputGate(Gate gate) throws Exception{
+        if(gate == null) throw new Exception("null input gate");
+        this.inputGate = gate;
+    }
+
+    public void setOutputGate(Gate gate) throws Exception{
+        if(gate == null) throw new Exception("null output gate");
+        this.outputGate = gate;
+    }
+
+    public void setInputPort(int portIndex) throws IndexOutOfBoundsException{
+        if(portIndex < 0){
+            throw  new IndexOutOfBoundsException("negative index");
+        }
+
+        this.inputPort = portIndex;
+    }
+
+    public void setOutputPort(int portIndex) throws IndexOutOfBoundsException {
+        if (portIndex < 0) {
+            throw new IndexOutOfBoundsException("Negative index.");
+        }
+
+        this.outputPort = portIndex;
     }
     // #endregion
 }
