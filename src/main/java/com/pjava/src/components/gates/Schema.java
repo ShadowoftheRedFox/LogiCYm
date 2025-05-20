@@ -81,7 +81,52 @@ public class Schema extends Gate {
 
     //#endregion
 
+    // #region Getters
 
+        // /**
+        //  * Getter for {@link #selectedGates}
+        //  */
+        // public ArrayList<Gate> getGates() {
+        //     return selectedGates;
+        // }
+
+        // public String getName() {
+        //     return name;
+        // }
+
+        @Override
+        public BitSet getState() {
+            return state;
+        }
+
+        public Circuit get_innerCircuit(){
+            return innerCircuit;
+        }
+
+    // #endregion
+
+    // #region Setters
+
+    public void setName(String name) throws IllegalArgumentException {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name can be empty");
+        }
+        this.name = name;
+    }
+
+    // public void setGates(ArrayList<Gate> array) {
+    //     if (array == null) {
+    //         throw new NullPointerException("Array can't be null");
+    //     }
+    //     for (Gate gate : array) {
+    //         if (gate == null) {
+    //             throw new NullPointerException("Gate can't be null");
+    //         }
+    //     }
+    //     selectedGates = array;
+    // }
+
+    // #endregion
 
     // TODO : toJson()
 
@@ -505,44 +550,6 @@ public class Schema extends Gate {
 
     // //#endregion
 
-    // // #region Getters
-    // /**
-    //  * Getter for {@link #selectedGates}
-    //  */
-    // public ArrayList<Gate> getGates() {
-    //     return selectedGates;
-    // }
-
-    // public String getName() {
-    //     return name;
-    // }
-
-    @Override
-    public BitSet getState() {
-        return state;
-    }
-    // // #endregion
-
-    // #region Setters
-    public void setName(String name) throws IllegalArgumentException {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Name can be empty");
-        }
-        this.name = name;
-    }
-
-    // public void setGates(ArrayList<Gate> array) {
-    //     if (array == null) {
-    //         throw new NullPointerException("Array can't be null");
-    //     }
-    //     for (Gate gate : array) {
-    //         if (gate == null) {
-    //             throw new NullPointerException("Gate can't be null");
-    //         }
-    //     }
-    //     selectedGates = array;
-    // }
-    // #endregion
 }
 
 

@@ -26,7 +26,7 @@ import com.pjava.src.components.output.Output;
 
 
 
-// TODO : map des schéma
+
 // TODO : getAllClockEverCreatedInThisCircuit()
 // TODO : custom argument quand on crée un nouveau gate
 
@@ -72,12 +72,16 @@ public class Circuit{
         */
         private HashMap<String,Output> outputGates = new HashMap<>();
 
+        /**
+        * List of all the output gates of a circuit
+        */
+        private HashMap<String,Schema> schemaGates = new HashMap<>();
+
 
 
 
 
     //#endregion
-
 
 
     public Circuit(){
@@ -89,16 +93,6 @@ public class Circuit{
         nbCircuit++;
     }
 
-    //#region Setter
-
-    public void set_name(String name) {
-        if (name == null || name.isBlank()) {
-            name = "Nom_Genere_Automatiquement_ahah";
-        }
-        this.name = name;
-    }
-
-    //#endregion
 
     //#region Getter
 
@@ -126,19 +120,39 @@ public class Circuit{
             return this.outputGates;
         }
 
+        public HashMap<String,Schema> get_schemaGates(){
+            return this.schemaGates;
+        }
+
         /**
          * recursively finds all clock contained in this circuit and schemas
          *
          * @return
          */
         public ArrayList<Clock> getAllClockEverCreatedInThisCircuit(){
-            ArrayList res = new ArrayList<>();
+            ArrayList<Clock> res = new ArrayList<>();
 
-            // TODO : choppe la liste des clock du circuit
-            // TODO : cheppe la liste des schéma et rentre dedans
+            // get all clocks in this circuit
+            res.addAll(this.get_clockGates().values());
+
+            // recursively get all Clocks in shemas
+            for(Schema schemaGate : this.get_schemaGates().values()){
+                res.addAll(schemaGate.get_innerCircuit().getAllClockEverCreatedInThisCircuit());
+            }
 
             return res;
         }
+
+    //#endregion
+
+    //#region Setter
+
+    public void set_name(String name) {
+        if (name == null || name.isBlank()) {
+            name = "Nom_Genere_Automatiquement_ahah";
+        }
+        this.name = name;
+    }
 
     //#endregion
 
@@ -264,6 +278,9 @@ public class Circuit{
                 else if (gate instanceof Button) {
                     this.get_buttonGates().put(label, ((Button)gate));
                 }
+            }
+            else if (gate instanceof Schema) {
+                this.schemaGates.put(label, ((Schema)gate));
             }
             else if(gate instanceof Output){
                 this.outputGates.put(label, ((Output)gate));
@@ -695,6 +712,9 @@ public class Circuit{
                     else if (gate instanceof Button) {
                         this.get_buttonGates().remove(label);
                     }
+                }
+                else if (gate instanceof Schema) {
+                    this.get_schemaGates().remove(label);
                 }
                 else if (gate instanceof Output) {
                     this.get_outputGates().remove(label);
