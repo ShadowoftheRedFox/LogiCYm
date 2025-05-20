@@ -6,6 +6,7 @@
    0
   ]],
   "inputFrom": [],
+  "schemaInputPort": -1,
   "powered": true,
   "inputBus": [],
   "type": "Power",
@@ -27,6 +28,7 @@
   "outputBus": [1],
   "outputTo": [],
   "inputFrom": [],
+  "schemaInputPort": -1,
   "powered": true,
   "inputBus": [],
   "type": "Lever",
@@ -36,6 +38,7 @@
   "outputBus": [1],
   "outputTo": [],
   "inputFrom": [],
+  "schemaInputPort": -1,
   "powered": true,
   "inputBus": [],
   "type": "Ground",
