@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pjava.src.components.Cable;
-import com.pjava.src.components.Element;
+import com.pjava.src.components.Gate;
 
 import javafx.geometry.Point2D;
 
@@ -15,11 +15,59 @@ public abstract class UIGate extends UIElement {
     private int width = 0;
     /** height of the gate */
     private int height = 0;
-    /** in the very end, there will be a list of input pins and output pins */
+    /**
+     * List of pins that are the inputs of this gate
+     */
     protected List<Pin> inputPins = new ArrayList<>();
+    /**
+     * List of pins that are the outputs of this gate
+     */
     protected List<Pin> outputPins = new ArrayList<>();
-    /** as well as the pins, there will be a list for the cables */
+    /**
+     * List of cables connect to this gate
+     */
     private List<UICable> connectedCables = new ArrayList<>();
+
+    @Override
+    public void updateVisuals() {
+        for (UICable connectedCables : getConnectedCables()) {
+            connectedCables.updateVisuals();
+        }
+    }
+
+    /**
+     * add the given cable to the connected list. it does not connect the cable to
+     * this gate, only this gate has a reference of this cable.
+     *
+     * @param cable the cable to add
+     */
+    public void addConnectedCable(UICable cable) {
+        if (!connectedCables.contains(cable)) {
+            connectedCables.add(cable);
+        }
+    }
+
+    /**
+     * disconnect the cable from this gate, and the gate from the cable.
+     *
+     * @param cable the cable to disconnect from.
+     */
+    public void disconnect(UICable cable) {
+        if (cable == null) {
+            return;
+        }
+        cable.disconnect(this);
+        connectedCables.remove(cable);
+    }
+
+    /**
+     * disconnect all cables from this gate, and the gate from every cable
+     */
+    public void disconnect() {
+        for (UICable connectedCables : connectedCables) {
+            disconnect(connectedCables);
+        }
+    }
 
     // #region Getters
     /**
@@ -35,28 +83,7 @@ public abstract class UIGate extends UIElement {
     public int getHeight() {
         return height;
     }
-    // #endregion
 
-    // #region Setters
-    /**
-     * to modifie the width
-     *
-     * @param width (width of the gate you want to put)
-     */
-    protected void setWidth(int width) {
-        this.width = width;
-    }
-
-    /**
-     * to modifie the height
-     *
-     * @param height (height of the gate you want to put)
-     */
-    protected void setHeight(int height) {
-        this.height = height;
-    }
-
-    // #endregion
     /**
      * returns the list of pins input of the gate
      *
@@ -73,26 +100,6 @@ public abstract class UIGate extends UIElement {
      */
     public List<Pin> getOutputPins() {
         return outputPins;
-    }
-
-    /**
-     * its in the name
-     *
-     * @param cable (a UICable)
-     */
-    public void addConnectedCable(UICable cable) {
-        if (!connectedCables.contains(cable)) {
-            connectedCables.add(cable);
-        }
-    }
-
-    /**
-     * in the name
-     *
-     * @param cable an UICable
-     */
-    public void removeConnectedCable(UICable cable) {
-        connectedCables.remove(cable);
     }
 
     /**
@@ -118,13 +125,8 @@ public abstract class UIGate extends UIElement {
     }
 
     @Override
-    public void setPosition(Point2D position) {
-        super.setPosition(position);
-    }
-
-    @Override
-    public Element getLogic() {
-        return (Element) super.getLogic();
+    public Gate getLogic() {
+        return (Gate) super.getLogic();
     }
 
     /**
@@ -146,4 +148,30 @@ public abstract class UIGate extends UIElement {
     public Pin getPinOutput(int index) {
         return outputPins.get(index);
     }
+    // #endregion
+
+    // #region Setters
+    /**
+     * to modifie the width
+     *
+     * @param width (width of the gate you want to put)
+     */
+    protected void setWidth(int width) {
+        this.width = width;
+    }
+
+    /**
+     * to modifie the height
+     *
+     * @param height (height of the gate you want to put)
+     */
+    protected void setHeight(int height) {
+        this.height = height;
+    }
+
+    @Override
+    public void setPosition(Point2D position) {
+        super.setPosition(position);
+    }
+    // #endregion
 }

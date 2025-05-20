@@ -1,10 +1,8 @@
 package com.pjava.src.UI.components.gates;
 
 import com.pjava.src.UI.components.Pin;
-import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
-import com.pjava.src.components.gates.And;
 import com.pjava.src.components.gates.Or;
 
 import javafx.fxml.FXML;
@@ -40,7 +38,7 @@ public class UIOr extends UIGate {
     @FXML
     private void initialize() {
         System.out.println("Initialisation!");
-        setLogic(new And());
+        setLogic(new Or());
         output1Controller.setAsInput(false);
 
         body1.setOnMousePressed(event -> pressed(event));
@@ -68,12 +66,5 @@ public class UIOr extends UIGate {
      */
     public void setLogic(Or or) {
         super.setLogic(or);
-    }
-
-    @Override
-    public void updateVisuals() {
-        for (UICable connectedCables : getConnectedCables()) {
-            connectedCables.updateVisuals();
-        }
     }
 }

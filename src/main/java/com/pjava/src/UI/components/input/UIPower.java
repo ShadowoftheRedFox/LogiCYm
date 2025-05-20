@@ -52,8 +52,4 @@ public class UIPower extends UIGate {
     public Pin getPinInput(int index) {
         return null;
     }
-
-    @Override
-    public void updateVisuals() {
-    }
 }

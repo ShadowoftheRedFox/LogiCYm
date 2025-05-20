@@ -20,21 +20,21 @@ public class UICable extends UIElement {
     private AnchorPane self;
 
     /**
-     * The source pin controller.
+     * The input pin controller.
      */
-    private Pin sourcePin = null;
+    private Pin inputPin = null;
     /**
-     * The target pin controller.
+     * The output pin controller.
      */
-    private Pin targetPin = null;
+    private Pin outputPin = null;
     /**
-     * The gate controller that owns the {@link #sourcePin}.
+     * The gate controller that owns the {@link #inputPin}.
      */
-    private UIGate sourceGate = null;
+    private UIGate inputGate = null;
     /**
-     * The gate controller that owns the {@link #targetPin}.
+     * The gate controller that owns the {@link #outputPin}.
      */
-    private UIGate targetGate = null;
+    private UIGate outputGate = null;
 
     /**
      * Create a new cable instance.
@@ -65,61 +65,61 @@ public class UICable extends UIElement {
     }
 
     /**
-     * It creates a connection between the two pin as well as putting the target pin
+     * It creates a connection between the two pin as well as putting the output pin
      * green.
      *
-     * @param source     A source pin.
-     * @param target     A target pin.
-     * @param sourceGate The controller that owns the source pin.
-     * @param targetGate The controller that owns the target pin.
+     * @param input      A input pin.
+     * @param output     A output pin.
+     * @param inputGate  The controller that owns the input pin.
+     * @param outputGate The controller that owns the output pin.
      * @throws NullPointerException Throws if any of the parameters is null.
      */
-    public void connect(Pin source, Pin target, UIGate sourceGate, UIGate targetGate) {
-        if (source == null) {
-            throw new NullPointerException("Expected source to be an instance of Pin, received null");
+    public void connect(Pin input, Pin output, UIGate inputGate, UIGate outputGate) {
+        if (input == null) {
+            throw new NullPointerException("Expected input to be an instance of Pin, received null");
         }
-        if (target == null) {
-            throw new NullPointerException("Expected target to be an instance of Pin, received null");
+        if (output == null) {
+            throw new NullPointerException("Expected output to be an instance of Pin, received null");
         }
         // check pins are linked to a gate
-        if (source.originController == null || target.originController == null) {
+        if (input.originController == null || output.originController == null) {
             throw new Error("Stand alone pin");
         }
         // fails if we connect an input to input or an output to an output
-        if ((source.isInput() && target.isInput()) || (!source.isInput() && !target.isInput())) {
+        if ((input.isInput() && output.isInput()) || (!input.isInput() && !output.isInput())) {
             return;
         }
-        if (sourceGate == null) {
-            throw new NullPointerException("Expected sourceElem to be an instance of UIGate, received null");
+        if (inputGate == null) {
+            throw new NullPointerException("Expected inputElem to be an instance of UIGate, received null");
         }
-        if (targetGate == null) {
-            throw new NullPointerException("Expected targetElem to be an instance of UIGate, received null");
+        if (outputGate == null) {
+            throw new NullPointerException("Expected outputElem to be an instance of UIGate, received null");
         }
 
         // swapping depending on the pin role
-        if (source.isInput()) {
-            Pin temp = source;
-            source = target;
-            target = temp;
+        if (input.isInput()) {
+            Pin temp = input;
+            input = output;
+            output = temp;
 
-            UIGate tempElem = sourceGate;
-            sourceGate = targetGate;
-            targetGate = tempElem;
+            UIGate tempElem = inputGate;
+            inputGate = outputGate;
+            outputGate = tempElem;
         }
 
         // link front
-        this.sourcePin = source;
-        this.targetPin = target;
-        this.sourceGate = sourceGate;
-        this.targetGate = targetGate;
+        this.inputPin = input;
+        this.outputPin = output;
+        this.inputGate = inputGate;
+        this.outputGate = outputGate;
 
         // tell gate that this is the cable controller
-        sourceGate.addConnectedCable(this);
-        targetGate.addConnectedCable(this);
+        inputGate.addConnectedCable(this);
+        outputGate.addConnectedCable(this);
 
         // link to back
         try {
-            Cable cable = ((Gate) sourceGate.getLogic()).connect((Gate) targetGate.getLogic());
+            Cable cable = ((Gate) inputGate.getLogic()).connect((Gate) outputGate.getLogic());
             if (!Objects.equals(cable, getLogic())) {
                 setLogic(cable);
             }
@@ -131,22 +131,21 @@ public class UICable extends UIElement {
         updateCablePosition();
 
         // if its connected it becomes green
-        target.setColor(Color.GREEN);
-        source.setColor(Color.GREEN);
+        output.setColor(Color.GREEN);
+        input.setColor(Color.GREEN);
 
         // connect, so cable should be visible
         cableLine.setVisible(true);
 
         // call update on both gates
-        sourceGate.updateVisuals();
-        targetGate.updateVisuals();
+        inputGate.updateVisuals();
     }
 
     @Override
     public void updateVisuals() {
         // TODO update own style with multiple cable size
-        if (targetGate != null && updateCableColor()) {
-            targetGate.updateVisuals();
+        if (outputGate != null && updateCableColor()) {
+            outputGate.updateVisuals();
         }
     }
 
@@ -155,24 +154,24 @@ public class UICable extends UIElement {
      * ends and starts
      */
     private void updateCablePosition() {
-        Point2D sourcePos = new Point2D(0, 0);
-        Point2D targetPos = new Point2D(0, 0);
+        Point2D inputPos = new Point2D(0, 0);
+        Point2D outputPos = new Point2D(0, 0);
         // calculating position then update position
-        if (sourcePin != null) {
-            sourcePos = sourcePin.getCenter();
-            cableLine.setStartX(sourcePos.getX());
-            cableLine.setStartY(sourcePos.getY());
+        if (inputPin != null) {
+            inputPos = inputPin.getCenter();
+            cableLine.setStartX(inputPos.getX());
+            cableLine.setStartY(inputPos.getY());
         }
-        if (targetPin != null) {
-            targetPos = targetPin.getCenter();
-            cableLine.setEndX(targetPos.getX());
-            cableLine.setEndY(targetPos.getY());
+        if (outputPin != null) {
+            outputPos = outputPin.getCenter();
+            cableLine.setEndX(outputPos.getX());
+            cableLine.setEndY(outputPos.getY());
         }
         // stretch the width and heigth
-        // self.setMinWidth(Math.max(sourcePos.getX(), targetPos.getX()));
-        // self.setMinHeight(Math.max(sourcePos.getY(), targetPos.getY()));
-        self.setPrefWidth(Math.max(sourcePos.getX(), targetPos.getX()));
-        self.setPrefHeight(Math.max(sourcePos.getY(), targetPos.getY()));
+        // self.setMinWidth(Math.max(inputPos.getX(), outputPos.getX()));
+        // self.setMinHeight(Math.max(inputPos.getY(), outputPos.getY()));
+        self.setPrefWidth(Math.max(inputPos.getX(), outputPos.getX()));
+        self.setPrefHeight(Math.max(inputPos.getY(), outputPos.getY()));
 
         System.out.println("cabling from "
                 + cableLine.getStartX() + ":" + cableLine.getStartY() + " to "
@@ -211,51 +210,78 @@ public class UICable extends UIElement {
      * reset the cable
      */
     public void disconnect() {
-        sourcePin = null;
-        targetPin = null;
-        sourceGate = null;
-        targetGate = null;
+        inputPin = null;
+        outputPin = null;
+        inputGate = null;
+        outputGate = null;
 
         // hide the cable
         cableLine.setVisible(false);
     }
 
     /**
-     * Getter for {@link #sourcePin}.
+     * Disconnect the given gate from this cable.
+     * If you want to disconnect both side, calling disconnect on the cable is
+     * enough.
+     *
+     * @param gate The gate to disconnect.
+     */
+    public void disconnect(UIGate gate) {
+        if (gate == null) {
+            return;
+        }
+
+        if (gate.equals(inputGate)) {
+            inputGate = null;
+            inputPin = null;
+            gate.getLogic().disconnect(getLogic());
+            updateVisuals();
+        }
+
+        if (gate.equals(outputGate)) {
+            outputGate = null;
+            outputPin = null;
+            gate.getLogic().disconnect(getLogic());
+            gate.updateVisuals();
+        }
+    }
+
+    /**
+     * Getter for {@link #inputPin}.
      *
      * @return The starting pin.
      */
-    public Pin getSourcePin() {
-        return sourcePin;
+    public Pin getInputPin() {
+        return inputPin;
     }
 
     /**
-     * Getter for {@link #targetPin}.
+     * Getter for {@link #outputPin}.
      *
-     * @return The target pin.
+     * @return The output pin.
      */
-    public Pin getTargetPin() {
-        return targetPin;
+    public Pin getOutputPin() {
+        return outputPin;
     }
 
     /**
-     * Getter for {@link #sourceGate}, which is the controller where the
-     * {@link #sourcePin} is attached to.
-     *
-     * @return The gate controller.
-     */
-    public UIGate getSourceGate() {
-        return sourceGate;
-    }
-
-    /**
-     * Getter for {@link #targetGate}, which is the controller where the
-     * {@link #targetPin} is attached to.
+     * Getter for {@link #inputGate}, which is the controller where the
+     * {@link #inputPin} is attached to.
      *
      * @return The gate controller.
      */
-    public UIGate getTargetGate() {
-        return targetGate;
+    public UIGate getInputGate() {
+        return inputGate;
+    }
+
+    /**
+     * Getter for {@link #outputGate}, which is the controller where the
+     * {@link #outputPin} is attached to.
+     *
+     * @return The gate controller.
+     */
+    public UIGate getOutputGate() {
+        return outputGate;
     }
 
     public Line getLine() {

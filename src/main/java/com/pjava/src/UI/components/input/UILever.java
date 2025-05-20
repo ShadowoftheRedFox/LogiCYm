@@ -57,7 +57,7 @@ public class UILever extends UIGate {
     }
 
     @Override
-    protected void pressed(MouseEvent event) {
+    protected void released(MouseEvent event) {
         getLogic().flip();
         updateVisuals();
         super.pressed(event);

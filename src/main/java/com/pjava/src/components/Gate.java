@@ -18,12 +18,12 @@ public abstract class Gate extends Element {
     /**
      * Give the number and size of the available input ports.
      */
-    protected int[] inputBus = new int[]{};
+    protected int[] inputBus = new int[] {};
 
     /**
      * Give the number and size of the available output ports.
      */
-    protected int[] outputBus = new int[]{};
+    protected int[] outputBus = new int[] {};
 
     /**
      * The input cables. Must have the same length as {@link #inputBus}.
@@ -40,7 +40,7 @@ public abstract class Gate extends Element {
      * output of the same size.
      */
     public Gate() {
-        this(new int[]{1, 1}, new int[]{1});
+        this(new int[] { 1, 1 }, new int[] { 1 });
     }
 
     /**
@@ -169,9 +169,10 @@ public abstract class Gate extends Element {
      *
      * @param arg0 The gate input you want to connect this output.
      * @return The Cable making the connection, or null if the connection is
-     * impossible (incompatible bus size).
-     * @throws Exception Throw an exception if the connection is possible but
-     * different Cable are already connected to both.
+     *         impossible (incompatible bus size).
+     * @throws Exception            Throw an exception if the connection is possible
+     *                              but
+     *                              different Cable are already connected to both.
      * @throws NullPointerException When arg0 is null.
      */
     public Cable connect(Gate arg0) throws Exception, NullPointerException {
@@ -290,20 +291,24 @@ public abstract class Gate extends Element {
      * the case, it either get an existing Cable or create a new one. It also
      * make the necessary internal modification to both gate and cable.
      *
-     * @param arg0 The gate input you want to connect this output.
+     * @param arg0            The gate input you want to connect this output.
      * @param thisOutputIndex The index in this.outputCable ArrayList.
-     * @param arg0InputIndex The index in arg0.inputCable ArrayList.
+     * @param arg0InputIndex  The index in arg0.inputCable ArrayList.
      * @return The cable making the connection, or null if the connection is
-     * impossible (incompatible bus size).
-     * @throws Exception Throw an exception if the connection is possible but
-     * different Cable are already connected to both.
-     * @throws NullPointerException When arg0 is null.
+     *         impossible (incompatible bus size).
+     * @throws Exception                 Throw an exception if the connection is
+     *                                   possible but
+     *                                   different Cable are already connected to
+     *                                   both.
+     * @throws NullPointerException      When arg0 is null.
      * @throws IndexOutOfBoundsException When thisOutputIndex and/or
-     * arg0InputIndex are below 0, or above or equal to
-     * this.{@link #outputBus}.length and arg0.{@link #inputBus}.length
-     * respectively.
-     * @throws BusSizeException Thrown when the given idenxes correspond to
-     * different sizes of bus.
+     *                                   arg0InputIndex are below 0, or above or
+     *                                   equal to
+     *                                   this.{@link #outputBus}.length and
+     *                                   arg0.{@link #inputBus}.length
+     *                                   respectively.
+     * @throws BusSizeException          Thrown when the given idenxes correspond to
+     *                                   different sizes of bus.
      */
     public Cable connect(Gate arg0, int thisOutputIndex, int arg0InputIndex)
             throws Exception, NullPointerException, IndexOutOfBoundsException, BusSizeException {
@@ -420,6 +425,18 @@ public abstract class Gate extends Element {
     }
 
     /**
+     * Disconnect this gate from all its input and output cable.
+     */
+    public void disconnect() {
+        inputCable.forEach(cable -> {
+            disconnect(cable);
+        });
+        outputCable.forEach(cable -> {
+            disconnect(cable);
+        });
+    }
+
+    /**
      * Get the cable between this and arg0, or return null if no connection
      * exists. The check direction is from this.output to arg0.input.
      *
@@ -448,9 +465,9 @@ public abstract class Gate extends Element {
      * Get the cable between this and arg0, or return null if no connection
      * exists. The check direction if from this.output to arg0.input.
      *
-     * @param arg0 The gate we want to check if there is a cable connecting us.
+     * @param arg0    The gate we want to check if there is a cable connecting us.
      * @param busSize The specific bus size of the want the return cable to
-     * have.
+     *                have.
      * @return The Cable if it exists, null otherwise.
      */
     public Cable getCableWith(Gate arg0, int busSize) {
@@ -496,7 +513,7 @@ public abstract class Gate extends Element {
      *
      * @param size The size of the new bus.
      * @throws BusSizeException Throw when the given size is equal or below 0,
-     * not a power of 2, or greater than 32.
+     *                          not a power of 2, or greater than 32.
      */
     protected void addInputBus(int size) throws BusSizeException {
         if (BusSizeException.isBusSizeException(size)) {
@@ -546,7 +563,7 @@ public abstract class Gate extends Element {
      *
      * @param size The size of the new bus.
      * @throws BusSizeException Throw when the given size is equal or below 0,
-     * not a power of 2, or greater than 32.
+     *                          not a power of 2, or greater than 32.
      */
     protected void addOutputBus(int size) throws BusSizeException {
         if (BusSizeException.isBusSizeException(size)) {
@@ -652,11 +669,11 @@ public abstract class Gate extends Element {
      *
      * @param inputBus The new bus input sizes array.
      * @return Return if true if all existing cables have valid bus size. If
-     * false, some cable have been disconnected.
-     * @throws BusSizeException Throw when the given size is equal or below 0,
-     * not a power of 2, or greater than 32.
+     *         false, some cable have been disconnected.
+     * @throws BusSizeException     Throw when the given size is equal or below 0,
+     *                              not a power of 2, or greater than 32.
      * @throws NullPointerException Throw when inputBus is null or contains a
-     * null.
+     *                              null.
      */
     protected boolean setInputBus(int[] inputBus) throws BusSizeException, NullPointerException {
         if (inputBus == null) {
@@ -696,14 +713,16 @@ public abstract class Gate extends Element {
      * Set a specific {@link #inputBus} at the given index.
      *
      * @param busSize The size of the bus.
-     * @param index The index of the new busSize. Should be a valid index, lower
-     * than {@link #inputBus}.length.
+     * @param index   The index of the new busSize. Should be a valid index, lower
+     *                than {@link #inputBus}.length.
      * @return Return if true if all existing cables have valid bus size. If
-     * false, some cable have been disconnected.
-     * @throws BusSizeException Throw when the given size is equal or below 0,
-     * not a power of 2, or greater than 32.
+     *         false, some cable have been disconnected.
+     * @throws BusSizeException          Throw when the given size is equal or below
+     *                                   0,
+     *                                   not a power of 2, or greater than 32.
      * @throws IndexOutOfBoundsException Throw when index is lower than 0, or
-     * equal or greater than {@link #inputBus}.length.
+     *                                   equal or greater than
+     *                                   {@link #inputBus}.length.
      */
     protected boolean setInputBus(int busSize, int index)
             throws BusSizeException, IndexOutOfBoundsException {
@@ -732,11 +751,11 @@ public abstract class Gate extends Element {
      *
      * @param outputBus The new bus output sizes array.
      * @return Return if true if all existing cables have valid bus size. If
-     * false, some cable have been disconnected.
-     * @throws BusSizeException Throw when the given size is equal or below 0,
-     * not a power of 2, or greater than 32.
+     *         false, some cable have been disconnected.
+     * @throws BusSizeException     Throw when the given size is equal or below 0,
+     *                              not a power of 2, or greater than 32.
      * @throws NullPointerException Throw when inputBus is null or contains a
-     * null.
+     *                              null.
      */
     protected boolean setOutputBus(int[] outputBus) throws BusSizeException, NullPointerException {
         if (outputBus == null) {
@@ -771,14 +790,16 @@ public abstract class Gate extends Element {
      * Set a specific {@link #outputBus} at the given index.
      *
      * @param busSize The size of the bus.
-     * @param index The index of the new busSize. Should be a valid index, lower
-     * than {@link #outputBus}.length.
+     * @param index   The index of the new busSize. Should be a valid index, lower
+     *                than {@link #outputBus}.length.
      * @return Return if true if all existing cables have valid bus size. If
-     * false, some cable have been disconnected.
-     * @throws BusSizeException Throw when the given size is equal or below 0,
-     * not a power of 2, or greater than 32.
+     *         false, some cable have been disconnected.
+     * @throws BusSizeException          Throw when the given size is equal or below
+     *                                   0,
+     *                                   not a power of 2, or greater than 32.
      * @throws IndexOutOfBoundsException Throw when index is lower than 0, or
-     * equal or greater than {@link #outputBus}.length.
+     *                                   equal or greater than
+     *                                   {@link #outputBus}.length.
      */
     protected boolean setOutputBus(int busSize, int index)
             throws BusSizeException, IndexOutOfBoundsException {
@@ -831,7 +852,8 @@ public abstract class Gate extends Element {
         JSONArray outputGatesArray = new JSONArray();
         JSONArray rowOutput = new JSONArray();
         for (int indexPortOutput = 0; indexPortOutput < this.getOutputCable().size(); indexPortOutput++) {
-            if(this.getOutputCable().get(indexPortOutput) == null) continue;
+            if (this.getOutputCable().get(indexPortOutput) == null)
+                continue;
 
             rowOutput.clear();
             // id of the target Gate
@@ -847,7 +869,8 @@ public abstract class Gate extends Element {
         JSONArray inputGatesArray = new JSONArray();
         JSONArray rowInput = new JSONArray();
         for (int indexPortInput = 0; indexPortInput < this.getInputCable().size(); indexPortInput++) {
-            if(this.getInputCable().get(indexPortInput) == null) continue;
+            if (this.getInputCable().get(indexPortInput) == null)
+                continue;
 
             rowInput.clear();
             // id of the target Gate

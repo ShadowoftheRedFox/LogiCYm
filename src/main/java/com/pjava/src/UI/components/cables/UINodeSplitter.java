@@ -1,6 +1,5 @@
 package com.pjava.src.UI.components.cables;
 
-import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.cables.NodeSplitter;
@@ -107,12 +106,5 @@ public class UINodeSplitter extends UIGate {
             return outputLines.get(index);
         }
         return null;
-    }
-
-    @Override
-    public void updateVisuals() {
-        for (UICable connectedCables : getConnectedCables()) {
-            connectedCables.updateVisuals();
-        }
     }
 }

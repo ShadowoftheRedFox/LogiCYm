@@ -114,10 +114,6 @@ public class Editor extends VBox {
      * scenemanager
      */
     private SceneManager manager;
-/**
-     * Element Selected
-     */
-    private UIElement currentlySelectedElement = null;
 
     /**
      * Rectangle
@@ -128,7 +124,7 @@ public class Editor extends VBox {
     /**
      * list of nodes selected
      */
-    private ArrayList<Node> selectedNodes = new ArrayList<Node>();
+    private ArrayList<UIElement> selectedNodes = new ArrayList<UIElement>();
     private ArrayList<UICable> cableLines = new ArrayList<UICable>();
 
     /**
@@ -194,7 +190,6 @@ public class Editor extends VBox {
             deleteSelectedElement();
         });
         manager.getScene().setOnKeyPressed(event -> {
-            System.out.println("Touche pressée: " + event.getCode());
             switch (event.getCode()) {
                 case DELETE:
                     deleteSelectedElement();
@@ -247,6 +242,7 @@ public class Editor extends VBox {
         cableController.connect(source, target, sourceGate, targetGate);
         cableLines.add(cableController);
         container.getChildren().add(cableController.getNode());
+        cableController.getNode().toBack();
 
         lastInputPinPressed = null;
         lastOutputPinPressed = null;
@@ -339,11 +335,19 @@ public class Editor extends VBox {
         // TODO look for selected elements with selectedNodes
         container.getChildren().remove(selectionRectangle);
         selectionRectangle = null;
+        deleteButton.setDisable(false);
     }
+
     private void clearSelection() {
+        for (UIElement selectedElement : selectedNodes) {
+            if (selectedElement != null) {
+                selectedElement.getNode().setStyle("-fx-background-color: #ffffff00");
+            }
+        }
+
         selectedNodes.clear();
-        currentlySelectedElement = null;
         deleteButton.setDisable(true);
+        replaceInfos(null);
     }
 
     private void replaceInfos(Node content) {
@@ -354,27 +358,41 @@ public class Editor extends VBox {
             infosContainer.getChildren().add(content);
         }
     }
+
     private void selectElement(UIElement element) {
-        currentlySelectedElement = element;
-        deleteButton.setDisable(false);
+        clearSelection();
+        if (element != null) {
+            selectedNodes.add(element);
+            element.getNode().setStyle("-fx-background-color: #0000ff80");
+        }
+        deleteButton.setDisable(element == null);
     }
 
     private void deleteSelectedElement() {
-        if (currentlySelectedElement == null) {
-            System.out.println("No item selected");
+        deleteButton.setDisable(true);
+        if (selectedNodes.size() == 0) {
             return;
         }
-        String elementName = currentlySelectedElement.getName();
-        System.out.println(elementName + " delete");
 
-        container.getChildren().remove(currentlySelectedElement.getNode());
+        System.out.println("Deleting " + selectedNodes.size() + " elements");
+        for (UIElement selectedElement : selectedNodes) {
+            String elementName = selectedElement.toString();
+            System.out.println("deleting " + elementName);
 
-        replaceInfos(null);
-        currentlySelectedElement = null;
+            // remove from the scene
+            container.getChildren().remove(selectedElement.getNode());
+
+            // disconnect everything
+            if (selectedElement instanceof UIGate) {
+                ((UIGate) selectedElement).disconnect();
+            } else if (selectedElement instanceof UICable) {
+                ((UICable) selectedElement).disconnect();
+            } else {
+                System.out.println("Something unexpected have been selected: " + selectedElement);
+            }
+        }
+
         clearSelection();
-        deleteButton.setDisable(true);
-        // TODO Supp in BAck
-        // SUpp Cable connect to the gate
     }
     // #endregion
 

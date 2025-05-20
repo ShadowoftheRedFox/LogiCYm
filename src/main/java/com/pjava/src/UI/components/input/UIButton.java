@@ -1,9 +1,9 @@
 package com.pjava.src.UI.components.input;
 
 import com.pjava.src.UI.components.Pin;
-import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.input.Button;
+import com.pjava.src.utils.Utils;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
@@ -59,23 +59,14 @@ public class UIButton extends UIGate {
     }
 
     @Override
-    protected void pressed(MouseEvent event) {
+    protected void released(MouseEvent event) {
         getLogic().press();
         updateVisuals();
         super.pressed(event);
-        try {
-            wait(getLogic().getDelay());
+        Utils.timeout(() -> {
+            // BUG it does not release the button somehow
             getLogic().release();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            getLogic().release();
-        }
-    }
-
-    @Override
-    public void updateVisuals() {
-        for (UICable connectedCables : getConnectedCables()) {
-            connectedCables.updateVisuals();
-        }
+            updateVisuals();
+        }, getLogic().getDelay(), null);
     }
 }

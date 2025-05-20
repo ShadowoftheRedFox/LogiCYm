@@ -1,7 +1,6 @@
 package com.pjava.src.UI.components.gates;
 
 import com.pjava.src.UI.components.Pin;
-import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.gates.Not;
@@ -60,12 +59,5 @@ public class UINot extends UIGate {
      */
     public void setLogic(Not not) {
         super.setLogic(not);
-    }
-
-    @Override
-    public void updateVisuals() {
-        for (UICable connectedCables : getConnectedCables()) {
-            connectedCables.updateVisuals();
-        }
     }
 }

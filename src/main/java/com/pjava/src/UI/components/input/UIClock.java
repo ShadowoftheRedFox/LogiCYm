@@ -1,7 +1,6 @@
 package com.pjava.src.UI.components.input;
 
 import com.pjava.src.UI.components.Pin;
-import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.input.Clock;
 
@@ -73,12 +72,5 @@ public class UIClock extends UIGate {
         getLogic().instantCycle();
         updateVisuals();
         super.pressed(event);
-    }
-
-    @Override
-    public void updateVisuals() {
-        for (UICable connectedCables : getConnectedCables()) {
-            connectedCables.updateVisuals();
-        }
     }
 }

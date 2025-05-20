@@ -1,7 +1,6 @@
 package com.pjava.src.UI.components.gates;
 
 import com.pjava.src.UI.components.Pin;
-import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.gates.And;
@@ -77,12 +76,5 @@ public class UIAnd extends UIGate {
      */
     private void setLogic(And and) {
         super.setLogic(and);
-    }
-
-    @Override
-    public void updateVisuals() {
-        for (UICable connectedCables : getConnectedCables()) {
-            connectedCables.updateVisuals();
-        }
     }
 }
