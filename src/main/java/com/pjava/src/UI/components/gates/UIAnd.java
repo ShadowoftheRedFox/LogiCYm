@@ -1,11 +1,11 @@
-package com.pjava.src.UI.components;
+package com.pjava.src.UI.components.gates;
 
+import com.pjava.src.UI.components.Pin;
+import com.pjava.src.UI.components.UIElement;
+import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.gates.And;
 
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
@@ -33,17 +33,13 @@ public class UIAnd extends UIGate {
     @FXML
     private AnchorPane self;
 
-    public static Node create(Class<?> getClass) {
-        return UIElement.create(getClass, "UIAnd");
-    }
-
-    public static UIAnd getController(Node node) {
-        Object controller = null;
-        do {
-            controller = node.getProperties().get("controller");
-            node = node.getParent();
-        } while (controller == null && node != null);
-        return (UIAnd) controller;
+    /**
+     * creates the And Gate in Fxml
+     *
+     * @return fmxl And Gate
+     */
+    public static UIAnd create() {
+        return (UIAnd) UIElement.create("UIAnd");
     }
 
     @FXML
@@ -58,6 +54,14 @@ public class UIAnd extends UIGate {
         body2.setOnMousePressed(event -> pressed(event));
         body2.setOnMouseReleased(event -> released(event));
         body2.setOnMouseDragged(event -> dragged(event));
+
+        input1Controller.originController = this;
+        input2Controller.originController = this;
+        output1Controller.originController = this;
+
+        inputPins.add(input1Controller);
+        inputPins.add(input2Controller);
+        outputPins.add(output1Controller);
     }
 
     @Override
@@ -65,34 +69,12 @@ public class UIAnd extends UIGate {
         return (And) super.getLogic();
     }
 
+    /**
+     * set the logic to the and gate its supposed to have
+     *
+     * @param and a And gate(FXML)
+     */
     private void setLogic(And and) {
         super.setLogic(and);
-    }
-
-    private void pressed(MouseEvent event) {
-        System.out.println(getClass().getSimpleName() + " pressed");
-    }
-
-    private void released(MouseEvent event) {
-        System.out.println(getClass().getSimpleName() + " released");
-    }
-
-    private void dragged(MouseEvent event) {
-        double posX = event.getX() + self.getLayoutX();
-        double posY = event.getY() + self.getLayoutY();
-
-        // prevent out of bound
-        if (posX < 0) {
-            posX = 0;
-        }
-        if (posY < 0) {
-            posY = 0;
-        }
-
-        // move
-        self.setLayoutX(posX - (posX % UIElement.baseSize));
-        self.setLayoutY(posY - (posY % UIElement.baseSize));
-
-        setPosition(new Point2D(posX / 50, posY / 50));
     }
 }
