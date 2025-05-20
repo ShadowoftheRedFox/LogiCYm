@@ -3,6 +3,8 @@ package com.pjava.src.components;
 import java.util.BitSet;
 import java.util.Objects;
 
+import org.json.JSONObject;
+
 import com.pjava.src.utils.Utils;
 
 /**
@@ -16,6 +18,13 @@ import com.pjava.src.utils.Utils;
  * @see Gate
  */
 public abstract class Element {
+
+    /**
+     * Create a new element.
+     */
+    public Element() {
+    }
+
     /**
      * A unique id to differentiate components between each others.
      */
@@ -61,6 +70,9 @@ public abstract class Element {
      */
     abstract void updatePower();
 
+    /**
+     * Internal state of the element.
+     */
     protected BitSet state = new BitSet(1);
 
     /**
@@ -108,20 +120,6 @@ public abstract class Element {
      */
     abstract void updateState(boolean propagate);
 
-    /**
-     * Return the number of inputs.
-     *
-     * @return The number of inputs.
-     */
-    abstract Integer getInputNumber();
-
-    /**
-     * Return the number of outputs.
-     *
-     * @return The number of output.
-     */
-    abstract Integer getOutputNumber();
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -141,5 +139,20 @@ public abstract class Element {
     @Override
     public String toString() {
         return getClass().getSimpleName() + " " + uuid();
+    }
+
+    /**
+     * Convert the main informations of an element to JSON
+     *
+     * @return JSONObject
+     */
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+
+        json.put("uuid", uuid());
+        json.put("powered", getPowered());
+        json.put("type", getClass().getSimpleName());
+
+        return json;
     }
 }

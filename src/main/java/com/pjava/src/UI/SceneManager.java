@@ -13,8 +13,9 @@ public class SceneManager {
      * Where all the scene roots are saved.
      */
     private HashMap<String, Pane> screenMap = new HashMap<>();
+
     /**
-     * A refeence to the scene.
+     * A reference to the scene.
      */
     private Scene main;
 
@@ -54,5 +55,14 @@ public class SceneManager {
      */
     public void activate(String name) {
         main.setRoot(screenMap.get(name));
+    }
+
+    /**
+     * Getter for {@link #main}.
+     *
+     * @return The scene referenced into the scene manager.
+     */
+    public Scene getScene() {
+        return main;
     }
 }

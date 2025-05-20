@@ -2,6 +2,8 @@ package com.pjava.src.components.output;
 
 import java.util.BitSet;
 
+import org.json.JSONObject;
+
 import com.pjava.src.components.Gate;
 
 /**
@@ -10,6 +12,9 @@ import com.pjava.src.components.Gate;
  * always do nothing.
  */
 public abstract class Output extends Gate {
+
+    private int schemaOutputPort = -1;
+
     /**
      * Create a new Output with the given amount of outputs.
      *
@@ -30,7 +35,7 @@ public abstract class Output extends Gate {
      * @return Always false.
      */
     @Override
-    protected final boolean setOutputBus(int[] busSizes) throws Error {
+    protected final boolean setOutputBus(int[] busSizes) {
         return false;
     }
 
@@ -45,7 +50,7 @@ public abstract class Output extends Gate {
      * @return Always false.
      */
     @Override
-    protected final boolean setOutputBus(int busSize, int index) throws Error {
+    protected final boolean setOutputBus(int busSize, int index) {
         return false;
     }
 
@@ -58,7 +63,7 @@ public abstract class Output extends Gate {
      * {@inheritDoc}
      */
     @Override
-    protected final void addOutputBus(int size) throws Error {
+    protected final void addOutputBus(int size) {
     }
 
     /**
@@ -70,7 +75,7 @@ public abstract class Output extends Gate {
      * {@inheritDoc}
      */
     @Override
-    protected final void removeOutputBus(int index) throws Error {
+    protected final void removeOutputBus(int index) {
     }
 
     /**
@@ -87,4 +92,22 @@ public abstract class Output extends Gate {
         // no output
         return null;
     }
+
+    @Override
+    public JSONObject toJson(){
+        JSONObject json = super.toJson();
+
+        json.put("schemaOutputPort", schemaOutputPort);
+
+        return json;
+    }
+
+    public void setSchemaOutputPort(int port){
+        schemaOutputPort = port;
+    }
+
+    public int getSchemaOutputPort(){
+        return schemaOutputPort;
+    }
+
 }

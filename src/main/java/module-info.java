@@ -6,13 +6,15 @@ module com.pjava {
     // (it's a requirement by javafx and how the structure has been made)
     requires transitive javafx.controls;
     requires javafx.fxml;
+    requires transitive org.json;
+    requires javafx.graphics;
 
     // export our package
     exports com.pjava;
     exports com.pjava.src.components;
     exports com.pjava.src.components.cables;
-    exports com.pjava.src.components.input;
     exports com.pjava.src.components.gates;
+    exports com.pjava.src.components.input;
     exports com.pjava.src.components.output;
     exports com.pjava.src.errors;
     // exports com.pjava.src.schema;
@@ -22,4 +24,9 @@ module com.pjava {
     // to authorize FXML files and FXMLLoader to see
     // classes from our package
     opens com.pjava.controllers to javafx.fxml;
+    opens com.pjava.src.UI.components to javafx.fxml;
+    opens com.pjava.src.UI.components.gates to javafx.fxml;
+    // opens com.pjava.src.UI.components.cables to javafx.fxml;
+    opens com.pjava.src.UI.components.input to javafx.fxml;
+    opens com.pjava.src.UI.components.output to javafx.fxml;
 }

@@ -21,7 +21,7 @@ public class Clock extends Input {
      * The timestamp of the last cycle.
      * It prevent using a sleep inside a loop.
      */
-    private long lastCycle = System.currentTimeMillis();
+    private long lastCycle = 0l;
 
     /**
      * If the clock is enabled, it will periodically change states depending on
@@ -61,21 +61,19 @@ public class Clock extends Input {
      * Cycle accordingly to the given {@link #cycleSpeed} and {@link #enabled}.
      */
     public void timeCycle() {
-        if (!enabled)
+        if (!enabled) {
             return;
-
-        if (System.currentTimeMillis() - cycleSpeed >= lastCycle) {
+        } else if (System.currentTimeMillis() - lastCycle >= cycleSpeed) {
             instantCycle();
         }
     }
 
     /**
-     * Return the current state, after a {@link #timeCycle()}.
+     * Return the current state.
      * {@inheritDoc}
      */
     @Override
     public BitSet getState() {
-        timeCycle();
         return state;
     }
 

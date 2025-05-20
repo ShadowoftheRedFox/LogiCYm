@@ -2,12 +2,15 @@ package com.pjava;
 
 import java.io.IOException;
 
+import com.pjava.controllers.Editor;
 import com.pjava.controllers.MainController;
 import com.pjava.controllers.PloofController;
+import com.pjava.controllers.WorkBenchController;
 import com.pjava.src.UI.SceneManager;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -41,13 +44,17 @@ public class App extends Application {
         this.manager = new SceneManager(scene);
         this.manager.addScreen("main", new MainController(this.manager));
         this.manager.addScreen("ploof", new PloofController(this.manager));
+        this.manager.addScreen("workbench", new WorkBenchController(this.manager));
+        this.manager.addScreen("editor", new Editor(this.manager));
 
+        Image haerin = new Image("/img/haerin.jpg"); // silly
         scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
-        stage.setTitle("Hello JavaFX and Maven");
+        stage.setTitle("LogiCYm");
         stage.setScene(scene);
+        stage.getIcons().add(haerin);
         stage.show();
 
-        manager.activate("main");
+        manager.activate("editor");
     }
 
     /**

@@ -132,6 +132,19 @@ public class GateTest {
     }
 
     @Test
+    void disconnect() throws NullPointerException, Exception {
+        TestGate g = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
+        TestGate h = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
+
+        Cable c = g.connect(h);
+
+        g.disconnect(c);
+
+        assertNull(g.getOutputCable().get(0));
+        assertNull(c.getInputGate());
+    }
+
+    @Test
     void getCableWith() throws Exception {
         TestGate g = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
         TestGate h = new TestGate(new int[] { 1, 1 }, new int[] { 1, 1 });
@@ -216,6 +229,7 @@ public class GateTest {
         assertDoesNotThrow(() -> {
             g.setInputBus(1, 0);
         });
+        assertEquals(1, g.getInputBus()[0]);
     }
 
     @Test
@@ -242,6 +256,7 @@ public class GateTest {
         assertDoesNotThrow(() -> {
             g.setOutputBus(1, 0);
         });
+        assertEquals(1, g.getOutputBus()[0]);
     }
 
     @Test

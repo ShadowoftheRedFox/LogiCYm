@@ -2,8 +2,7 @@ package com.pjava.components.output;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-
-import java.util.BitSet;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -13,11 +12,6 @@ public class OutputTest {
     class TestOutput extends Output {
         TestOutput() {
             super(new int[] { 1 });
-        }
-
-        @Override
-        public BitSet getState() {
-            return null;
         }
 
         public boolean setOutputBusTest1() {
@@ -38,5 +32,11 @@ public class OutputTest {
 
         assertFalse(i.setOutputBusTest1());
         assertFalse(i.setOutputBusTest2());
+    }
+
+    @Test
+    void getState() {
+        TestOutput i = new TestOutput();
+        assertNull(i.getState());
     }
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="self" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+    minWidth="-Infinity" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="com.pjava.src.UI.components.gates.UIOr">
+    <children>
+        <ImageView fx:id="body1" fitHeight="200.0" fitWidth="200.0">
+            <image>
+                <Image url="@../../img/OR.png" />
+            </image>
+        </ImageView>
+        <fx:include fx:id="input1" layoutX="-30.0" layoutY="-50.0" scaleX="0.3" scaleY="0.3"
+            source="Pin.fxml" />
+        <fx:include fx:id="input2" layoutX="-30.0" layoutY="40.0" scaleX="0.3" scaleY="0.3"
+            source="Pin.fxml" />
+        <fx:include fx:id="output1" layoutX="160.0" rotate="180.0" scaleX="0.3" scaleY="0.3"
+            source="Pin.fxml" />
+    </children>
+</AnchorPane>

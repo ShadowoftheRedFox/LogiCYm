@@ -1,0 +1,72 @@
+{
+ "externalInput": [2],
+ "externalOutput": [2],
+ "Gates": [
+  {
+   "outputBus": [2],
+   "outputTo": [[
+    150,
+    -1
+   ]],
+   "inputFrom": [[
+    145,
+    -1
+   ]],
+   "powered": true,
+   "inputBus": [2],
+   "type": "Not",
+   "uuid": 148
+  },
+  {
+   "outputBus": [2],
+   "outputTo": [[
+    150,
+    -1
+   ]],
+   "inputFrom": [],
+   "powered": true,
+   "inputBus": [],
+   "type": "Ground",
+   "uuid": 149
+  },
+  {
+   "outputBus": [2],
+   "outputTo": [[
+    152,
+    -1
+   ]],
+   "inputFrom": [
+    [
+     148,
+     -1
+    ],
+    [
+     148,
+     -1
+    ]
+   ],
+   "powered": true,
+   "inputBus": [
+    2,
+    2
+   ],
+   "type": "And",
+   "uuid": 150
+  },
+  {
+   "outputBus": [2],
+   "outputTo": [[
+    153,
+    -1
+   ]],
+   "inputFrom": [[
+    150,
+    -1
+   ]],
+   "powered": true,
+   "inputBus": [2],
+   "type": "Not",
+   "uuid": 152
+  }
+ ]
+}
