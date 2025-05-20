@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+
+
+<AnchorPane fx:id="self" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="223.0" prefWidth="271.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pjava.src.UI.components.input.UIClock" >
+   <children>
+      <Rectangle fx:id="body1" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="200.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="200.0" />
+      <ImageView fx:id="body2" fitHeight="107.0" fitWidth="130.0" layoutX="35.0" layoutY="47.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../img/Capture.PNG" />
+         </image>
+      </ImageView>
+      <fx:include fx:id="output" layoutX="165.0" rotate="180.0" scaleX="0.3" scaleY="0.3" source="Pin.fxml" />
+   </children>
+</AnchorPane>

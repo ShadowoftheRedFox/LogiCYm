@@ -4,11 +4,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.pjava.src.UI.SceneManager;
-import com.pjava.src.UI.components.UIAnd;
+import com.pjava.src.UI.components.Pin;
+import com.pjava.src.UI.components.gates.UIAnd;
+import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIElement;
-import com.pjava.src.UI.components.UINot;
-import com.pjava.src.UI.components.UIOr;
-import com.pjava.src.utils.UIUtlis;
+import com.pjava.src.UI.components.UIGate;
+import com.pjava.src.UI.components.gates.UINot;
+import com.pjava.src.UI.components.gates.UIOr;
+import com.pjava.src.UI.components.input.*;
+import com.pjava.src.UI.components.output.UIDisplay;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -20,6 +24,8 @@ import javafx.geometry.HPos;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.text.Text;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
@@ -31,16 +37,17 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
+import javafx.scene.shape.Line;
 
 public class Editor extends VBox {
     @FXML
-    private GridPane gridPane;
+    public GridPane gridPane;
     @FXML
-    private ScrollPane viewScroll;
+    public ScrollPane viewScroll;
     @FXML
     private AnchorPane container;
-
+    @FXML
+    private VBox infosContainer;
     // #region Menu items
     @FXML
     private MenuItem copyButton;
@@ -100,13 +107,38 @@ public class Editor extends VBox {
     private MenuItem unselectAllButton;
     // #endregion
 
+    // #region Menu items
+    @FXML
+    public Button cableBtn;
+    /**
+     * scenemanager
+     */
     private SceneManager manager;
 
+    /**
+     * Rectangle
+     */
     private Rectangle selectionRectangle = null;
     private Point2D selectionStart = null;
 
+    /**
+     * list of nodes selected
+     */
     private ArrayList<Node> selectedNodes = new ArrayList<Node>();
+    private ArrayList<UICable> cableLines = new ArrayList<UICable>();
 
+    /**
+     * the cabling mode is when you can link gates
+     */
+    private boolean cablingMode = false;
+    private Pin lastInputPinPressed = null;
+    private Pin lastOutputPinPressed = null;
+
+    /**
+     * it setup the view section
+     *
+     * @param manager
+     */
     public Editor(SceneManager manager) {
         this.manager = manager;
 
@@ -168,10 +200,67 @@ public class Editor extends VBox {
                         "1;0;1\n" +
                         "0;1;0\n");
         // #endregion
-
-        UIUtlis.errorPopup("Ploof");
     }
 
+    /**
+     * Crée un câble entre deux pins
+     */
+    private void createCableBetweenPins(Pin source, Pin target) {
+        if (source == null || target == null) {
+            System.out.println("no pin pair selected");
+            return;
+        }
+
+        // Vérifier si les pins sont associés à des gates
+        UIGate sourceGate = (UIGate) source.originController;
+        UIGate targetGate = (UIGate) target.originController;
+
+        if (sourceGate == null || targetGate == null) {
+            throw new Error("Stand alone pin");
+        }
+
+        // Créer le câble en tant que Node
+        UICable cableController = UICable.create();
+        // Node cableNode = cableController.getNode();
+
+        // Ajouter le câble au conteneur
+        // container.getChildren().add(cableNode);
+
+        // Connecter le câble
+        cableController.connect(source, target, sourceGate, targetGate);
+
+        // Ajouter le câble aux gates connectées
+        // TODO cable to pins, not to gate
+        // TODO english comments
+        sourceGate.addConnectedCable(cableController);
+        targetGate.addConnectedCable(cableController);
+
+        Line cable = new Line();
+
+        cable.setLayoutX(0);
+        cable.setLayoutY(0);
+
+        cable.setStartX(source.getCenter().getX());
+        cable.setStartY(source.getCenter().getY());
+        cable.setEndX(target.getCenter().getX());
+        cable.setEndY(target.getCenter().getY());
+
+        cable.strokeWidthProperty().set(5);
+        cable.setStroke(Color.RED);
+        cable.setFill(Color.RED);
+
+        container.getChildren().add(cable);
+        cableLines.add(cableController);
+
+        System.out.println("cabling from "
+                + cable.getStartX() + ":" + cable.getStartY() + " to "
+                + cable.getEndX() + ":" + cable.getEndY());
+
+        lastInputPinPressed = null;
+        lastOutputPinPressed = null;
+    }
+
+    // #region Functions
     private void resizeGrid() {
         final double paneWidth = viewScroll.getWidth();
         final double paneHeight = viewScroll.getHeight();
@@ -263,42 +352,162 @@ public class Editor extends VBox {
         selectedNodes.clear();
     }
 
+    private void replaceInfos(Node content) {
+        // clear container
+        infosContainer.getChildren().clear();
+        if (content != null) {
+            // add content to the container
+            infosContainer.getChildren().add(content);
+        }
+    }
+    // #endregion
+
     // #region Gate spawn
     @FXML
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
-        Node and = UIAnd.create(getClass());
-        // UIAnd uiand = UIAnd.getController(and);
+        UIAnd andController = (UIAnd) UIElement.create("UIAnd");
+        Node and = andController.getNode();
         container.getChildren().add(and);
+
+        pinsListener(andController);
+        andController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(andController.getInfos().getNode());
+        });
     }
 
     @FXML
     public void clickOr(ActionEvent event) {
         System.out.println("Click Or!");
-        Node or = UIOr.create(getClass());
+        UIOr orController = (UIOr) UIElement.create("UIOr");
+        Node or = orController.getNode();
         container.getChildren().add(or);
+
+        pinsListener(orController);
+        orController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(orController.getInfos().getNode());
+        });
     }
 
     @FXML
     public void clickNot(ActionEvent event) {
         System.out.println("Click Not!");
-        Node not = UINot.create(getClass());
+        UINot notController = (UINot) UIElement.create("UINot");
+        Node not = notController.getNode();
         container.getChildren().add(not);
+
+        pinsListener(notController);
+        notController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(notController.getInfos().getNode());
+        });
+    }
+
+    @FXML
+    public void clickButton(ActionEvent event) {
+        System.out.println("Click Button!");
+        UIButton buttonController = (UIButton) UIElement.create("UIButton");
+        Node button = buttonController.getNode();
+        container.getChildren().add(button);
+
+        pinsListener(buttonController);
+        buttonController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(buttonController.getInfos().getNode());
+        });
     }
 
     @FXML
     public void clickClock(ActionEvent event) {
-        System.out.println("Click Clock!");
+        System.out.println("Click clock!");
+        UIClock clockController = (UIClock) UIElement.create("UIClock");
+        Node clock = clockController.getNode();
+        container.getChildren().add(clock);
+
+        pinsListener(clockController);
+        clockController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(clockController.getInfos().getNode());
+        });
+    }
+
+    @FXML
+    public void clickLever(ActionEvent event) {
+        System.out.println("Click lever!");
+        UILever leverController = (UILever) UIElement.create("UILever");
+        Node lever = leverController.getNode();
+        container.getChildren().add(lever);
+
+        pinsListener(leverController);
+        leverController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(leverController.getInfos().getNode());
+        });
+    }
+
+    @FXML
+    public void clickPower(ActionEvent event) {
+        System.out.println("Click power!");
+        UIPower powerController = (UIPower) UIElement.create("UIPower");
+        Node power = powerController.getNode();
+        container.getChildren().add(power);
+
+        pinsListener(powerController);
+        powerController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(powerController.getInfos().getNode());
+        });
+    }
+
+    @FXML
+    public void clickGround(ActionEvent event) {
+        System.out.println("Click ground!");
+        UIGround groundController = (UIGround) UIElement.create("UIGround");
+        Node ground = groundController.getNode();
+        container.getChildren().add(ground);
+
+        pinsListener(groundController);
+        groundController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(groundController.getInfos().getNode());
+        });
     }
 
     @FXML
     public void clickDisplay(ActionEvent event) {
-        System.out.println("Click Display!");
+        System.out.println("Click display!");
+        UIDisplay displayController = (UIDisplay) UIElement.create("UIDisplay");
+        Node display = displayController.getNode();
+        container.getChildren().add(display);
+
+        pinsListener(displayController);
+        displayController.getNode().setOnMousePressed(mouseEvent -> {
+            replaceInfos(displayController.getInfos().getNode());
+        });
     }
 
+    /**
+     * register the pins for later connection
+     *
+     * @param gate the gate related to the pins
+     */
+    private void pinsListener(UIGate gate) {
+        for (Pin pin : gate.getInputPins()) {
+            pin.setOnPressed(event -> {
+                lastInputPinPressed = pin;
+                createCableBetweenPins(lastOutputPinPressed, lastInputPinPressed);
+            });
+        }
+        for (Pin pin : gate.getOutputPins()) {
+            pin.setOnPressed(event -> {
+                lastOutputPinPressed = pin;
+                createCableBetweenPins(lastOutputPinPressed, lastInputPinPressed);
+            });
+        }
+    }
     @FXML
     public void clickCable(ActionEvent event) {
         System.out.println("Click Cable!");
+        // Activer/désactiver le mode câblage
+        cablingMode = !cablingMode;
+
+        // Mettre à jour l'apparence du bouton
+        Button btn = (Button) event.getSource();
+        btn.setStyle(cablingMode ? "-fx-background-color: lightblue;" : "");
     }
 
     @FXML
@@ -310,5 +519,4 @@ public class Editor extends VBox {
     public void clickSplitter(ActionEvent event) {
         System.out.println("Click Splitter!");
     }
-    // #endregion
 }
