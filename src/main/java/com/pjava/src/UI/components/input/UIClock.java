@@ -1,6 +1,7 @@
 package com.pjava.src.UI.components.input;
 
 import com.pjava.src.UI.components.Pin;
+import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.input.Clock;
 
@@ -8,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 
 public class UIClock extends UIGate {
@@ -63,6 +65,20 @@ public class UIClock extends UIGate {
                 return outputController;
             default:
                 return null;
+        }
+    }
+
+    @Override
+    protected void pressed(MouseEvent event) {
+        getLogic().instantCycle();
+        updateVisuals();
+        super.pressed(event);
+    }
+
+    @Override
+    public void updateVisuals() {
+        for (UICable connectedCables : getConnectedCables()) {
+            connectedCables.updateVisuals();
         }
     }
 }

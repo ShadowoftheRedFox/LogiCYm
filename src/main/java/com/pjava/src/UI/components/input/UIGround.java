@@ -1,6 +1,7 @@
 package com.pjava.src.UI.components.input;
 
 import com.pjava.src.UI.components.Pin;
+import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.input.Ground;
 
@@ -51,5 +52,12 @@ public class UIGround extends UIGate {
     @Override
     public Pin getPinInput(int index) {
         return null;
+    }
+
+    @Override
+    public void updateVisuals() {
+        for (UICable connectedCables : getConnectedCables()) {
+            connectedCables.updateVisuals();
+        }
     }
 }

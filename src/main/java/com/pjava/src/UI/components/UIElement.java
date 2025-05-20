@@ -121,6 +121,8 @@ public abstract class UIElement {
         setPosition(new Point2D(posX / 50, posY / 50));
     }
 
+    public abstract void updateVisuals();
+
     // #region Getters
     /**
      * give the name of the Gate

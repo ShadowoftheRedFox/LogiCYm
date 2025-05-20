@@ -7,6 +7,7 @@ import com.pjava.src.components.output.Display;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
@@ -39,6 +40,8 @@ public class UIDisplay extends UIGate {
         inputController.originController = this;
 
         inputPins.add(inputController);
+
+        text.fillProperty().set(Color.RED);
     }
 
     @Override
@@ -53,5 +56,16 @@ public class UIDisplay extends UIGate {
     @Override
     public Pin getPinOutput(int index) {
         return null;
+    }
+
+    @Override
+    public void updateVisuals() {
+        if (!getLogic().getPowered()) {
+            text.setStrikethrough(true);
+            text.setText("X");
+            return;
+        }
+        text.setStrikethrough(false);
+        text.setText(getLogic().getOutput());
     }
 }

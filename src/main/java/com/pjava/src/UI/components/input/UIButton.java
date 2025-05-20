@@ -1,6 +1,7 @@
 package com.pjava.src.UI.components.input;
 
 import com.pjava.src.UI.components.Pin;
+import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.input.Button;
 
@@ -8,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 
 public class UIButton extends UIGate {
@@ -54,5 +56,26 @@ public class UIButton extends UIGate {
     @Override
     public Pin getPinInput(int index) {
         return null;
+    }
+
+    @Override
+    protected void pressed(MouseEvent event) {
+        getLogic().press();
+        updateVisuals();
+        super.pressed(event);
+        try {
+            wait(getLogic().getDelay());
+            getLogic().release();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            getLogic().release();
+        }
+    }
+
+    @Override
+    public void updateVisuals() {
+        for (UICable connectedCables : getConnectedCables()) {
+            connectedCables.updateVisuals();
+        }
     }
 }
