@@ -33,11 +33,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Line;
 
 public class Editor extends VBox {
     @FXML
@@ -219,42 +219,13 @@ public class Editor extends VBox {
             throw new Error("Stand alone pin");
         }
 
-        // Créer le câble en tant que Node
+        // TODO case if either gate already has a one sided cable connected
+        // create a new cable controller
         UICable cableController = UICable.create();
-        // Node cableNode = cableController.getNode();
-
-        // Ajouter le câble au conteneur
-        // container.getChildren().add(cableNode);
-
-        // Connecter le câble
+        // connect cable
         cableController.connect(source, target, sourceGate, targetGate);
-
-        // Ajouter le câble aux gates connectées
-        // TODO cable to pins, not to gate
-        // TODO english comments
-        sourceGate.addConnectedCable(cableController);
-        targetGate.addConnectedCable(cableController);
-
-        Line cable = new Line();
-
-        cable.setLayoutX(0);
-        cable.setLayoutY(0);
-
-        cable.setStartX(source.getCenter().getX());
-        cable.setStartY(source.getCenter().getY());
-        cable.setEndX(target.getCenter().getX());
-        cable.setEndY(target.getCenter().getY());
-
-        cable.strokeWidthProperty().set(5);
-        cable.setStroke(Color.RED);
-        cable.setFill(Color.RED);
-
-        container.getChildren().add(cable);
         cableLines.add(cableController);
-
-        System.out.println("cabling from "
-                + cable.getStartX() + ":" + cable.getStartY() + " to "
-                + cable.getEndX() + ":" + cable.getEndY());
+        container.getChildren().add(cableController.getNode());
 
         lastInputPinPressed = null;
         lastOutputPinPressed = null;
@@ -293,8 +264,9 @@ public class Editor extends VBox {
     }
 
     private void pressSelection(MouseEvent event) {
-        // press is not on a blank space
-        if (!gridPane.equals(event.getTarget())) {
+        // make sure selection always start on the grid
+        if (!gridPane.equals(event.getTarget()) &&
+                !(event.getTarget() instanceof Pane)) {
             return;
         }
 
@@ -499,6 +471,7 @@ public class Editor extends VBox {
             });
         }
     }
+
     @FXML
     public void clickCable(ActionEvent event) {
         System.out.println("Click Cable!");

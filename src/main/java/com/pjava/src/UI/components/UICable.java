@@ -48,8 +48,15 @@ public class UICable extends UIElement {
         try {
             setLogic(new Cable(1)); // busSize can be changed
             cableLine.setVisible(false);
+            // all cables anchor pane element are snapped to (0,0) to match other elements
+            // position without having to make obscure calculations
+            self.setLayoutX(0);
+            self.setLayoutY(0);
+            cableLine.setLayoutX(0);
+            cableLine.setLayoutY(0);
+            updateCableColor();
         } catch (BusSizeException e) {
-            e.printStackTrace();
+            throw new Error(e);
         }
     }
 
@@ -64,27 +71,30 @@ public class UICable extends UIElement {
      *
      * @param source     A source pin.
      * @param target     A target pin.
-     * @param sourceElem The controller that owns the source pin.
-     * @param targetElem The controller that owns the target pin.
+     * @param sourceGate The controller that owns the source pin.
+     * @param targetGate The controller that owns the target pin.
      * @throws NullPointerException Throws if any of the parameters is null.
      */
-    public void connect(Pin source, Pin target, UIGate sourceElem, UIGate targetElem) {
+    public void connect(Pin source, Pin target, UIGate sourceGate, UIGate targetGate) {
         if (source == null) {
             throw new NullPointerException("Expected source to be an instance of Pin, received null");
         }
         if (target == null) {
             throw new NullPointerException("Expected target to be an instance of Pin, received null");
         }
-        if (sourceElem == null) {
-            throw new NullPointerException("Expected sourceElem to be an instance of UIGate, received null");
+        // check pins are linked to a gate
+        if (source.originController == null || target.originController == null) {
+            throw new Error("Stand alone pin");
         }
-        if (targetElem == null) {
-            throw new NullPointerException("Expected targetElem to be an instance of UIGate, received null");
-        }
-
         // fails if we connect an input to input or an output to an output
         if ((source.isInput() && target.isInput()) || (!source.isInput() && !target.isInput())) {
             return;
+        }
+        if (sourceGate == null) {
+            throw new NullPointerException("Expected sourceElem to be an instance of UIGate, received null");
+        }
+        if (targetGate == null) {
+            throw new NullPointerException("Expected targetElem to be an instance of UIGate, received null");
         }
 
         // swapping depending on the pin role
@@ -93,39 +103,64 @@ public class UICable extends UIElement {
             source = target;
             target = temp;
 
-            UIGate tempElem = sourceElem;
-            sourceElem = targetElem;
-            targetElem = tempElem;
+            UIGate tempElem = sourceGate;
+            sourceGate = targetGate;
+            targetGate = tempElem;
         }
 
+        // link front
         this.sourcePin = source;
         this.targetPin = target;
-        this.sourceElement = sourceElem;
-        this.targetElement = targetElem;
+        this.sourceElement = sourceGate;
+        this.targetElement = targetGate;
 
         updateCablePosition();
 
         // if its connected it becomes green
         target.setColor(Color.GREEN);
         source.setColor(Color.GREEN);
+
+        // connect, so cable should be visible
+        cableLine.setVisible(true);
+
+        // tell gate that this is the cable controller
+        sourceGate.addConnectedCable(this);
+        targetGate.addConnectedCable(this);
     }
 
     /**
      * check the new position then take the center to determine the new cablelines
      * ends and starts
      */
-    public void updateCablePosition() {
+    private void updateCablePosition() {
+        Point2D sourcePos = new Point2D(0, 0);
+        Point2D targetPos = new Point2D(0, 0);
         // calculating position then update position
         if (sourcePin != null) {
-            Point2D sourcePos = sourcePin.getCenter();
+            sourcePos = sourcePin.getCenter();
             cableLine.setStartX(sourcePos.getX());
             cableLine.setStartY(sourcePos.getY());
         }
         if (targetPin != null) {
-            Point2D targetPos = targetPin.getCenter();
+            targetPos = targetPin.getCenter();
             cableLine.setEndX(targetPos.getX());
             cableLine.setEndY(targetPos.getY());
         }
+        // stretch the width and heigth
+        // self.setMinWidth(Math.max(sourcePos.getX(), targetPos.getX()));
+        // self.setMinHeight(Math.max(sourcePos.getY(), targetPos.getY()));
+        self.setPrefWidth(Math.max(sourcePos.getX(), targetPos.getX()));
+        self.setPrefHeight(Math.max(sourcePos.getY(), targetPos.getY()));
+
+        System.out.println("cabling from "
+                + cableLine.getStartX() + ":" + cableLine.getStartY() + " to "
+                + cableLine.getEndX() + ":" + cableLine.getEndY());
+    }
+
+    private void updateCableColor() {
+        cableLine.strokeWidthProperty().set(5);
+        cableLine.setStroke(Color.RED);
+        cableLine.setFill(Color.RED);
     }
 
     /**

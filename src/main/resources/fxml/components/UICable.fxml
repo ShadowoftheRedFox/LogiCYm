@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Line?>
 
-<AnchorPane fx:id="self" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pjava.src.UI.components.UICable">
+<AnchorPane fx:id="self" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="0.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pjava.src.UI.components.UICable">
    <children>
       <Line fx:id="cableLine" endX="0.0" endY="0.0" startX="0.0" startY="0.0" strokeWidth="3.0" />
    </children>

@@ -16,3 +16,8 @@
     -fx-background-color: rgb(226, 230, 255);
     background-color: rgba(226, 230, 255);
 }
+
+.ploof {
+    -fx-background-color: rgb(226, 0, 0);
+    background-color: rgb(226, 0, 0);
+}
