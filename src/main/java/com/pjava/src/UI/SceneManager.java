@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 /**
  * Enable to change between scene roots easily.
@@ -18,14 +19,20 @@ public class SceneManager {
      * A reference to the scene.
      */
     private Scene main;
+    /**
+     * A reference to the main window.
+     */
+    private Stage stage;
 
     /**
      * Create a new SceneManager.
      *
-     * @param main The reference to the scene.
+     * @param main  The reference to the scene.
+     * @param stage The reference main window.
      */
-    public SceneManager(Scene main) {
+    public SceneManager(Scene main, Stage stage) {
         this.main = main;
+        this.stage = stage;
     }
 
     /**
@@ -64,5 +71,14 @@ public class SceneManager {
      */
     public Scene getScene() {
         return main;
+    }
+
+    /**
+     * Getter for {@link #stage}.
+     *
+     * @return The main window referenced into the scene manager.
+     */
+    public Stage getStage() {
+        return stage;
     }
 }

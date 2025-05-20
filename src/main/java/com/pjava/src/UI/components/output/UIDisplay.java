@@ -19,7 +19,7 @@ public class UIDisplay extends UIGate {
     @FXML
     private VBox input;
     @FXML
-    private Text text;
+    private Text display;
     @FXML
     private AnchorPane self;
 
@@ -33,15 +33,18 @@ public class UIDisplay extends UIGate {
         body1.setOnMousePressed(event -> pressed(event));
         body1.setOnMouseReleased(event -> released(event));
         body1.setOnMouseDragged(event -> dragged(event));
-        text.setOnMousePressed(event -> pressed(event));
-        text.setOnMouseReleased(event -> released(event));
-        text.setOnMouseDragged(event -> dragged(event));
+        display.setOnMousePressed(event -> pressed(event));
+        display.setOnMouseReleased(event -> released(event));
+        display.setOnMouseDragged(event -> dragged(event));
 
         inputController.originController = this;
 
         inputPins.add(inputController);
 
-        text.fillProperty().set(Color.RED);
+        display.fillProperty().set(Color.RED);
+        updateVisuals();
+        // TODO the width of the gate need to be (1+bussize) * 50, because each number
+        // is 50px wide
     }
 
     @Override
@@ -61,11 +64,11 @@ public class UIDisplay extends UIGate {
     @Override
     public void updateVisuals() {
         if (!getLogic().getPowered()) {
-            text.setStrikethrough(true);
-            text.setText("X");
+            display.setStrikethrough(true);
+            display.setText("X");
             return;
         }
-        text.setStrikethrough(false);
-        text.setText(getLogic().getOutput());
+        display.setStrikethrough(false);
+        display.setText(getLogic().getOutput());
     }
 }

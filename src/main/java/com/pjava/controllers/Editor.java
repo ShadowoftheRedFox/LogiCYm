@@ -2,6 +2,7 @@ package com.pjava.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import com.pjava.src.UI.SceneManager;
 import com.pjava.src.UI.components.Pin;
@@ -13,11 +14,14 @@ import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
 import com.pjava.src.UI.components.input.*;
 import com.pjava.src.UI.components.output.UIDisplay;
+import com.pjava.src.utils.UIUtlis;
+import com.pjava.src.utils.UIUtlis.ValidationAnwser;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
@@ -26,6 +30,7 @@ import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
+import javafx.stage.WindowEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
@@ -181,9 +186,15 @@ public class Editor extends VBox {
             clearSelection();
         });
 
+        manager.getStage().setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                event.consume();
+                closeEditor();
+            };
+        });
         quitButton.setOnAction(event -> {
-            // TODO popup to ask to save?
-            Platform.exit();
+            closeEditor();
         });
 
         deleteButton.setOnAction(event -> {
@@ -393,6 +404,27 @@ public class Editor extends VBox {
         }
 
         clearSelection();
+    }
+
+    private void closeEditor() {
+        // TODO check if need to save here
+        boolean needToSave = true;
+        if (needToSave) {
+            Consumer<ValidationAnwser> callback = (res) -> {
+                if (res == ValidationAnwser.APPROVED) {
+                    // save here
+                    Platform.exit();
+                } else if (res == ValidationAnwser.DENIED) {
+                    // don't save
+                    Platform.exit();
+                }
+            };
+
+            UIUtlis.validationPopup("There are unsaved changes.\nDo you wish to save them?", callback, "Save changes",
+                    "Dismiss changes", "Cancel");
+        } else {
+            Platform.exit();
+        }
     }
     // #endregion
 

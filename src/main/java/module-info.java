@@ -29,4 +29,5 @@ module com.pjava {
     // opens com.pjava.src.UI.components.cables to javafx.fxml;
     opens com.pjava.src.UI.components.input to javafx.fxml;
     opens com.pjava.src.UI.components.output to javafx.fxml;
+    opens com.pjava.src.utils to javafx.fxml;
 }

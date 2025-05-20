@@ -62,7 +62,7 @@ public class UIButton extends UIGate {
     protected void released(MouseEvent event) {
         getLogic().press();
         updateVisuals();
-        super.pressed(event);
+        super.released(event);
         Utils.timeout(() -> {
             // BUG it does not release the button somehow
             getLogic().release();
