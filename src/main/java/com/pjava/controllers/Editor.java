@@ -170,6 +170,7 @@ public class Editor extends VBox {
         });
         viewScroll.setOnScroll(event -> resizeGrid());
 
+        setupElementSelection();
         resizeGrid();
 
         // #region Listeners
@@ -342,16 +343,6 @@ public class Editor extends VBox {
         }
     }
 
-    private void endSelection(MouseEvent event) {
-        // TODO look for selected elements with selectedNodes
-        container.getChildren().remove(selectionRectangle);
-        selectionRectangle = null;
-    }
-
-    private void clearSelection() {
-        selectedNodes.clear();
-    }
-
     private void replaceInfos(Node content) {
         // clear container
         infosContainer.getChildren().clear();
@@ -368,6 +359,7 @@ public class Editor extends VBox {
         System.out.println("Click And!");
         UIAnd andController = (UIAnd) UIElement.create("UIAnd");
         Node and = andController.getNode();
+        and.setUserData(andController);
         container.getChildren().add(and);
 
         pinsListener(andController);
@@ -382,6 +374,8 @@ public class Editor extends VBox {
         UIOr orController = (UIOr) UIElement.create("UIOr");
         Node or = orController.getNode();
         container.getChildren().add(or);
+        or.setUserData(orController);
+
 
         pinsListener(orController);
         orController.getNode().setOnMousePressed(mouseEvent -> {
@@ -395,6 +389,8 @@ public class Editor extends VBox {
         UINot notController = (UINot) UIElement.create("UINot");
         Node not = notController.getNode();
         container.getChildren().add(not);
+        not.setUserData(notController);
+
 
         pinsListener(notController);
         notController.getNode().setOnMousePressed(mouseEvent -> {
@@ -408,6 +404,8 @@ public class Editor extends VBox {
         UIButton buttonController = (UIButton) UIElement.create("UIButton");
         Node button = buttonController.getNode();
         container.getChildren().add(button);
+        button.setUserData(buttonController);
+
 
         pinsListener(buttonController);
         buttonController.getNode().setOnMousePressed(mouseEvent -> {
@@ -421,6 +419,8 @@ public class Editor extends VBox {
         UIClock clockController = (UIClock) UIElement.create("UIClock");
         Node clock = clockController.getNode();
         container.getChildren().add(clock);
+        clock.setUserData(clockController);
+
 
         pinsListener(clockController);
         clockController.getNode().setOnMousePressed(mouseEvent -> {
@@ -434,6 +434,8 @@ public class Editor extends VBox {
         UILever leverController = (UILever) UIElement.create("UILever");
         Node lever = leverController.getNode();
         container.getChildren().add(lever);
+        lever.setUserData(leverController);
+
 
         pinsListener(leverController);
         leverController.getNode().setOnMousePressed(mouseEvent -> {
@@ -447,6 +449,8 @@ public class Editor extends VBox {
         UIPower powerController = (UIPower) UIElement.create("UIPower");
         Node power = powerController.getNode();
         container.getChildren().add(power);
+        power.setUserData(powerController);
+
 
         pinsListener(powerController);
         powerController.getNode().setOnMousePressed(mouseEvent -> {
@@ -460,6 +464,8 @@ public class Editor extends VBox {
         UIGround groundController = (UIGround) UIElement.create("UIGround");
         Node ground = groundController.getNode();
         container.getChildren().add(ground);
+        ground.setUserData(groundController);
+
 
         pinsListener(groundController);
         groundController.getNode().setOnMousePressed(mouseEvent -> {
@@ -473,6 +479,8 @@ public class Editor extends VBox {
         UIDisplay displayController = (UIDisplay) UIElement.create("UIDisplay");
         Node display = displayController.getNode();
         container.getChildren().add(display);
+        display.setUserData(displayController);
+
 
         pinsListener(displayController);
         displayController.getNode().setOnMousePressed(mouseEvent -> {
@@ -519,4 +527,307 @@ public class Editor extends VBox {
     public void clickSplitter(ActionEvent event) {
         System.out.println("Click Splitter!");
     }
+
+    private void endSelection(MouseEvent event) {
+        if (selectionRectangle == null) {
+            return;
+        }
+
+        // Coordonnées du rectangle de sélection
+        double selectionMinX = selectionRectangle.getLayoutX();
+        double selectionMinY = selectionRectangle.getLayoutY();
+        double selectionMaxX = selectionMinX + selectionRectangle.getWidth();
+        double selectionMaxY = selectionMinY + selectionRectangle.getHeight();
+
+        System.out.println("Rectangle de sélection: " + selectionMinX + "," + selectionMinY + " -> " + selectionMaxX + "," + selectionMaxY);
+
+        // Parcourir tous les enfants du conteneur
+        for (Node node : container.getChildren()) {
+            // Ignorer le rectangle de sélection lui-même
+            if (node == selectionRectangle) {
+                continue;
+            }
+
+            // Vérifier si c'est un élément d'UI avec userData
+            if (node.getUserData() instanceof UIElement) {
+                UIElement element = (UIElement) node.getUserData();
+
+                // Obtenir les coordonnées de l'élément
+                double elementMinX = node.getLayoutX();
+                double elementMinY = node.getLayoutY();
+                double elementMaxX = elementMinX + node.getBoundsInLocal().getWidth();
+                double elementMaxY = elementMinY + node.getBoundsInLocal().getHeight();
+
+                System.out.println("Élément " + element.getName() + ": " + elementMinX + "," + elementMinY + " -> " + elementMaxX + "," + elementMaxY);
+
+                // Vérifier si l'élément est dans le rectangle de sélection
+                boolean isInSelection = (elementMinX >= selectionMinX &&
+                                        elementMaxX <= selectionMaxX &&
+                                        elementMinY >= selectionMinY &&
+                                        elementMaxY <= selectionMaxY);
+
+                // Ajouter l'élément à la sélection s'il est dans le rectangle
+                if (isInSelection) {
+                    System.out.println("Élément sélectionné: " + element.getName());
+                    selectedNodes.add(node);
+                    highlightSelectedNode(node);
+                }
+            }
+        }
+
+        // Mettre à jour les boutons d'action en fonction de la sélection
+        updateSelectionActions();
+
+        // Supprimer le rectangle de sélection
+        container.getChildren().remove(selectionRectangle);
+        selectionRectangle = null;
+    }
+    /**
+     * Met en évidence un nœud sélectionné
+     */
+    private void highlightSelectedNode(Node node) {
+        // Ajouter un effet visuel pour indiquer que le nœud est sélectionné
+        node.setEffect(new javafx.scene.effect.DropShadow(5, Color.BLUE));
+    }
+
+    /**
+     * Retire la mise en évidence d'un nœud désélectionné
+     */
+    private void unhighlightNode(Node node) {
+        node.setEffect(null);
+    }
+
+    /**
+     * Met à jour la méthode clearSelection pour également retirer la mise en évidence
+     */
+    private void clearSelection() {
+        // Supprimer la mise en évidence de tous les nœuds sélectionnés
+        for (Node node : selectedNodes) {
+            unhighlightNode(node);
+        }
+        // Vider la liste
+        selectedNodes.clear();
+        // Mettre à jour les boutons d'action
+        updateSelectionActions();
+    }
+
+    /**
+     * Met à jour l'état des boutons d'action en fonction de la sélection
+     */
+    private void updateSelectionActions() {
+        boolean hasSelection = !selectedNodes.isEmpty();
+
+        // Activer/désactiver les boutons en fonction de l'état de la sélection
+        deleteButton.setDisable(!hasSelection);
+        copyButton.setDisable(!hasSelection);
+        cutButton.setDisable(!hasSelection);
+        // Paste est toujours désactivé s'il n'y a rien dans le presse-papier
+        // Il faudra l'activer séparément quand quelque chose est copié
+    }
+
+    /**
+     * Supprime les éléments sélectionnés
+     */
+    @FXML
+    private void deleteSelectedElements(ActionEvent event) {
+        // Utiliser une nouvelle liste pour éviter ConcurrentModificationException
+        ArrayList<Node> nodesToRemove = new ArrayList<>(selectedNodes);
+
+        for (Node node : nodesToRemove) {
+            // Si c'est un UIElement, on le récupère pour gérer les déconnexions
+            if (node.getUserData() instanceof UIElement) {
+                UIElement element = (UIElement) node.getUserData();
+
+                // Si c'est une porte logique, on gère les connexions
+                if (element instanceof UIGate) {
+                    UIGate gate = (UIGate) element;
+
+                    // Supprimer tous les câbles connectés à cette porte
+                    ArrayList<UICable> cablesToRemove = new ArrayList<>(gate.getConnectedCables());
+                    for (UICable cable : cablesToRemove) {
+                        // Supprimer le câble physique du conteneur
+                        container.getChildren().remove(cable.getNode());
+                        // Supprimer le câble de la liste des câbles
+                        cableLines.remove(cable);
+
+                        // Déconnecter le câble de ses gates
+                        if (cable.getSourceElement() != null) {
+                            cable.getSourceElement().removeConnectedCable(cable);
+                        }
+                        if (cable.getTargetElement() != null) {
+                            cable.getTargetElement().removeConnectedCable(cable);
+                        }
+                    }
+                }
+            }
+
+            // Supprimer le nœud du conteneur
+            container.getChildren().remove(node);
+        }
+
+        // Vider la sélection
+        clearSelection();
+    }
+
+    // Variables pour gérer le copier-coller
+    private ArrayList<UIElement> clipboardElements = new ArrayList<>();
+
+    /**
+     * Copie les éléments sélectionnés dans le presse-papier
+     */
+    @FXML
+    private void copySelectedElements(ActionEvent event) {
+        // Vider le presse-papier
+        clipboardElements.clear();
+
+        // Ajouter les éléments sélectionnés au presse-papier
+        for (Node node : selectedNodes) {
+            if (node.getUserData() instanceof UIElement) {
+                UIElement element = (UIElement) node.getUserData();
+                clipboardElements.add(element);
+            }
+        }
+
+        // Activer le bouton coller
+        pasteButton.setDisable(false);
+    }
+
+    /**
+     * Coupe les éléments sélectionnés (copie puis supprime)
+     */
+    @FXML
+    private void cutSelectedElements(ActionEvent event) {
+        // D'abord copier
+        copySelectedElements(event);
+        // Puis supprimer
+        deleteSelectedElements(event);
+    }
+
+    /**
+     * Colle les éléments du presse-papier
+     */
+    @FXML
+    private void pasteElements(ActionEvent event) {
+        // Coordonnées du clic de la souris ou position par défaut
+        double pasteX = container.getWidth() / 2;
+        double pasteY = container.getHeight() / 2;
+
+        // Si la souris est dans le conteneur, utiliser sa position
+        if (container.localToScene(container.getBoundsInLocal()).contains(manager.getScene().getX(), manager.getScene().getY())) {
+            pasteX = manager.getScene().getX() - container.localToScene(container.getBoundsInLocal()).getMinX();
+            pasteY = manager.getScene().getY() - container.localToScene(container.getBoundsInLocal()).getMinY();
+        }
+
+        // Désélectionner tous les éléments actuellement sélectionnés
+        clearSelection();
+
+        // Pour chaque élément du presse-papier
+        for (UIElement originalElement : clipboardElements) {
+            // Créer une nouvelle instance de l'élément
+            UIElement newElement = UIElement.create(originalElement.getClass().getSimpleName());
+
+            if (newElement != null) {
+                // Positionner le nouvel élément
+                Node newNode = newElement.getNode();
+                newNode.setLayoutX(pasteX);
+                newNode.setLayoutY(pasteY);
+
+                // Ajouter le nouvel élément au conteneur
+                container.getChildren().add(newNode);
+
+                // Enregistrer les écouteurs pour les broches
+                if (newElement instanceof UIGate) {
+                    pinsListener((UIGate) newElement);
+                }
+
+                // Ajouter à la sélection
+                selectedNodes.add(newNode);
+                highlightSelectedNode(newNode);
+
+                // Décaler légèrement pour le prochain élément
+                pasteX += 20;
+                pasteY += 20;
+            }
+        }
+
+        // Mettre à jour les boutons d'action
+        updateSelectionActions();
+    }
+
+    /**
+     * Implémente la sélection/désélection d'un élément par clic
+     */
+    private void setupElementSelection() {
+        // Ajouter un écouteur pour tous les UIElements existants et futurs
+        container.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            // Si on clique sur le fond (GridPane), on ne traite pas ici
+            // car ce sera géré par la méthode pressSelection
+            if (event.getTarget() == gridPane) {
+                return;
+            }
+
+            // Vérifier si le clic est sur un élément
+            if (event.getTarget() instanceof Node) {
+                Node targetNode = (Node) event.getTarget();
+
+                // Remonter jusqu'à un parent qui contient un UIElement en userData
+                while (targetNode != null && targetNode != container) {
+                    if (targetNode.getUserData() instanceof UIElement) {
+                        UIElement element = (UIElement) targetNode.getUserData();
+                        System.out.println("Clic sur l'élément: " + element.getName());
+
+                        // Si la touche Ctrl est enfoncée, ajouter ou retirer de la sélection
+                        if (event.isControlDown()) {
+                            if (selectedNodes.contains(targetNode)) {
+                                // Désélectionner
+                                selectedNodes.remove(targetNode);
+                                unhighlightNode(targetNode);
+                            } else {
+                                // Sélectionner
+                                selectedNodes.add(targetNode);
+                                highlightSelectedNode(targetNode);
+                            }
+                        } else {
+                            // Si Ctrl n'est pas enfoncé et que le nœud n'est pas déjà sélectionné
+                            if (!selectedNodes.contains(targetNode)) {
+                                // Désélectionner tous les autres
+                                clearSelection();
+                                // Sélectionner le nœud cliqué
+                                selectedNodes.add(targetNode);
+                                highlightSelectedNode(targetNode);
+                            }
+                        }
+
+                        // Mettre à jour les boutons d'action
+                        updateSelectionActions();
+
+                        // Consommer l'événement pour ne pas déclencher d'autres actions
+                        event.consume();
+                        break;
+                    }
+
+                    // Remonter au parent
+                    targetNode = targetNode.getParent();
+                }
+            }
+        });
+    }
+    @FXML
+    private void selectAllElements(ActionEvent event) {
+        // Désélectionner d'abord
+        clearSelection();
+
+        // Parcourir tous les enfants du conteneur
+        for (Node node : container.getChildren()) {
+            // Ne considérer que les UIElements
+            if (node.getUserData() instanceof UIElement) {
+                selectedNodes.add(node);
+                highlightSelectedNode(node);
+            }
+        }
+
+        // Mettre à jour les boutons d'action
+        updateSelectionActions();
+    }
+
 }

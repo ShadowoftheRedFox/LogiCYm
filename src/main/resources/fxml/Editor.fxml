@@ -47,7 +47,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<fx:root prefHeight="400.0" prefWidth="640.0" type="VBox" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="400.0" prefWidth="640.0" type="VBox" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <MenuBar VBox.vgrow="NEVER">
             <menus>
@@ -73,12 +73,12 @@
                         <MenuItem fx:id="undoButton" disable="true" mnemonicParsing="false" text="Undo" />
                         <MenuItem fx:id="redoButton" disable="true" mnemonicParsing="false" text="Redo" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="cutButton" disable="true" mnemonicParsing="false" text="Cut" />
-                        <MenuItem fx:id="copyButton" disable="true" mnemonicParsing="false" text="Copy" />
-                        <MenuItem fx:id="pasteButton" mnemonicParsing="false" text="Paste" />
-                        <MenuItem fx:id="deleteButton" disable="true" mnemonicParsing="false" text="Delete" />
+                        <MenuItem fx:id="cutButton" disable="true" mnemonicParsing="false" onAction="#cutSelectedElements" text="Cut" />
+                        <MenuItem fx:id="copyButton" disable="true" mnemonicParsing="false" onAction="#copySelectedElements" text="Copy" />
+                        <MenuItem fx:id="pasteButton" mnemonicParsing="false" onAction="#pasteElements" text="Paste" />
+                        <MenuItem fx:id="deleteButton" disable="true" mnemonicParsing="false" onAction="#deleteSelectedElements" text="Delete" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="selectAllButton" mnemonicParsing="false" text="Select All" />
+                        <MenuItem fx:id="selectAllButton" mnemonicParsing="false" onAction="#selectAllElements" text="Select All" />
                         <MenuItem fx:id="unselectAllButton" disable="true" mnemonicParsing="false" text="Unselect All" />
                     </items>
                 </Menu>
