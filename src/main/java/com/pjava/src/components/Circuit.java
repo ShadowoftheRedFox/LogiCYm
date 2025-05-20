@@ -26,7 +26,9 @@ import com.pjava.src.components.output.Output;
 
 
 
-
+// TODO : map des schéma
+// TODO : getAllClockEverCreatedInThisCircuit()
+// TODO : custom argument quand on crée un nouveau gate
 
 public class Circuit{
 
@@ -76,8 +78,7 @@ public class Circuit{
 
     //#endregion
 
-    // TODO : map des schéma
-    // TODO : getAllClockEverCreatedInThisCircuit()
+
 
     public Circuit(){
         this(String.format("circuit_%d", nbCircuit));
@@ -457,7 +458,9 @@ public class Circuit{
                             if(targetInput_JsonArray.getJSONArray(targetGateInputIndex).getInt(0) == inputOldId){
                                 // we set the target get to be connected to the schéma port
                                 targetInput_JsonArray.getJSONArray(targetGateInputIndex).put(0, -1);
-                                targetInput_JsonArray.getJSONArray(targetGateInputIndex).put(1, gate.getSchemaInputPort());
+                                targetInput_JsonArray.getJSONArray(targetGateInputIndex).put(
+                                    1,
+                                    gate_JsonArray.getJSONObject(input_jsonIndex).getInt("schemaInputPort"));
                             }
                         }
                     }
@@ -505,7 +508,9 @@ public class Circuit{
                             if(targetOutput_JsonArray.getJSONArray(targetGateOutputIndex).getInt(0) == outputOldId){
                                 // we set the target get to be connected to the schéma port
                                 targetOutput_JsonArray.getJSONArray(targetGateOutputIndex).put(0, -1);
-                                targetOutput_JsonArray.getJSONArray(targetGateOutputIndex).put(1, gate.getSchemaOutputPort());
+                                targetOutput_JsonArray.getJSONArray(targetGateOutputIndex).put(
+                                    1,
+                                    gate_JsonArray.getJSONObject(output_jsonIndex).getInt("schemaOutputPort"));
                             }
                         }
                     }
