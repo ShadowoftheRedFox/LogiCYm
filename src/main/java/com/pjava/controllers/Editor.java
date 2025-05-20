@@ -193,6 +193,19 @@ public class Editor extends VBox {
         deleteButton.setOnAction(event -> {
             deleteSelectedElement();
         });
+        manager.getScene().setOnKeyPressed(event -> {
+            System.out.println("Touche pressée: " + event.getCode());
+            switch (event.getCode()) {
+                case DELETE:
+                    deleteSelectedElement();
+                    break;
+                case BACK_SPACE:
+                    deleteSelectedElement();
+                    break;
+                default:
+                    break;
+            }
+        });
         // #endregion
 
         // #region Help
