@@ -6,6 +6,7 @@ module com.pjava {
     // (it's a requirement by javafx and how the structure has been made)
     requires transitive javafx.controls;
     requires javafx.fxml;
+    requires javafx.graphics;
 
     // export our package
     exports com.pjava;
@@ -23,4 +24,8 @@ module com.pjava {
     // classes from our package
     opens com.pjava.controllers to javafx.fxml;
     opens com.pjava.src.UI.components to javafx.fxml;
+    opens com.pjava.src.UI.components.gates to javafx.fxml;
+    // opens com.pjava.src.UI.components.cables to javafx.fxml;
+    opens com.pjava.src.UI.components.input to javafx.fxml;
+    opens com.pjava.src.UI.components.output to javafx.fxml;
 }
