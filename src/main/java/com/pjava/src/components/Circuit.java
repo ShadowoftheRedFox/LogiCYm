@@ -26,9 +26,11 @@ import com.pjava.src.components.output.Output;
 
 
 
-
-// TODO : getAllClockEverCreatedInThisCircuit()
+// TODO : Format d'une selection
 // TODO : custom argument quand on crée un nouveau gate
+// TODO : recup ces arguments quand on passe du json
+// TODO : disconnectGate()
+// TODO : input de n bus
 
 public class Circuit{
 
@@ -83,16 +85,38 @@ public class Circuit{
 
     //#endregion
 
+    //#region Constructor
 
-    public Circuit(){
-        this(String.format("circuit_%d", nbCircuit));
-    }
+        public Circuit(){
+            this(String.format("circuit_%d", nbCircuit));
+        }
 
-    public Circuit(String name){
-        this.set_name(name);
-        nbCircuit++;
-    }
+        public Circuit(String name){
+            this.set_name(name);
+            nbCircuit++;
+        }
 
+        public Circuit(String name, JSONObject selection){
+            this.set_name(name);
+            nbCircuit++;
+            try {
+                this.addGatesFromJson(selection);
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+        }
+
+        public Circuit(String name, String filePath){
+            this.set_name(name);
+            nbCircuit++;
+            try {
+                this.addGatesFromFile(filePath);
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+        }
+
+    //#endregion
 
     //#region Getter
 
@@ -125,7 +149,7 @@ public class Circuit{
         }
 
         /**
-         * recursively finds all clock contained in this circuit and schemas
+         * Recursively finds all clock contained in this circuit and schemas
          *
          * @return
          */
@@ -147,7 +171,7 @@ public class Circuit{
 
     //#region Setter
 
-    public void set_name(String name) {
+    public final void set_name(String name) {
         if (name == null || name.isBlank()) {
             name = "Nom_Genere_Automatiquement_ahah";
         }
@@ -155,6 +179,7 @@ public class Circuit{
     }
 
     //#endregion
+
 
     //#region .setSchemaInputGatePort
 
@@ -292,26 +317,26 @@ public class Circuit{
     //#endregion
 
     //#region .addNewGate
-    // TODO : needs more parameters to customise gate creation (busSize, delay, etc..)
+        // TODO : needs more parameters to customise gate creation (busSize, delay, etc..)
 
 
-    /**
-     * @param type
-     * @return The gate created
-     * @throws Exception
-     */
-    public Gate addNewGate(String type) throws Exception{
-        return addNewGate(type, "");
-    }
+        /**
+         * @param type
+         * @return The gate created
+         * @throws Exception
+         */
+        public Gate addNewGate(String type) throws Exception{
+            return addNewGate(type, "");
+        }
 
-    /**
-     * create a gate and add it to the circuit using {@code addGate()}
-     *
-     * @param type A string of the gate type to be created
-     * @param label The key for this gate
-     * @return The gate that has just been created
-     */
-    public Gate addNewGate(String type, String label) throws Exception{
+        /**
+         * create a gate and add it to the circuit using {@code addGate()}
+         *
+         * @param type A string of the gate type to be created
+         * @param label The key for this gate
+         * @return The gate that has just been created
+         */
+        public Gate addNewGate(String type, String label) throws Exception{
 
         Gate newGate;
         switch(type){
@@ -358,7 +383,7 @@ public class Circuit{
 
     //#endregion
 
-    //#region .addGatesFromJson
+    //#region addGatesFromJson
 
         /**
          * add gates to the circuit and connects them
@@ -366,7 +391,7 @@ public class Circuit{
          * @param circuit_Json
          * @throws Exception
          */
-        public void addGatesFromJson(JSONObject circuit_Json) throws Exception{
+        public final void addGatesFromJson(JSONObject circuit_Json) throws Exception{
             Circuit tempCircuit = new Circuit();
 
             try {
@@ -416,7 +441,7 @@ public class Circuit{
          * @param schema
          * @throws Exception
          */
-        public void addGatesFromJson(JSONObject circuit_Json, Schema schema) throws Exception{
+        public final void addGatesFromJson(JSONObject circuit_Json, Schema schema) throws Exception{
             if(schema == null){
                 throw new Exception("schema is null");
             }
@@ -560,7 +585,7 @@ public class Circuit{
 
                         if(targetGateOldId.equals("-1")){
                             if(targetGateOutputIndex != -1){
-                                schema.connectInnerInput(tempCircuit.get_allGates().get(baseGateOldId), baseGateInputIndex, targetGateOutputIndex);
+                                schema.connectInnerInputGate(tempCircuit.get_allGates().get(baseGateOldId), baseGateInputIndex, targetGateOutputIndex);
                                 if(!innerInputGatesWithIndex.containsKey(i)){
                                     innerInputGatesWithIndex.put(i, new ArrayList<>());
                                 }
@@ -577,7 +602,7 @@ public class Circuit{
 
                         if(targetGateOldId.equals("-1")){
                             if(targetGateInputIndex != -1){
-                                schema.connectInnerOutput(tempCircuit.get_allGates().get(baseGateOldId), baseGateOutputIndex, targetGateInputIndex);
+                                schema.connectInnerOutputGate(tempCircuit.get_allGates().get(baseGateOldId), baseGateOutputIndex, targetGateInputIndex);
                                 if(!innerOuputGatesWithIndex.containsKey(i)){
                                     innerOuputGatesWithIndex.put(i, new ArrayList<>());
                                 }
@@ -605,7 +630,7 @@ public class Circuit{
 
                         // the target gate is the schema
                         if(targetGateOldId.equals("-1")){
-                            schema.connectInnerOutput(tempCircuit.get_allGates().get(baseGateOldId), baseGateOutputIndex, targetGateInputIndex);
+                            schema.connectInnerOutputGate(tempCircuit.get_allGates().get(baseGateOldId), baseGateOutputIndex, targetGateInputIndex);
                             continue;
                         }
 
@@ -625,7 +650,7 @@ public class Circuit{
 
                         // the target gate is the schema
                         if(targetGateOldId.equals("-1")){
-                            schema.connectInnerInput(tempCircuit.get_allGates().get(baseGateOldId), baseGateInputIndex, targetGateOutputIndex);
+                            schema.connectInnerInputGate(tempCircuit.get_allGates().get(baseGateOldId), baseGateInputIndex, targetGateOutputIndex);
                         }
                     }
                 }
@@ -641,16 +666,21 @@ public class Circuit{
 
     //#endregion
 
-    //#region .addGatesFromFile
+    //#region addGatesFromFile
+
+        public final void addGatesFromFile(String filePath) throws Exception{
+            addGatesFromFile( filePath, null);
+        }
 
         /**
-         * Load the Json schema of the circuit at the given localisation from './data/'
+         * Load the Json of the circuit at the given localisation from './data/'
          * It then calls {@link #addGatesFromJson(JSONObject)} to finish the job.
          *
          * @param filePath
+         * @param schema
          * @throws Exception
          */
-        public void addGatesFromFile(String filePath) throws Exception{
+        public final void addGatesFromFile(String filePath, Schema schema) throws Exception{
             // We format filePath
             if((filePath != null) && (!filePath.isBlank())){
                 filePath = filePath.replace(".", "");
@@ -687,7 +717,14 @@ public class Circuit{
                 }
 
                 JSONObject circuit_Json = new JSONObject(content.toString());
-                this.addGatesFromJson(circuit_Json);
+
+                // we are dealing with a schema
+                if(schema != null){
+                    this.addGatesFromJson(circuit_Json, schema);
+                }
+                else{
+                    this.addGatesFromJson(circuit_Json);
+                }
             } catch (IOException e){
                 System.err.println(String.format("Problem while reading '%s' : ", filePath, e.getMessage()));
             }
@@ -727,7 +764,27 @@ public class Circuit{
 
     //#endregion
 
-    //#region .toJson
+    //#region copy
+
+        public Circuit copy(){
+            Circuit res = null;
+            res = new Circuit();
+
+            for(Gate gate : this.get_allGates().values()){
+                try{
+                    res.addGate(gate);
+                }
+                catch(Exception e){
+                    System.err.println(e);
+                }
+            }
+
+            return res;
+        }
+
+    //#endregion
+
+    //#region toJson
 
         public JSONObject toJson() {
             // adding gates within the circuit to a JSON array
@@ -745,7 +802,7 @@ public class Circuit{
 
     //#endregion
 
-    //#region .save
+    //#region save
 
         /**
          * Shorthand for {@link #save(String folderPath)}

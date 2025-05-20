@@ -19,8 +19,8 @@ public abstract class Input extends Gate {
      *
      * @param busOutput The output buses array.
      */
-    public Input(int[] busOutput) {
-        super(new int[] {}, busOutput);
+    public Input(int busOutput) {
+        super(1, busOutput);
         super.setPowered(true);
     }
 

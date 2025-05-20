@@ -123,6 +123,24 @@ public class Cable extends Element {
         }
     }
 
+    public Cable copy(){
+        Cable res = null;
+        try {
+            res = new Cable(this.getBusSize());
+
+            res.setInputGate(this.inputGate);
+            res.setOutputGate(this.outputGate);
+
+            res.setInputPort(this.inputPort);
+            res.setOutputPort(this.outputPort);
+
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+
+        return res;
+    }
+
     // #region Getters
     /**
      * Getter for {@link #busSize}.
