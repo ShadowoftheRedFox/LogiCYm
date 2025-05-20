@@ -114,6 +114,10 @@ public class Editor extends VBox {
      * scenemanager
      */
     private SceneManager manager;
+/**
+     * Element Selected
+     */
+    private UIElement currentlySelectedElement = null;
 
     /**
      * Rectangle
@@ -184,6 +188,10 @@ public class Editor extends VBox {
         quitButton.setOnAction(event -> {
             // TODO popup to ask to save?
             Platform.exit();
+        });
+
+        deleteButton.setOnAction(event -> {
+            deleteSelectedElement();
         });
         // #endregion
 
@@ -319,9 +327,10 @@ public class Editor extends VBox {
         container.getChildren().remove(selectionRectangle);
         selectionRectangle = null;
     }
-
     private void clearSelection() {
         selectedNodes.clear();
+        currentlySelectedElement = null;
+        deleteButton.setDisable(true);
     }
 
     private void replaceInfos(Node content) {
@@ -331,6 +340,28 @@ public class Editor extends VBox {
             // add content to the container
             infosContainer.getChildren().add(content);
         }
+    }
+    private void selectElement(UIElement element) {
+        currentlySelectedElement = element;
+        deleteButton.setDisable(false);
+    }
+
+    private void deleteSelectedElement() {
+        if (currentlySelectedElement == null) {
+            System.out.println("No item selected");
+            return;
+        }
+        String elementName = currentlySelectedElement.getName();
+        System.out.println(elementName + " delete");
+
+        container.getChildren().remove(currentlySelectedElement.getNode());
+
+        replaceInfos(null);
+        currentlySelectedElement = null;
+        clearSelection();
+        deleteButton.setDisable(true);
+        // TODO Supp in BAck
+        // SUpp Cable connect to the gate
     }
     // #endregion
 
@@ -345,6 +376,7 @@ public class Editor extends VBox {
         pinsListener(andController);
         andController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(andController.getInfos().getNode());
+            selectElement(andController);
         });
     }
 
@@ -358,6 +390,7 @@ public class Editor extends VBox {
         pinsListener(orController);
         orController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(orController.getInfos().getNode());
+            selectElement(orController);
         });
     }
 
@@ -371,6 +404,7 @@ public class Editor extends VBox {
         pinsListener(notController);
         notController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(notController.getInfos().getNode());
+            selectElement(notController);
         });
     }
 
@@ -384,6 +418,7 @@ public class Editor extends VBox {
         pinsListener(buttonController);
         buttonController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(buttonController.getInfos().getNode());
+            selectElement(buttonController);
         });
     }
 
@@ -397,6 +432,7 @@ public class Editor extends VBox {
         pinsListener(clockController);
         clockController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(clockController.getInfos().getNode());
+            selectElement(clockController);
         });
     }
 
@@ -410,6 +446,7 @@ public class Editor extends VBox {
         pinsListener(leverController);
         leverController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(leverController.getInfos().getNode());
+            selectElement(leverController);
         });
     }
 
@@ -423,6 +460,7 @@ public class Editor extends VBox {
         pinsListener(powerController);
         powerController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(powerController.getInfos().getNode());
+            selectElement(powerController);
         });
     }
 
@@ -436,6 +474,7 @@ public class Editor extends VBox {
         pinsListener(groundController);
         groundController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(groundController.getInfos().getNode());
+            selectElement(groundController);
         });
     }
 
@@ -449,6 +488,7 @@ public class Editor extends VBox {
         pinsListener(displayController);
         displayController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(displayController.getInfos().getNode());
+            selectElement(displayController);
         });
     }
 
