@@ -422,10 +422,7 @@ public class Schema extends Gate {
     public void loadFromSelection(JSONObject selection){
         // input/output gate that are set to -1 will be connected to the schema gate
         try {
-            // TODO: transform input/output gate to -1 connection (hors du schema)
-
             this.innerCircuit.addGatesFromJson(selection, this);
-
 
         } catch (Exception e) {
             System.err.println("Error circuit can't be launch " + e.getMessage());
