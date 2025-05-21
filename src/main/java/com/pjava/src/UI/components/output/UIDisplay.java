@@ -64,11 +64,9 @@ public class UIDisplay extends UIGate {
     @Override
     public void updateVisuals() {
         if (!getLogic().getPowered()) {
-            display.setStrikethrough(true);
             display.setText("X");
-            return;
+        } else {
+            display.setText(getLogic().getOutput());
         }
-        display.setStrikethrough(false);
-        display.setText(getLogic().getOutput());
     }
 }

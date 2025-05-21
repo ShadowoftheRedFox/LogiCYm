@@ -4,6 +4,7 @@ import java.util.BitSet;
 
 import org.json.JSONObject;
 
+import com.pjava.src.components.output.Display;
 import com.pjava.src.utils.Utils;
 
 /**
@@ -16,7 +17,7 @@ import com.pjava.src.utils.Utils;
  * value in base 10 will be capped out at 3.
  * The base can be set when instantiating the class or later.
  *
- * @see #outputBase
+ * @see #inputBase
  */
 public class Numeric extends Input {
     /**
@@ -33,7 +34,7 @@ public class Numeric extends Input {
      * Create a new display with default base of 2 and maximum cable bus size of 1.
      *
      * @throws Exception Should not throw.
-     * @see #Display(int, int)
+     * @see Display
      */
     public Numeric() throws Exception {
         this(1, 2);

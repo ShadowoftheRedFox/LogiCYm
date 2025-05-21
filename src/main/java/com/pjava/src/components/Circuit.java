@@ -150,7 +150,7 @@ public class Circuit {
     /**
      * Recursively finds all clock contained in this circuit and schemas
      *
-     * @return
+     * @return The list of all the clocks.
      */
     public ArrayList<Clock> getAllClock() {
         ArrayList<Clock> res = new ArrayList<>();
@@ -241,6 +241,7 @@ public class Circuit {
      * @param fromPort The index of the output port
      * @param toPort   The index of the input port
      * @return The cable created
+     * @throws Exception
      */
     public Cable connectGate(String fromGate, String toGate, int fromPort, int toPort) throws Exception {
         if (!this.allGates.containsKey(fromGate)) {
@@ -333,6 +334,7 @@ public class Circuit {
      * @param type  A string of the gate type to be created
      * @param label The key for this gate
      * @return The gate that has just been created
+     * @throws Exception
      */
     public Gate addNewGate(String type, String label) throws Exception {
 
@@ -551,6 +553,7 @@ public class Circuit {
 
             // output
             for (String key : tempCircuit.getOutputGates().keySet()) {
+                // FIXME warning unused?
                 Output gate = tempCircuit.getOutputGates().get(key);
 
                 int outputOldId = Integer.valueOf(key);
@@ -861,6 +864,7 @@ public class Circuit {
     /**
      * Shorthand for {@link #save(String folderPath, String fileName)}
      *
+     * @param folderPath
      * @throws Exception
      */
     public void save(String folderPath) throws Exception {
@@ -880,6 +884,7 @@ public class Circuit {
      * ./data/file -> "./data/file/"
      *
      * @param folderPath
+     * @param fileName
      * @throws Exception
      */
     public void save(String folderPath, String fileName) throws Exception {

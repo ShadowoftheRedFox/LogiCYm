@@ -34,8 +34,14 @@ public class Cable extends Element {
      */
     protected Gate outputGate = null;
 
+    /**
+     * FIXME javadoc
+     */
     protected int inputPort = -1;
 
+    /**
+     * FIXME javadoc
+     */
     protected int outputPort = -1;
 
     /**
@@ -123,7 +129,12 @@ public class Cable extends Element {
         }
     }
 
-    public Cable copy(){
+    /**
+     * FIXME javadoc
+     *
+     * @return
+     */
+    public Cable copy() {
         Cable res = null;
         try {
             res = new Cable(this.getBusSize());
@@ -169,12 +180,22 @@ public class Cable extends Element {
         return outputGate;
     }
 
+    /**
+     * Getter for {@link #inputPort}.
+     *
+     * @return The current input port.
+     */
     public int getInputPort() {
         return inputPort;
     }
 
+    /**
+     * Getter for {@link #outputPort}.
+     *
+     * @return The current output port.
+     */
     public int getOutputPort() {
-        return inputPort;
+        return outputPort;
     }
     // #endregion
 
@@ -203,23 +224,58 @@ public class Cable extends Element {
         this.busSize = busSize;
     }
 
-    public void setInputGate(Gate gate) throws Exception{
-        if(gate == null) throw new Exception("null input gate");
+    /**
+     * FIXME javadoc
+     * HACK should be private, or at least protected
+     * BUG can break connections
+     *
+     * @param gate
+     * @throws Exception
+     */
+    public void setInputGate(Gate gate) throws Exception {
+        if (gate == null) {
+            throw new Exception("null input gate");
+        }
         this.inputGate = gate;
     }
 
-    public void setOutputGate(Gate gate) throws Exception{
-        if(gate == null) throw new Exception("null output gate");
+    /**
+     * FIXME javadoc
+     * HACK should be private, or at least protected
+     * BUG can break connections
+     *
+     * @param gate
+     * @throws Exception
+     */
+    public void setOutputGate(Gate gate) throws Exception {
+        if (gate == null) {
+            throw new Exception("null output gate");
+        }
         this.outputGate = gate;
     }
 
-    public void setInputPort(int portIndex) throws IndexOutOfBoundsException{
-        if(portIndex < 0){
-            throw  new IndexOutOfBoundsException("negative index");
+    /**
+     * FIXME javadoc
+     * BUG no upper bound
+     *
+     * @param portIndex
+     * @throws IndexOutOfBoundsException
+     */
+    public void setInputPort(int portIndex) throws IndexOutOfBoundsException {
+        if (portIndex < 0) {
+            throw new IndexOutOfBoundsException("negative index");
         }
 
         this.inputPort = portIndex;
     }
+
+    /**
+     * FIXME javadoc
+     * BUG no upper bound
+     *
+     * @param portIndex
+     * @throws IndexOutOfBoundsException
+     */
 
     public void setOutputPort(int portIndex) throws IndexOutOfBoundsException {
         if (portIndex < 0) {

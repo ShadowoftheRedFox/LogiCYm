@@ -2,6 +2,7 @@ package com.pjava.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.function.Consumer;
 
 import com.pjava.src.UI.SceneManager;
@@ -14,10 +15,12 @@ import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
 import com.pjava.src.UI.components.input.*;
 import com.pjava.src.UI.components.output.UIDisplay;
-import com.pjava.src.utils.UIUtlis;
-import com.pjava.src.utils.UIUtlis.ValidationAnwser;
 import com.pjava.src.document.FileReaderSimulation;
 import com.pjava.src.document.SimulationFileLoader;
+
+import com.pjava.src.components.Circuit;
+import com.pjava.src.utils.UIUtils;
+import com.pjava.src.utils.UIUtils.ValidationAnwser;
 
 
 import javafx.application.Platform;
@@ -135,6 +138,7 @@ public class Editor extends VBox {
     /**
      * list of nodes selected
      */
+    private ArrayList<UIElement> allController = new ArrayList<UIElement>();
     private ArrayList<UIElement> selectedNodes = new ArrayList<UIElement>();
     private ArrayList<UICable> cableLines = new ArrayList<UICable>();
 
@@ -145,6 +149,9 @@ public class Editor extends VBox {
     private Pin lastInputPinPressed = null;
     private Pin lastOutputPinPressed = null;
 
+    private Circuit editedCircuit = new Circuit("Unamed circuit");
+    private boolean unsavedChanges = false;
+
     /**
      * it setup the view section
      *
@@ -152,6 +159,7 @@ public class Editor extends VBox {
      */
     public Editor(SceneManager manager) {
         this.manager = manager;
+        setUnsavedChanges(false);
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Editor.fxml"));
@@ -218,9 +226,36 @@ public class Editor extends VBox {
                     break;
             }
         });
+        saveButton.setOnAction(event -> {
+            try {
+                editedCircuit.save();
+            } catch (Exception e) {
+                UIUtils.errorPopup(e.getMessage());
+            }
+        });
+
+        selectAllButton.setOnAction(event -> {
+            selectElement(allController);
+        });
+
+        unselectAllButton.setOnAction(event -> {
+            clearSelection();
+        });
+
+        // set a listener that will automaticaly change unselect when deleteButton
+        // disable state is changed
+        deleteButton.disableProperty().addListener(new ChangeListener<Boolean>() {
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
+                    Boolean newValue) {
+                unselectAllButton.setDisable(newValue);
+            };
+        });
+        initializeSchema();
+
         loadInputsButton.setOnAction(event -> {
             loadSimulationFile();
         });
+
         // #endregion
 
         // #region Help
@@ -236,6 +271,11 @@ public class Editor extends VBox {
                         "1;0;1\n" +
                         "0;1;0\n");
         // #endregion
+    }
+
+    private void initializeSchema() {
+        // TODO get all schema and add the buttons here with event listeners of the said
+        // schema
     }
 
     /**
@@ -311,6 +351,12 @@ public class Editor extends VBox {
     }
 
     // #region Functions
+    private void setUnsavedChanges(boolean unsavedChanges) {
+        this.unsavedChanges = unsavedChanges;
+        manager.getStage().setTitle((unsavedChanges ? "Unsaved changes - " : "") + editedCircuit.getName());
+        saveButton.setDisable(!unsavedChanges);
+    }
+
     private void resizeGrid() {
         final double paneWidth = viewScroll.getWidth();
         final double paneHeight = viewScroll.getHeight();
@@ -408,8 +454,8 @@ public class Editor extends VBox {
         }
 
         selectedNodes.clear();
-        deleteButton.setDisable(true);
         replaceInfos(null);
+        deleteButton.setDisable(true);
     }
 
     private void replaceInfos(Node content) {
@@ -430,6 +476,20 @@ public class Editor extends VBox {
         deleteButton.setDisable(element == null);
     }
 
+    private void selectElement(Collection<UIElement> array) {
+        clearSelection();
+        if (array != null) {
+            selectedNodes.addAll(array);
+            selectedNodes.forEach(element -> {
+                if (element == null) {
+                    selectedNodes.remove(element);
+                }
+                element.getNode().setStyle("-fx-background-color: #0000ff80");
+            });
+        }
+        deleteButton.setDisable(selectedNodes.size() == 0);
+    }
+
     private void deleteSelectedElement() {
         deleteButton.setDisable(true);
         if (selectedNodes.size() == 0) {
@@ -443,6 +503,8 @@ public class Editor extends VBox {
 
             // remove from the scene
             container.getChildren().remove(selectedElement.getNode());
+            // remove them from the controller list
+            allController.remove(selectedElement);
 
             // disconnect everything
             if (selectedElement instanceof UIGate) {
@@ -458,12 +520,15 @@ public class Editor extends VBox {
     }
 
     private void closeEditor() {
-        // TODO check if need to save here
-        boolean needToSave = true;
-        if (needToSave) {
+        if (unsavedChanges) {
             Consumer<ValidationAnwser> callback = (res) -> {
                 if (res == ValidationAnwser.APPROVED) {
-                    // save here
+                    // TODO save here
+                    try {
+                        editedCircuit.save();
+                    } catch (Exception e) {
+                        UIUtils.errorPopup(e.getMessage());
+                    }
                     Platform.exit();
                 } else if (res == ValidationAnwser.DENIED) {
                     // don't save
@@ -471,7 +536,7 @@ public class Editor extends VBox {
                 }
             };
 
-            UIUtlis.validationPopup("There are unsaved changes.\nDo you wish to save them?", callback, "Save changes",
+            UIUtils.validationPopup("There are unsaved changes.\nDo you wish to save them?", callback, "Save changes",
                     "Dismiss changes", "Cancel");
         } else {
             Platform.exit();
@@ -521,6 +586,7 @@ public class Editor extends VBox {
             replaceInfos(andController.getInfos().getNode());
             selectElement(andController);
         });
+        allController.add(andController);
     }
 
     @FXML
@@ -535,6 +601,7 @@ public class Editor extends VBox {
             replaceInfos(orController.getInfos().getNode());
             selectElement(orController);
         });
+        allController.add(orController);
     }
 
     @FXML
@@ -549,6 +616,7 @@ public class Editor extends VBox {
             replaceInfos(notController.getInfos().getNode());
             selectElement(notController);
         });
+        allController.add(notController);
     }
 
     @FXML
@@ -563,6 +631,7 @@ public class Editor extends VBox {
             replaceInfos(buttonController.getInfos().getNode());
             selectElement(buttonController);
         });
+        allController.add(buttonController);
     }
 
     @FXML
@@ -577,6 +646,7 @@ public class Editor extends VBox {
             replaceInfos(clockController.getInfos().getNode());
             selectElement(clockController);
         });
+        allController.add(clockController);
     }
 
     @FXML
@@ -591,6 +661,7 @@ public class Editor extends VBox {
             replaceInfos(leverController.getInfos().getNode());
             selectElement(leverController);
         });
+        allController.add(leverController);
     }
 
     @FXML
@@ -605,6 +676,7 @@ public class Editor extends VBox {
             replaceInfos(powerController.getInfos().getNode());
             selectElement(powerController);
         });
+        allController.add(powerController);
     }
 
     @FXML
@@ -619,6 +691,7 @@ public class Editor extends VBox {
             replaceInfos(groundController.getInfos().getNode());
             selectElement(groundController);
         });
+        allController.add(groundController);
     }
 
     @FXML
@@ -633,6 +706,7 @@ public class Editor extends VBox {
             replaceInfos(displayController.getInfos().getNode());
             selectElement(displayController);
         });
+        allController.add(displayController);
     }
 
     /**

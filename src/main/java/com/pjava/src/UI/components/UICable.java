@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import com.pjava.src.components.Cable;
 import com.pjava.src.components.Gate;
-import com.pjava.src.utils.UIUtlis;
+import com.pjava.src.utils.UIUtils;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -129,7 +129,7 @@ public class UICable extends UIElement {
                 setLogic(cable);
             }
         } catch (Exception e) {
-            UIUtlis.errorPopup(e.getMessage());
+            UIUtils.errorPopup(e.getMessage());
             e.printStackTrace();
         }
 

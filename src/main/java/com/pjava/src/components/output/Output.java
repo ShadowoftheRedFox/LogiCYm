@@ -13,6 +13,9 @@ import com.pjava.src.components.Gate;
  */
 public abstract class Output extends Gate {
 
+    /**
+     * FIXME javadoc
+     */
     private int schemaOutputPort = -1;
 
     /**
@@ -94,7 +97,7 @@ public abstract class Output extends Gate {
     }
 
     @Override
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject json = super.toJson();
 
         json.put("schemaOutputPort", schemaOutputPort);
@@ -102,11 +105,22 @@ public abstract class Output extends Gate {
         return json;
     }
 
-    public void setSchemaOutputPort(int port){
+    /**
+     * Setter for {@link #schemaOutputPort}.
+     * BUG no value check
+     *
+     * @param port The new port.
+     */
+    public void setSchemaOutputPort(int port) {
         schemaOutputPort = port;
     }
 
-    public int getSchemaOutputPort(){
+    /**
+     * Getter for {@link #schemaOutputPort}.
+     *
+     * @return The current output port for the schema.
+     */
+    public int getSchemaOutputPort() {
         return schemaOutputPort;
     }
 

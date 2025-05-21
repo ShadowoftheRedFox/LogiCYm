@@ -18,12 +18,12 @@ public abstract class Gate extends Element {
     /**
      * Give the number and size of the available input ports.
      */
-    protected int[] inputBus = new int[]{};
+    protected int[] inputBus = new int[] {};
 
     /**
      * Give the number and size of the available output ports.
      */
-    protected int[] outputBus = new int[]{};
+    protected int[] outputBus = new int[] {};
 
     /**
      * The input cables. Must have the same length as {@link #inputBus}.
@@ -40,7 +40,7 @@ public abstract class Gate extends Element {
      * output of the same size.
      */
     public Gate() {
-        this(new int[]{1, 1}, new int[]{1});
+        this(new int[] { 1, 1 }, new int[] { 1 });
     }
 
     /**
@@ -169,9 +169,10 @@ public abstract class Gate extends Element {
      *
      * @param arg0 The gate input you want to connect this output.
      * @return The Cable making the connection, or null if the connection is
-     * impossible (incompatible bus size).
-     * @throws Exception Throw an exception if the connection is possible but
-     * different Cable are already connected to both.
+     *         impossible (incompatible bus size).
+     * @throws Exception            Throw an exception if the connection is possible
+     *                              but
+     *                              different Cable are already connected to both.
      * @throws NullPointerException When arg0 is null.
      */
     public Cable connect(Gate arg0) throws Exception, NullPointerException {
@@ -290,9 +291,9 @@ public abstract class Gate extends Element {
      * the case, it either get an existing Cable or create a new one. It also
      * make the necessary internal modification to both gate and cable.
      *
-     * @param arg0 The gate input you want to connect this output.
+     * @param arg0            The gate input you want to connect this output.
      * @param thisOutputIndex The index in this.outputCable ArrayList.
-     * @param arg0InputIndex The index in arg0.inputCable ArrayList.
+     * @param arg0InputIndex  The index in arg0.inputCable ArrayList.
      * @return The cable making the connection, or null if the connection is
      *         impossible (incompatible bus size).
      * @throws Exception                 Throw an exception if the connection is
@@ -823,9 +824,6 @@ public abstract class Gate extends Element {
     }
     // #endregion
 
-    /**
-     * {@inheritDoc Element#toJson()}
-     */
     @Override
     public JSONObject toJson() {
         JSONObject json = super.toJson();

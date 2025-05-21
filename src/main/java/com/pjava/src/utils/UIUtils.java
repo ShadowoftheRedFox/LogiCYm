@@ -20,11 +20,11 @@ import javafx.stage.Stage;
  * An abstract class used to get access to useful static functions globally.
  * Targeted towards the UI.
  */
-public abstract class UIUtlis {
+public abstract class UIUtils {
     /**
      * The constructor of the Utils class.
      */
-    public UIUtlis() {
+    public UIUtils() {
     }
 
     /**
@@ -138,6 +138,20 @@ public abstract class UIUtlis {
         DENIED
     }
 
+    /**
+     * Display a popup with a text and three buttons. Upon interactions with those,
+     * each will return a difference answer. Closing this popup return a
+     * {@code CANCELED} answer.
+     * Blank or null strings will be set to default value.
+     *
+     * @param question The question to ask.
+     * @param callback The call back upon interactions.
+     * @param approve  The approve button text.
+     * @param deny     The deny button text.
+     * @param cancel   The cancel button text.
+     * @return The popup stage reference.
+     * @throws NullPointerException Throws if callback if null.
+     */
     public static Stage validationPopup(String question, Consumer<ValidationAnwser> callback, String approve,
             String deny, String cancel) {
         if (callback == null) {
@@ -215,6 +229,15 @@ public abstract class UIUtlis {
         return dialog;
     }
 
+    /**
+     * Shorthand for
+     * {@link #validationPopup(String, Consumer, String, String, String)}, with the
+     * rest as null. String will take default value.
+     *
+     * @param question The question to display on the popup.
+     * @param callback Call back to consume when user interact with the popup.
+     * @return The popup stage reference.
+     */
     public static Stage validationPopup(String question, Consumer<ValidationAnwser> callback) {
         return validationPopup(question, callback, null, null, null);
     }

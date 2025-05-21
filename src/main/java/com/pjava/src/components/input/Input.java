@@ -18,7 +18,6 @@ public abstract class Input extends Gate {
      */
     private int schemaInputPort = -1;
 
-
     /**
      * Create a new Input with the given amount of outputs.
      *
@@ -99,7 +98,7 @@ public abstract class Input extends Gate {
      * {@inheritDoc}
      */
     @Override
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject json = super.toJson();
 
         json.put("schemaInputPort", schemaInputPort);
@@ -108,16 +107,20 @@ public abstract class Input extends Gate {
     }
 
     /**
-     * set schemaInputPort
+     * FIXME javadoc
+     *
+     * @param port
      */
-    public void setSchemaInputPort(int port){
+    public void setSchemaInputPort(int port) {
         schemaInputPort = port;
     }
 
     /**
-     * get schemaInputPort
+     * FIXME javadoc
+     *
+     * @return
      */
-    public int getSchemaInputPort(){
+    public int getSchemaInputPort() {
         return schemaInputPort;
     }
 
