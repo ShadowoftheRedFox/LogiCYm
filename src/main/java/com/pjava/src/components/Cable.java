@@ -22,7 +22,7 @@ public class Cable extends Element {
      * @see Utils#isPower2(int)
      * @see Utils#pow2(int)
      */
-    private int busSize = 1;
+    private Integer busSize = 1;
 
     /**
      * The input gate.
@@ -33,6 +33,16 @@ public class Cable extends Element {
      * The output gate.
      */
     protected Gate outputGate = null;
+
+    /**
+     * FIXME javadoc
+     */
+    protected int inputPort = -1;
+
+    /**
+     * FIXME javadoc
+     */
+    protected int outputPort = -1;
 
     /**
      * Create a new cable with the specified bus size.
@@ -48,6 +58,7 @@ public class Cable extends Element {
      * This function is called when inputs state change.
      * Equivalent of {@code updateState(true)} ({@link #updateState(boolean)}).
      */
+    @Override
     public void updateState() {
         updateState(true);
     }
@@ -57,6 +68,7 @@ public class Cable extends Element {
      *
      * @param propagate Whether or not to propagate the changes to the outputs.
      */
+    @Override
     public void updateState(boolean propagate) {
         // early returns
         if (outputGate == null || getPowered() == false) {
@@ -103,6 +115,7 @@ public class Cable extends Element {
      * Should be called when input/output changes.
      * Update the power of himself and its output accordingly.
      */
+    @Override
     public void updatePower() {
         // send update to output when powered changed
         if ((inputGate == null && getPowered()) ||
@@ -114,6 +127,30 @@ public class Cable extends Element {
                 outputGate.updatePower();
             }
         }
+    }
+
+    /**
+     * FIXME javadoc
+     *
+     * @return
+     */
+    @Override
+    public Cable clone() {
+        Cable res = null;
+        try {
+            res = new Cable(this.getBusSize());
+
+            res.setInputGate(this.inputGate);
+            res.setOutputGate(this.outputGate);
+
+            res.setInputPort(this.inputPort);
+            res.setOutputPort(this.outputPort);
+
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+
+        return res;
     }
 
     // #region Getters
@@ -143,6 +180,24 @@ public class Cable extends Element {
     public Gate getOutputGate() {
         return outputGate;
     }
+
+    /**
+     * Getter for {@link #inputPort}.
+     *
+     * @return The current input port.
+     */
+    public int getInputPort() {
+        return inputPort;
+    }
+
+    /**
+     * Getter for {@link #outputPort}.
+     *
+     * @return The current output port.
+     */
+    public int getOutputPort() {
+        return outputPort;
+    }
     // #endregion
 
     // #region Setters
@@ -168,6 +223,67 @@ public class Cable extends Element {
         }
 
         this.busSize = busSize;
+    }
+
+    /**
+     * FIXME javadoc
+     * HACK should be private, or at least protected
+     * BUG can break connections
+     *
+     * @param gate
+     * @throws Exception
+     */
+    private void setInputGate(Gate gate) throws Exception {
+        if (gate == null) {
+            throw new Exception("null input gate");
+        }
+        this.inputGate = gate;
+    }
+
+    /**
+     * FIXME javadoc
+     * HACK should be private, or at least protected
+     * BUG can break connections
+     *
+     * @param gate
+     * @throws Exception
+     */
+    private  void setOutputGate(Gate gate) throws Exception {
+        if (gate == null) {
+            throw new Exception("null output gate");
+        }
+        this.outputGate = gate;
+    }
+
+    /**
+     * FIXME javadoc
+     * BUG no upper bound
+     *
+     * @param portIndex
+     * @throws IndexOutOfBoundsException
+     */
+    public void setInputPort(int portIndex) throws IndexOutOfBoundsException {
+        if (portIndex < 0) {
+            throw new IndexOutOfBoundsException("negative index");
+        }
+
+        this.inputPort = portIndex;
+    }
+
+    /**
+     * FIXME javadoc
+     * BUG no upper bound
+     *
+     * @param portIndex
+     * @throws IndexOutOfBoundsException
+     */
+
+    public void setOutputPort(int portIndex) throws IndexOutOfBoundsException {
+        if (portIndex < 0) {
+            throw new IndexOutOfBoundsException("Negative index.");
+        }
+
+        this.outputPort = portIndex;
     }
     // #endregion
 }

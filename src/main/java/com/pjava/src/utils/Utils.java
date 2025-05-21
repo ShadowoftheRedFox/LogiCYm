@@ -1,5 +1,10 @@
 package com.pjava.src.utils;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 /**
  * An abstract class used to get access to useful static functions globally.
  */
@@ -99,13 +104,13 @@ public abstract class Utils {
      *
      * @see #runtimeID()
      */
-    static int id = 0;
+    static int id = 1;
 
     /**
      * Create a unique id, though it's garanted to be unique during the same run.
      * Also can overflow if the id gets bigger than the {@code Integer.MAX_VALUE}
      *
-     * @return The unnique ID, starting from 0.
+     * @return The unique ID, starting from 1.
      */
     public static int runtimeID() {
         return id++;
@@ -120,5 +125,87 @@ public abstract class Utils {
      */
     public static int getComponentsCount() {
         return id;
+    }
+
+    /**
+     * Execute the given runnable after waiting the given delay.
+     *
+     * @param exec    The main runnable function.
+     * @param delay   The delay to wait, in miliseconds.
+     * @param catcher A function in case {@link CompletableFuture} throws. Can be
+     *                null.
+     * @return The CompletableFuture created, or null if exec is null or if delay is
+     *         smaller or equal to 0.
+     */
+    public static CompletableFuture<Void> timeout(Runnable exec, long delay, TimeoutCatch catcher) {
+        if (delay < 0 || exec == null) {
+            return null;
+        }
+
+        CompletableFuture<Void> future = CompletableFuture.runAsync(exec);
+        if (catcher == null) {
+            catcher = new TimeoutCatch() {
+            };
+        }
+
+        try {
+            // success
+            future.get(delay, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            catcher.handleInterruption(ie);
+        } catch (ExecutionException ee) {
+            // exception was thrown by code
+            catcher.handleExecution(ee);
+        } catch (TimeoutException te) {
+            // timeout occurred
+            catcher.handleTimeout(te);
+        }
+        return future;
+    }
+
+    /**
+     * Interface use as the catcher in
+     * {@link #timeout(Runnable, long, TimeoutCatch)}.
+     */
+    public interface TimeoutCatch {
+        /**
+         * Default handler, that print the exception.
+         *
+         * @param e The exception to handle.
+         */
+        default void handle(Exception e) {
+            e.printStackTrace();
+        };
+
+        /**
+         * Specific handler for InterruptedException. By default, fallback to
+         * {@link #handle(Exception)}.
+         *
+         * @param ie The InterruptedException to handle.
+         */
+        default void handleInterruption(InterruptedException ie) {
+            handle(ie);
+        }
+
+        /**
+         * Specific handler for ExecutionException. By default, fallback to
+         * {@link #handle(Exception)}.
+         *
+         * @param ee The ExecutionException to handle.
+         */
+        default void handleExecution(ExecutionException ee) {
+            handle(ee);
+        }
+
+        /**
+         * Specific handler for TimeoutException. By default, fallback to
+         * {@link #handle(Exception)}.
+         *
+         * @param te The TimeoutException to handle.
+         */
+        default void handleTimeout(TimeoutException te) {
+            handle(te);
+        }
     }
 }

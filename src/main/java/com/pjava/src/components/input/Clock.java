@@ -2,6 +2,8 @@ package com.pjava.src.components.input;
 
 import java.util.BitSet;
 
+import org.json.JSONObject;
+
 /**
  * A specific type of gate that can periodically send an update. It doesn't have
  * any inputs, and has only one output bus of size 1. This gate can be
@@ -75,6 +77,13 @@ public class Clock extends Input {
     @Override
     public BitSet getState() {
         return state;
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = super.toJson();
+        json.put("cycleSpeed", cycleSpeed);
+        return json;
     }
 
     // #region Getters

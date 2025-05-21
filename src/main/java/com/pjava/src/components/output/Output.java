@@ -2,6 +2,8 @@ package com.pjava.src.components.output;
 
 import java.util.BitSet;
 
+import org.json.JSONObject;
+
 import com.pjava.src.components.Gate;
 
 /**
@@ -10,6 +12,12 @@ import com.pjava.src.components.Gate;
  * always do nothing.
  */
 public abstract class Output extends Gate {
+
+    /**
+     * FIXME javadoc
+     */
+    private int schemaOutputPort = -1;
+
     /**
      * Create a new Output with the given amount of outputs.
      *
@@ -87,4 +95,33 @@ public abstract class Output extends Gate {
         // no output
         return null;
     }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = super.toJson();
+
+        json.put("schemaOutputPort", schemaOutputPort);
+
+        return json;
+    }
+
+    /**
+     * Setter for {@link #schemaOutputPort}.
+     * BUG no value check
+     *
+     * @param port The new port.
+     */
+    public void setSchemaOutputPort(int port) {
+        schemaOutputPort = port;
+    }
+
+    /**
+     * Getter for {@link #schemaOutputPort}.
+     *
+     * @return The current output port for the schema.
+     */
+    public int getSchemaOutputPort() {
+        return schemaOutputPort;
+    }
+
 }

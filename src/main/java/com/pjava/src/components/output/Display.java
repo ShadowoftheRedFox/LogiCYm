@@ -2,6 +2,8 @@ package com.pjava.src.components.output;
 
 import java.util.ArrayList;
 
+import org.json.JSONObject;
+
 import com.pjava.src.components.Cable;
 import com.pjava.src.utils.Utils;
 
@@ -105,4 +107,16 @@ public class Display extends Output {
         return outputBase;
     }
     // #endregion
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = super.toJson();
+
+        json.put("base", this.outputBase);
+
+        return json;
+    }
 }

@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 
 public class UIClock extends UIGate {
@@ -64,5 +65,12 @@ public class UIClock extends UIGate {
             default:
                 return null;
         }
+    }
+
+    @Override
+    protected void pressed(MouseEvent event) {
+        getLogic().instantCycle();
+        updateVisuals();
+        super.pressed(event);
     }
 }

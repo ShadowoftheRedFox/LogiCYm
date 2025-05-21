@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pjava.src.components.Cable;
-import com.pjava.src.components.Element;
+import com.pjava.src.components.Gate;
 
 import javafx.geometry.Point2D;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 
 public abstract class UIGate extends UIElement {
     /**
@@ -15,11 +17,95 @@ public abstract class UIGate extends UIElement {
     private int width = 0;
     /** height of the gate */
     private int height = 0;
-    /** in the very end, there will be a list of input pins and output pins */
+    /**
+     * List of pins that are the inputs of this gate
+     */
     protected List<Pin> inputPins = new ArrayList<>();
+    /**
+     * List of pins that are the outputs of this gate
+     */
     protected List<Pin> outputPins = new ArrayList<>();
-    /** as well as the pins, there will be a list for the cables */
+    /**
+     * List of cables connect to this gate
+     */
     private List<UICable> connectedCables = new ArrayList<>();
+
+    @Override
+    public void updateVisuals() {
+        for (UICable connectedCables : getConnectedCables()) {
+            if (connectedCables != null) {
+                connectedCables.updateVisuals();
+            }
+        }
+    }
+
+    /**
+     * add the given cable to the connected list. it does not connect the cable to
+     * this gate, only this gate has a reference of this cable.
+     *
+     * @param cable the cable to add
+     */
+    public void addConnectedCable(UICable cable) {
+        if (!connectedCables.contains(cable)) {
+            // try to fill the first null
+            if (connectedCables.indexOf(null) >= 0) {
+                connectedCables.set(connectedCables.indexOf(null), cable);
+            } else {
+                connectedCables.add(cable);
+            }
+        }
+    }
+
+    /**
+     * disconnect the cable from this gate, and the gate from the cable.
+     *
+     * @param cable the cable to disconnect from.
+     */
+    public void disconnect(UICable cable) {
+        if (cable == null) {
+            return;
+        }
+        cable.disconnect(this);
+        if (connectedCables.indexOf(cable) >= 0) {
+            // recolor pin
+            if (cable.getInputPin() != null) {
+                cable.getInputPin().setColor(Color.BLUE);
+            }
+            if (cable.getOutputPin() != null) {
+                cable.getOutputPin().setColor(Color.RED);
+            }
+            connectedCables.set(connectedCables.indexOf(cable), null);
+        }
+    }
+
+    /**
+     * disconnect all cables from this gate, and the gate from every cable
+     */
+    public void disconnect() {
+        for (UICable connectedCables : connectedCables) {
+            disconnect(connectedCables);
+        }
+    }
+
+    public UICable getCableFromPin(Pin pin) {
+        if (pin == null) {
+            return null;
+        }
+        for (UICable cable : connectedCables) {
+            if (cable != null && (pin.equals(cable.getInputPin()) || pin.equals(cable.getInputPin()))) {
+                return cable;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected void dragged(MouseEvent event) {
+        // disconnect the gate from everything if it moves
+        // TODO move cable with the gate instead of disconnecting
+        disconnect();
+        super.dragged(event);
+    }
 
     // #region Getters
     /**
@@ -34,6 +120,55 @@ public abstract class UIGate extends UIElement {
      */
     public int getHeight() {
         return height;
+    }
+
+    /**
+     * returns the list of pins input of the gate
+     *
+     * @return (list of input pins)
+     */
+    public List<Pin> getInputPins() {
+        return inputPins;
+    }
+
+
+
+    /**
+     * used to get all the cable connecte to the gate sended
+     *
+     * @return List of Cable connected to a Gate
+     */
+    public List<Cable> getConnectedLogicCables() {
+        List<Cable> cablesLogic = new ArrayList<>();
+        for (UICable cable : connectedCables) {
+            cablesLogic.add((Cable) cable.getLogic());
+        }
+        return cablesLogic;
+    }
+
+    @Override
+    public Gate getLogic() {
+        return (Gate) super.getLogic();
+    }
+
+    /**
+     * to get a single pinInput
+     *
+     * @param index which one do you want (0 to N)
+     * @return the pin selected
+     */
+    public Pin getPinInput(int index) {
+        return inputPins.get(index);
+    }
+
+    /**
+     * to get a single pinOutput
+     *
+     * @param index which one do you want (from 0 to N)
+     * @return the Output pin selected
+     */
+    public Pin getPinOutput(int index) {
+        return outputPins.get(index);
     }
     // #endregion
 
@@ -56,15 +191,11 @@ public abstract class UIGate extends UIElement {
         this.height = height;
     }
 
-    // #endregion
-    /**
-     * returns the list of pins input of the gate
-     *
-     * @return (list of input pins)
-     */
-    public List<Pin> getInputPins() {
-        return inputPins;
+    @Override
+    public void setPosition(Point2D position) {
+        super.setPosition(position);
     }
+    // #endregion
 
     /**
      * returns the list of pins output
@@ -73,17 +204,6 @@ public abstract class UIGate extends UIElement {
      */
     public List<Pin> getOutputPins() {
         return outputPins;
-    }
-
-    /**
-     * its in the name
-     *
-     * @param cable (a UICable)
-     */
-    public void addConnectedCable(UICable cable) {
-        if (!connectedCables.contains(cable)) {
-            connectedCables.add(cable);
-        }
     }
 
     /**
@@ -102,48 +222,5 @@ public abstract class UIGate extends UIElement {
      */
     public List<UICable> getConnectedCables() {
         return connectedCables;
-    }
-
-    /**
-     * used to get all the cable connecte to the gate sended
-     *
-     * @return List of Cable connected to a Gate
-     */
-    public List<Cable> getConnectedLogicCables() {
-        List<Cable> cablesLogic = new ArrayList<>();
-        for (UICable cable : connectedCables) {
-            cablesLogic.add((Cable) cable.getLogic());
-        }
-        return cablesLogic;
-    }
-
-    @Override
-    public void setPosition(Point2D position) {
-        super.setPosition(position);
-    }
-
-    @Override
-    public Element getLogic() {
-        return (Element) super.getLogic();
-    }
-
-    /**
-     * to get a single pinInput
-     *
-     * @param index which one do you want (0 to N)
-     * @return the pin selected
-     */
-    public Pin getPinInput(int index) {
-        return inputPins.get(index);
-    }
-
-    /**
-     * to get a single pinOutput
-     *
-     * @param index which one do you want (from 0 to N)
-     * @return the Output pin selected
-     */
-    public Pin getPinOutput(int index) {
-        return outputPins.get(index);
     }
 }
