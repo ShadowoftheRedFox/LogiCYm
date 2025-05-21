@@ -11,14 +11,6 @@ import org.json.JSONObject;
  */
 public class Button extends Input {
     /**
-     * Whether the button is inverted.
-     * False means the button send a signal when pressed, otherwise it does not send
-     * a signal.
-     * True is the opposite of the previously stated false.
-     */
-    private boolean inverted = false;
-
-    /**
      * Delay the button is "waiting" before it come back to it's original state.
      * Delay is in miliseconds.
      */
@@ -37,42 +29,19 @@ public class Button extends Input {
      * @see #setDelay(long)
      */
     public Button() throws Exception {
-        this(100, false);
+        this(100);
     }
 
     /**
      * Create a new button with the given delay.
      *
-     * @param delay The given delay in miliseconds.
+     * @param delay    The given delay in miliseconds.
      * @throws Exception Throws when delay is lesser or equals to 0.
      * @see #setDelay(long)
      */
     public Button(long delay) throws Exception {
-        this(delay, false);
-    }
-
-    /**
-     * Create a new button with the given invertion.
-     *
-     * @param inverted True if the button is inverted.
-     * @throws Exception Should not throw here.
-     */
-    public Button(boolean inverted) throws Exception {
-        this(100l, inverted);
-    }
-
-    /**
-     * Create a new button with the given delay, and whether or not it is inverted.
-     *
-     * @param delay    The given delay in miliseconds.
-     * @param inverted True if the button is inverted.
-     * @throws Exception Throws when delay is lesser or equals to 0.
-     * @see #setDelay(long)
-     */
-    public Button(long delay, boolean inverted) throws Exception {
         super(new int[] { 1 });
         setDelay(delay);
-        setInverted(inverted);
     }
 
     /**
@@ -85,7 +54,7 @@ public class Button extends Input {
         }
 
         lastCycle = System.currentTimeMillis();
-        state.set(0, !inverted);
+        state.set(0, true);
         updateState();
     }
 
@@ -95,8 +64,8 @@ public class Button extends Input {
      * {@link #delay}.
      */
     public void release() {
-        if (System.currentTimeMillis() - lastCycle >= delay && getState(0) != inverted) {
-            state.set(0, inverted);
+        if (System.currentTimeMillis() - lastCycle >= delay) {
+            state.set(0, false);
             updateState();
         }
     }
@@ -117,22 +86,7 @@ public class Button extends Input {
         return delay;
     }
 
-    /**
-     * Getter for {@link #inverted}.
-     *
-     * @return Whether or not the button is inverted.
-     */
-    public boolean getInverted() {
-        return inverted;
-    }
     // #endregion
-
-    @Override
-    public JSONObject toJson() {
-        JSONObject json = super.toJson();
-        json.put("delay", delay);
-        return json;
-    }
 
     // #region Setters
     /**
@@ -149,18 +103,13 @@ public class Button extends Input {
         this.delay = delay;
     }
 
-    /**
-     * Setter for {@link #inverted}. Changing the inverted state will send a
-     * {@link #updateState()} signal as well as changing the internal state.
-     *
-     * @param inverted Whether or not to invert the button.
-     */
-    public void setInverted(boolean inverted) {
-        if (this.inverted != inverted) {
-            this.inverted = inverted;
-            state.flip(0);
-            updateState();
-        }
-    }
     // #endregion
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = super.toJson();
+        json.put("delay", delay);
+        return json;
+    }
+
 }
