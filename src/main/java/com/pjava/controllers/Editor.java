@@ -366,6 +366,10 @@ public class Editor extends VBox {
         andController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(andController.getInfos().getNode());
         });
+<<<<<<< Updated upstream
+=======
+        allController.add(andController);   
+>>>>>>> Stashed changes
     }
 
     @FXML
