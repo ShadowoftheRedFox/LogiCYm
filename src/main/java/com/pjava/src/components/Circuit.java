@@ -28,6 +28,7 @@ import com.pjava.src.components.input.Numeric;
 import com.pjava.src.components.input.Power;
 import com.pjava.src.components.output.Display;
 import com.pjava.src.components.output.Output;
+import com.pjava.src.utils.UtilsSave;
 
 // TODO : Format d'une selection
 // TODO : custom argument quand on crée un nouveau gate
@@ -909,14 +910,15 @@ public class Circuit {
         }
 
         if (!folderPath.startsWith("/data")) {
-            folderPath = "/data" + folderPath;
+            folderPath = UtilsSave.saveFolder + folderPath;
+        }
+        else{
+            folderPath = "." + folderPath;
         }
 
         if (!folderPath.endsWith("/")) {
             folderPath = folderPath + "/";
         }
-
-        folderPath = "." + folderPath;
 
         // Formating fileName
         if (fileName.endsWith(".json")) {
