@@ -5,14 +5,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Rectangle?>
 
-<AnchorPane fx:id="self" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="204.0" prefWidth="204.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pjava.src.UI.components.input.UILever">
+<AnchorPane fx:id="self" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="102.0" prefWidth="102.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pjava.src.UI.components.input.UILever">
    <children>
-      <Rectangle fx:id="body1" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="200.0" layoutX="2.0" layoutY="2.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="200.0" />
-      <ImageView fx:id="body2" fitHeight="150.0" fitWidth="200.0" layoutX="25.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true">
+      <Rectangle fx:id="body1" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="100.0" layoutX="1.0" layoutY="1.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="100.0" />
+      <ImageView fx:id="body2" fitHeight="75.0" fitWidth="100.0" layoutX="14.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../img/lever.jpg" />
          </image>
       </ImageView>
-      <fx:include fx:id="output" layoutX="165.0" rotate="180.0" scaleX="0.3" scaleY="0.3" source="Pin.fxml" />
+      <fx:include fx:id="output" layoutX="83.0" rotate="180.0" scaleX="0.3" scaleY="0.3" source="Pin.fxml" />
    </children>
 </AnchorPane>
