@@ -802,7 +802,7 @@ public class Circuit {
 
     // #region delGate
 
-    public void removeGate(String label) {
+    public void delGate(String label) {
         if (this.getAllGates().containsKey(label)) {
             Gate gate = this.getAllGates().get(label);
 
@@ -827,6 +827,18 @@ public class Circuit {
     }
 
     // #endregion
+
+
+    // #region delGateFromIdList
+
+    public void delGateFromIdList(ArrayList<Integer> idGates) {
+        for (int id : idGates) {
+            delGate(String.valueOf(id));
+        }
+    }
+
+    // #endregion
+
 
     // #region toJson
 
