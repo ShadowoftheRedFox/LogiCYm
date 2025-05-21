@@ -1,26 +1,30 @@
 package com.pjava.controllers;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 
 import com.pjava.src.UI.SceneManager;
 import com.pjava.src.UI.components.Pin;
-import com.pjava.src.UI.components.gates.UIAnd;
 import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
+import com.pjava.src.UI.components.gates.UIAnd;
 import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
-import com.pjava.src.UI.components.input.*;
+import com.pjava.src.UI.components.input.UIButton;
+import com.pjava.src.UI.components.input.UIClock;
+import com.pjava.src.UI.components.input.UIGround;
+import com.pjava.src.UI.components.input.UILever;
+import com.pjava.src.UI.components.input.UIPower;
 import com.pjava.src.UI.components.output.UIDisplay;
-import com.pjava.src.document.FileReaderSimulation;
-import com.pjava.src.document.SimulationFileLoader;
-
 import com.pjava.src.components.Circuit;
+import com.pjava.src.document.SimulationFileLoader;
 import com.pjava.src.utils.UIUtils;
 import com.pjava.src.utils.UIUtils.ValidationAnwser;
+import com.pjava.src.utils.UtilsSave;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -31,13 +35,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
@@ -50,7 +51,10 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import java.nio.file.Path;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class Editor extends VBox {
     @FXML
@@ -61,6 +65,9 @@ public class Editor extends VBox {
     private AnchorPane container;
     @FXML
     private VBox infosContainer;
+    @FXML
+    private VBox schemaContainer;
+
     // #region Menu items
     @FXML
     private MenuItem copyButton;
@@ -120,7 +127,6 @@ public class Editor extends VBox {
     private MenuItem unselectAllButton;
     // #endregion
 
-    // #region Menu items
     @FXML
     private Button cableBtn;
     /**
@@ -278,6 +284,42 @@ public class Editor extends VBox {
     private void initializeSchema() {
         // TODO get all schema and add the buttons here with event listeners of the said
         // schema
+
+        ArrayList<Path> paths = UtilsSave.list(UtilsSave.saveFolder);
+        if (paths == null) {
+            throw new Error("Can't find save folder");
+        }
+
+        ArrayList<Path> files = new ArrayList<Path>();
+        ArrayList<Path> folders = new ArrayList<Path>();
+
+        for (Path path : paths) {
+            if (path.toString().endsWith(UtilsSave.saveExtension)) {
+                System.out.println("schema file: " + path);
+                files.add(path);
+            } else {
+                System.out.println("schema sub folder: " + path);
+                folders.add(path);
+            }
+        }
+
+        // TODO now, create panels and add buttons inside depending on subfolders
+
+        // creating buttons and adding them to the schema container
+        for (Path file : files) {
+            Button button = new Button(file.getFileName().toString().replaceFirst("[.][^.]+$", ""));
+            button.setTextAlignment(TextAlignment.CENTER);
+            button.setAlignment(Pos.CENTER);
+            button.setMaxSize(Double.MAX_VALUE, USE_COMPUTED_SIZE);
+            button.setPrefSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
+            button.setMinSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
+            schemaContainer.getChildren().add(button);
+
+            button.setOnAction(event -> {
+                System.out.println("Schema " + button.getText());
+                // TODO ui schema and add to container
+            });
+        }
     }
 
     /**
