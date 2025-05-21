@@ -37,10 +37,10 @@ public class CircuitTest {
             circuit.addNewGate("Or", "or1");
 
             Gate a = circuit.addNewGate("Not", "not1");
-            Gate b = circuit.addGate(circuit.get_allGates().get("not1"), "not1_copy");
+            Gate b = circuit.addGate(circuit.getAllGates().get("not1"), "not1_copy");
 
             Gate c = circuit.addNewGate("Not", "not2");
-            Gate d = circuit.addGate(circuit.get_allGates().get("not2"));
+            Gate d = circuit.addGate(circuit.getAllGates().get("not2"));
 
             circuit.addNewGate("Not");
             circuit.addNewGate("Power");
@@ -54,8 +54,8 @@ public class CircuitTest {
 
         System.out.println("circuit to JSON by hand :\nnuméro : clé : Gate");
         int j = 0;
-        for (String i : circuit.get_allGates().keySet()) {
-            System.out.println(String.format("%d : %s : %s", j, i, circuit.get_allGates().get(i).toJson()));
+        for (String i : circuit.getAllGates().keySet()) {
+            System.out.println(String.format("%d : %s : %s", j, i, circuit.getAllGates().get(i).toJson()));
             j++;
         }
 
@@ -118,9 +118,9 @@ public class CircuitTest {
 
             System.out.println("Selection :");
             int j = 0;
-            for (String i : circuit3.get_allGates().keySet()) {
+            for (String i : circuit3.getAllGates().keySet()) {
                 System.out.println(
-                        String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.get_allGates().get(i).toJson()));
+                        String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.getAllGates().get(i).toJson()));
                 j++;
             }
 
@@ -128,9 +128,9 @@ public class CircuitTest {
 
             System.out.println("\nResult :");
             j = 0;
-            for (String i : circuit3.get_allGates().keySet()) {
+            for (String i : circuit3.getAllGates().keySet()) {
                 System.out.println(
-                        String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.get_allGates().get(i).toJson()));
+                        String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.getAllGates().get(i).toJson()));
                 j++;
             }
 
@@ -154,8 +154,8 @@ public class CircuitTest {
         System.out.println("\nLoading 'save4/circuit_1.json'..");
         System.out.println("numéro : clé : Gate");
         int j = 0;
-        for (String i : circuit4.get_allGates().keySet()) {
-            System.out.println(String.format("%d : %s : %s", j, i, circuit4.get_allGates().get(i).toJson()));
+        for (String i : circuit4.getAllGates().keySet()) {
+            System.out.println(String.format("%d : %s : %s", j, i, circuit4.getAllGates().get(i).toJson()));
             j++;
         }
 
@@ -169,8 +169,8 @@ public class CircuitTest {
         System.out.println("\nLoading 'bbonqjour'..");
         System.out.println("numéro : clé : Gate");
         j = 0;
-        for (String i : circuit4.get_allGates().keySet()) {
-            System.out.println(String.format("%d : %s : %s", j, i, circuit4.get_allGates().get(i).toJson()));
+        for (String i : circuit4.getAllGates().keySet()) {
+            System.out.println(String.format("%d : %s : %s", j, i, circuit4.getAllGates().get(i).toJson()));
             j++;
         }
 
@@ -184,8 +184,8 @@ public class CircuitTest {
         System.out.println("\nLoading 'test/sirkuit_3'..");
         System.out.println("numéro : clé : Gate");
         j = 0;
-        for (String i : circuit4.get_allGates().keySet()) {
-            System.out.println(String.format("%d : %s : %s", j, i, circuit4.get_allGates().get(i).toJson()));
+        for (String i : circuit4.getAllGates().keySet()) {
+            System.out.println(String.format("%d : %s : %s", j, i, circuit4.getAllGates().get(i).toJson()));
             j++;
         }
 
