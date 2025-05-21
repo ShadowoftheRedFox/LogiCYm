@@ -2,6 +2,7 @@ package com.pjava.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.function.Consumer;
 
 import com.pjava.src.UI.SceneManager;
@@ -14,8 +15,9 @@ import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
 import com.pjava.src.UI.components.input.*;
 import com.pjava.src.UI.components.output.UIDisplay;
-import com.pjava.src.utils.UIUtlis;
-import com.pjava.src.utils.UIUtlis.ValidationAnwser;
+import com.pjava.src.components.Circuit;
+import com.pjava.src.utils.UIUtils;
+import com.pjava.src.utils.UIUtils.ValidationAnwser;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -129,6 +131,7 @@ public class Editor extends VBox {
     /**
      * list of nodes selected
      */
+    private ArrayList<UIElement> allController = new ArrayList<UIElement>();
     private ArrayList<UIElement> selectedNodes = new ArrayList<UIElement>();
     private ArrayList<UICable> cableLines = new ArrayList<UICable>();
 
@@ -139,6 +142,9 @@ public class Editor extends VBox {
     private Pin lastInputPinPressed = null;
     private Pin lastOutputPinPressed = null;
 
+    private Circuit editedCircuit = new Circuit("Unamed circuit");
+    private boolean unsavedChanges = false;
+
     /**
      * it setup the view section
      *
@@ -146,6 +152,7 @@ public class Editor extends VBox {
      */
     public Editor(SceneManager manager) {
         this.manager = manager;
+        setUnsavedChanges(false);
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Editor.fxml"));
@@ -212,6 +219,33 @@ public class Editor extends VBox {
                     break;
             }
         });
+
+        saveButton.setOnAction(event -> {
+            try {
+                editedCircuit.save();
+            } catch (Exception e) {
+                UIUtils.errorPopup(e.getMessage());
+            }
+        });
+
+        selectAllButton.setOnAction(event -> {
+            selectElement(allController);
+        });
+
+        unselectAllButton.setOnAction(event -> {
+            clearSelection();
+        });
+
+        // set a listener that will automaticaly change unselect when deleteButton
+        // disable state is changed
+        deleteButton.disableProperty().addListener(new ChangeListener<Boolean>() {
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
+                    Boolean newValue) {
+                unselectAllButton.setDisable(newValue);
+            };
+        });
+
+        initializeSchema();
         // #endregion
 
         // #region Help
@@ -229,8 +263,13 @@ public class Editor extends VBox {
         // #endregion
     }
 
+    private void initializeSchema() {
+        // TODO get all schema and add the buttons here with event listeners of the said
+        // schema
+    }
+
     /**
-     * Crée un câble entre deux pins
+     * Connect gate wit the two selected pins
      */
     private void createCableBetweenPins(Pin source, Pin target) {
         if (source == null || target == null) {
@@ -238,7 +277,7 @@ public class Editor extends VBox {
             return;
         }
 
-        // Vérifier si les pins sont associés à des gates
+        // check pins are connected to gates controller
         UIGate sourceGate = (UIGate) source.originController;
         UIGate targetGate = (UIGate) target.originController;
 
@@ -247,19 +286,67 @@ public class Editor extends VBox {
         }
 
         // TODO case if either gate already has a one sided cable connected
-        // create a new cable controller
-        UICable cableController = UICable.create();
-        // connect cable
-        cableController.connect(source, target, sourceGate, targetGate);
-        cableLines.add(cableController);
-        container.getChildren().add(cableController.getNode());
-        cableController.getNode().toBack();
+
+        UICable sourceCable = sourceGate.getCableFromPin(source);
+        UICable targetCable = targetGate.getCableFromPin(target);
+
+        // check if either gate are full at the given pins
+        if (sourceCable != null && targetCable != null) {
+            System.out.println("Pins already connected");
+        } else
+        // check if source has a spot
+        if (sourceCable != null && targetCable == null) {
+            if (sourceCable.getOutputGate() != null) {
+                System.out.println("Cable not able to connect");
+                return;
+            }
+
+            sourceCable.connect(source, target, sourceGate, targetGate);
+        } else
+        // check if target has a spot
+        if (sourceCable == null && targetCable != null) {
+            if (targetCable.getOutputGate() != null) {
+                System.out.println("Cable not able to connect");
+                return;
+            }
+
+            targetCable.connect(source, target, sourceGate, targetGate);
+            return;
+        } else {
+            // create a new cable controller
+            UICable cableController = UICable.create();
+            // connect cable
+            cableController.connect(source, target, sourceGate, targetGate);
+            cableLines.add(cableController);
+            container.getChildren().add(cableController.getNode());
+            cableController.getNode().toBack();
+
+            // FIXME selection doesn't work
+            cableController.getLine().setOnMousePressed(event -> {
+                selectElement(cableController);
+                replaceInfos(cableController.getInfos().getNode());
+            });
+        }
+
+        // remove color if yellow and forget the pins
+        if (lastInputPinPressed.getColor() == Color.YELLOW) {
+            lastInputPinPressed.setColor(Color.BLUE);
+        }
+        if (lastOutputPinPressed.getColor() == Color.YELLOW) {
+            lastOutputPinPressed.setColor(Color.RED);
+        }
 
         lastInputPinPressed = null;
         lastOutputPinPressed = null;
     }
 
     // #region Functions
+    private void setUnsavedChanges(boolean unsavedChanges) {
+        this.unsavedChanges = unsavedChanges;
+        manager.getStage().setTitle((unsavedChanges ? "Unsaved changes - " : "") + editedCircuit.getName());
+        saveButton.setDisable(!unsavedChanges);
+    }
+
     private void resizeGrid() {
         final double paneWidth = viewScroll.getWidth();
         final double paneHeight = viewScroll.getHeight();
@@ -357,8 +444,8 @@ public class Editor extends VBox {
         }
 
         selectedNodes.clear();
-        deleteButton.setDisable(true);
         replaceInfos(null);
+        deleteButton.setDisable(true);
     }
 
     private void replaceInfos(Node content) {
@@ -379,6 +466,20 @@ public class Editor extends VBox {
         deleteButton.setDisable(element == null);
     }
 
+    private void selectElement(Collection<UIElement> array) {
+        clearSelection();
+        if (array != null) {
+            selectedNodes.addAll(array);
+            selectedNodes.forEach(element -> {
+                if (element == null) {
+                    selectedNodes.remove(element);
+                }
+                element.getNode().setStyle("-fx-background-color: #0000ff80");
+            });
+        }
+        deleteButton.setDisable(selectedNodes.size() == 0);
+    }
+
     private void deleteSelectedElement() {
         deleteButton.setDisable(true);
         if (selectedNodes.size() == 0) {
@@ -392,6 +493,8 @@ public class Editor extends VBox {
 
             // remove from the scene
             container.getChildren().remove(selectedElement.getNode());
+            // remove them from the controller list
+            allController.remove(selectedElement);
 
             // disconnect everything
             if (selectedElement instanceof UIGate) {
@@ -407,12 +510,15 @@ public class Editor extends VBox {
     }
 
     private void closeEditor() {
-        // TODO check if need to save here
-        boolean needToSave = true;
-        if (needToSave) {
+        if (unsavedChanges) {
             Consumer<ValidationAnwser> callback = (res) -> {
                 if (res == ValidationAnwser.APPROVED) {
-                    // save here
+                    // TODO save here
+                    try {
+                        editedCircuit.save();
+                    } catch (Exception e) {
+                        UIUtils.errorPopup(e.getMessage());
+                    }
                     Platform.exit();
                 } else if (res == ValidationAnwser.DENIED) {
                     // don't save
@@ -420,7 +526,7 @@ public class Editor extends VBox {
                 }
             };
 
-            UIUtlis.validationPopup("There are unsaved changes.\nDo you wish to save them?", callback, "Save changes",
+            UIUtils.validationPopup("There are unsaved changes.\nDo you wish to save them?", callback, "Save changes",
                     "Dismiss changes", "Cancel");
         } else {
             Platform.exit();
@@ -441,6 +547,7 @@ public class Editor extends VBox {
             replaceInfos(andController.getInfos().getNode());
             selectElement(andController);
         });
+        allController.add(andController);
     }
 
     @FXML
@@ -455,6 +562,7 @@ public class Editor extends VBox {
             replaceInfos(orController.getInfos().getNode());
             selectElement(orController);
         });
+        allController.add(orController);
     }
 
     @FXML
@@ -469,6 +577,7 @@ public class Editor extends VBox {
             replaceInfos(notController.getInfos().getNode());
             selectElement(notController);
         });
+        allController.add(notController);
     }
 
     @FXML
@@ -483,6 +592,7 @@ public class Editor extends VBox {
             replaceInfos(buttonController.getInfos().getNode());
             selectElement(buttonController);
         });
+        allController.add(buttonController);
     }
 
     @FXML
@@ -497,6 +607,7 @@ public class Editor extends VBox {
             replaceInfos(clockController.getInfos().getNode());
             selectElement(clockController);
         });
+        allController.add(clockController);
     }
 
     @FXML
@@ -511,6 +622,7 @@ public class Editor extends VBox {
             replaceInfos(leverController.getInfos().getNode());
             selectElement(leverController);
         });
+        allController.add(leverController);
     }
 
     @FXML
@@ -525,6 +637,7 @@ public class Editor extends VBox {
             replaceInfos(powerController.getInfos().getNode());
             selectElement(powerController);
         });
+        allController.add(powerController);
     }
 
     @FXML
@@ -539,6 +652,7 @@ public class Editor extends VBox {
             replaceInfos(groundController.getInfos().getNode());
             selectElement(groundController);
         });
+        allController.add(groundController);
     }
 
     @FXML
@@ -553,6 +667,7 @@ public class Editor extends VBox {
             replaceInfos(displayController.getInfos().getNode());
             selectElement(displayController);
         });
+        allController.add(displayController);
     }
 
     /**
@@ -563,13 +678,21 @@ public class Editor extends VBox {
     private void pinsListener(UIGate gate) {
         for (Pin pin : gate.getInputPins()) {
             pin.setOnPressed(event -> {
+                if (lastInputPinPressed != null) {
+                    lastInputPinPressed.setColor(Color.BLUE);
+                }
                 lastInputPinPressed = pin;
+                pin.setColor(Color.YELLOW);
                 createCableBetweenPins(lastOutputPinPressed, lastInputPinPressed);
             });
         }
         for (Pin pin : gate.getOutputPins()) {
             pin.setOnPressed(event -> {
+                if (lastOutputPinPressed != null) {
+                    lastOutputPinPressed.setColor(Color.RED);
+                }
                 lastOutputPinPressed = pin;
+                pin.setColor(Color.YELLOW);
                 createCableBetweenPins(lastOutputPinPressed, lastInputPinPressed);
             });
         }

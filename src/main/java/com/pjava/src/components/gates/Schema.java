@@ -18,7 +18,6 @@ import com.pjava.src.components.output.Display;
 import com.pjava.src.components.output.Output;
 import com.pjava.src.errors.BusSizeException;
 
-
 // TODO : gate numeric a tranformer en port et inversement (transformer les port en Numeric)
 
 // TODO : Quand on sauvegarde un schéma, on sauvegarde le circuit interne du schéma dans un fichier séparé
@@ -37,356 +36,393 @@ import com.pjava.src.errors.BusSizeException;
 
 /**
  * The schema gate is special as he hold a circuit within himself.
- * His main objective is to connect this inner circuit to the circuit he belongs (outside circuit).
+ * His main objective is to connect this inner circuit to the circuit he belongs
+ * (outside circuit).
  */
 public class Schema extends Gate {
 
-    //#region Attributes
-        private String name;
+    // #region Attributes
+    /**
+     * Name of the schema.
+     */
+    private String name;
 
-        private String filePath = null;
+    /**
+     * FIXME javadoc
+     */
+    private String filePath = null;
 
-        /**
-         * Gates that are inside the schema.
-         */
-        private Circuit innerCircuit;
+    /**
+     * Gates that are inside the schema.
+     */
+    private Circuit innerCircuit;
 
-        /*
-         * Extend Gate :
-         * private int[] inputBus = new int[]{};
-         * private int[] outputBus = new int[]{};
-         *
-         * private ArrayList<Cable> inputCable = new ArrayList<Cable>();
-         * private ArrayList<Cable> outputCable = new ArrayList<Cable>();
-        */
+    /*
+     * Extend Gate :
+     * private int[] inputBus = new int[]{};
+     * private int[] outputBus = new int[]{};
+     *
+     * private ArrayList<Cable> inputCable = new ArrayList<Cable>();
+     * private ArrayList<Cable> outputCable = new ArrayList<Cable>();
+     */
 
-        private ArrayList<Cable> innerInputCable = new ArrayList<>();
-        private ArrayList<Cable> innerOutputCable = new ArrayList<>();
+    /**
+     * FIXME javadoc
+     */
+    private ArrayList<Cable> innerInputCable = new ArrayList<>();
+    /**
+     * FIXME javadoc
+     */
+    private ArrayList<Cable> innerOutputCable = new ArrayList<>();
 
-    //#endregion
+    // #endregion
 
-    //#region Constructor()
+    // #region Constructor()
 
-        /**
-         * Create a new schema with the given names and json
-         * The schema's inner circuit is saved in the folder 'data/schema/SCHEMA_NAME.json'
-         *
-         * @param schemaName The name of the schema file.
-         * @param json       json of a selection to create the schema
-         * @throws Exception Throws if the schema fails to save, or name is invalid, or
-         *                   gates array is invalid.
-         */
-        public Schema(String schemaName, JSONObject selection) throws Exception {
-            this.setName(schemaName);
-            this.loadFromJson(selection);
+    /**
+     * Create a new schema with the given names and json
+     * The schema's inner circuit is saved in the folder
+     * 'data/schema/SCHEMA_NAME.json'
+     *
+     * @param schemaName The name of the schema file.
+     * @param selection  JSON of a selection to create the schema
+     * @throws Exception Throws if the schema fails to save, or name is invalid, or
+     *                   gates array is invalid.
+     */
+    public Schema(String schemaName, JSONObject selection) throws Exception {
+        this.setName(schemaName);
+        this.loadFromJson(selection);
 
-            this.filePath = String.format("./data/schema/%s.json", schemaName);
-            this.saveInnerCircuit();
-        }
+        this.filePath = String.format("./data/schema/%s.json", schemaName);
+        this.saveInnerCircuit();
+    }
 
-        /**
-         * Create a new schema with the given names and a file.
-         *
-         * @param schemaName The name of the schema.
-         * @param json       file of a circuit to create the schema
-         * @throws Exception Throws if the schema fails to save, or name is invalid, or
-         *                   gates array is invalid.
-         */
-        public Schema(String schemaName, String filePath) throws Exception {
-            this.setName(schemaName);
-            this.loadFromFile(filePath);
-            this.filePath = filePath;
-        }
+    /**
+     * Create a new schema with the given names and a file.
+     *
+     * @param schemaName The name of the schema.
+     * @param filePath   File path to a circuit to create the schema
+     * @throws Exception Throws if the schema fails to save, or name is invalid, or
+     *                   gates array is invalid.
+     */
+    public Schema(String schemaName, String filePath) throws Exception {
+        this.setName(schemaName);
+        this.loadFromFile(filePath);
+        this.filePath = filePath;
+    }
 
-    //#endregion
+    // #endregion
 
     // #region Getters
 
-        public String get_name() {
-            return name;
-        }
+    public String getName() {
+        return name;
+    }
 
-        public String get_filePath() {
-            return filePath;
-        }
+    public String getFilePath() {
+        return filePath;
+    }
 
-        public Circuit get_innerCircuit(){
-            return innerCircuit;
-        }
+    public Circuit getInnerCircuit() {
+        return innerCircuit;
+    }
 
-
-        @Override
-        public BitSet getState() {
-            return state;
-        }
+    @Override
+    public BitSet getState() {
+        return state;
+    }
 
     // #endregion
 
     // #region Setters
 
-        public final void setName(String name) throws IllegalArgumentException {
-            if (name == null || name.isBlank()) {
-                throw new IllegalArgumentException("Name can be empty");
-            }
-            this.name = name;
+    public final void setName(String name) throws IllegalArgumentException {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name can be empty");
         }
+        this.name = name;
+    }
 
     // #endregion
 
     // //#region save()
     //
-    //     // TODO : si le circuit n'existe pas, tous les cables sortant se transforment en gates input/output
-    //     /**
-    //      * Save the current {@link #selectedGates} into the schema with the given {@link #name}.
-    //      *
-    //      * @throws FileNotFoundException Throws when file handler fails, typicaly a wrong name.
-    //      */
-    //     public void save() throws FileNotFoundException {
-    //         ArrayList<Gate> excludedOutputs = new ArrayList<>();
-    //         ArrayList<Gate> excludedInputs = new ArrayList<>();
+    // // TODO : si le circuit n'existe pas, tous les cables sortant se transforment
+    // en gates input/output
+    // /**
+    // * Save the current {@link #selectedGates} into the schema with the given
+    // {@link #name}.
+    // *
+    // * @throws FileNotFoundException Throws when file handler fails, typicaly a
+    // wrong name.
+    // */
+    // public void save() throws FileNotFoundException {
+    // ArrayList<Gate> excludedOutputs = new ArrayList<>();
+    // ArrayList<Gate> excludedInputs = new ArrayList<>();
     //
-    //         // we get the the input and output of the selected gates, which in the end will
-    //         // be the inputs and outputs of the schema
-    //         /*
-    //         selectedGates.forEach(gate -> {
-    //             gate.getInputCable().forEach(cable -> {
-    //                 if (cable != null) {
-    //                     if (!selectedGates.contains(cable.getInputGate())) {
-    //                         excludedInputs.add(cable.getInputGate());
-    //                     }
-    //                     if (!selectedGates.contains(cable.getOutputGate())) {
-    //                         excludedOutputs.add(cable.getOutputGate());
-    //                     }
-    //                 }
-    //             });
-    //             gate.getOutputCable().forEach(cable -> {
-    //                 if (cable != null) {
-    //                     if (!selectedGates.contains(cable.getInputGate())) {
-    //                         excludedInputs.add(cable.getInputGate());
-    //                     }
-    //                     if (!selectedGates.contains(cable.getOutputGate())) {
-    //                         excludedOutputs.add(cable.getOutputGate());
-    //                     }
-    //                 }
-    //             });
-    //         });
-    //         */
+    // // we get the the input and output of the selected gates, which in the end
+    // will
+    // // be the inputs and outputs of the schema
+    // /*
+    // selectedGates.forEach(gate -> {
+    // gate.getInputCable().forEach(cable -> {
+    // if (cable != null) {
+    // if (!selectedGates.contains(cable.getInputGate())) {
+    // excludedInputs.add(cable.getInputGate());
+    // }
+    // if (!selectedGates.contains(cable.getOutputGate())) {
+    // excludedOutputs.add(cable.getOutputGate());
+    // }
+    // }
+    // });
+    // gate.getOutputCable().forEach(cable -> {
+    // if (cable != null) {
+    // if (!selectedGates.contains(cable.getInputGate())) {
+    // excludedInputs.add(cable.getInputGate());
+    // }
+    // if (!selectedGates.contains(cable.getOutputGate())) {
+    // excludedOutputs.add(cable.getOutputGate());
+    // }
+    // }
+    // });
+    // });
+    // */
     //
-    //         // get the bus sizes for each outputs and inputs of the schema
-    //         excludedInputs.forEach(gate -> {
-    //             for (int i = 0; i < gate.getOutputNumber(); i++) {
-    //                 externalOutput.add(gate.getOutputBus()[i]);
-    //             }
-    //         });
-    //         excludedOutputs.forEach(gate -> {
-    //             for (int i = 0; i < gate.getInputNumber(); i++) {
-    //                 externalInput.add(gate.getInputBus()[i]);
-    //             }
-    //         });
+    // // get the bus sizes for each outputs and inputs of the schema
+    // excludedInputs.forEach(gate -> {
+    // for (int i = 0; i < gate.getOutputNumber(); i++) {
+    // externalOutput.add(gate.getOutputBus()[i]);
+    // }
+    // });
+    // excludedOutputs.forEach(gate -> {
+    // for (int i = 0; i < gate.getInputNumber(); i++) {
+    // externalInput.add(gate.getInputBus()[i]);
+    // }
+    // });
     //
-    //         // DEBUG
-    //         System.out.println("Input Count: " + externalInput.size() + "\n\t" + externalInput);
-    //         System.out.println("Output Count: " + externalOutput.size() + "\n\t" + externalOutput);
+    // // DEBUG
+    // System.out.println("Input Count: " + externalInput.size() + "\n\t" +
+    // externalInput);
+    // System.out.println("Output Count: " + externalOutput.size() + "\n\t" +
+    // externalOutput);
     //
-    //         // create our json constructor
-    //         JSONObject schemaObject = new JSONObject();
-    //         ArrayList<JSONObject> gatesArray = new ArrayList<>();
+    // // create our json constructor
+    // JSONObject schemaObject = new JSONObject();
+    // ArrayList<JSONObject> gatesArray = new ArrayList<>();
     //
-    //         // represent the inputs/outputs bus of the schema
-    //         schemaObject.put("externalInput", externalInput);
-    //         schemaObject.put("externalOutput", externalOutput);
+    // // represent the inputs/outputs bus of the schema
+    // schemaObject.put("externalInput", externalInput);
+    // schemaObject.put("externalOutput", externalOutput);
     //
-    //         // save to json format each gate
-    //         selectedGates.forEach(gate -> {
-    //             // json constructor of the gate
-    //             JSONObject gateInfoObject = gate.toJson();
-    //             // // array of inputs/outputs of the gate that are connected
-    //             // ArrayList<Integer> inputArray = new ArrayList<>();
-    //             // ArrayList<Integer> outputArray = new ArrayList<>();
-    //             // // array of the inputs/outputs bus sizes
-    //             // ArrayList<Integer> inputBusSizeArray = new ArrayList<>();
-    //             // ArrayList<Integer> outputBusSizeArray = new ArrayList<>();
+    // // save to json format each gate
+    // selectedGates.forEach(gate -> {
+    // // json constructor of the gate
+    // JSONObject gateInfoObject = gate.toJson();
+    // // // array of inputs/outputs of the gate that are connected
+    // // ArrayList<Integer> inputArray = new ArrayList<>();
+    // // ArrayList<Integer> outputArray = new ArrayList<>();
+    // // // array of the inputs/outputs bus sizes
+    // // ArrayList<Integer> inputBusSizeArray = new ArrayList<>();
+    // // ArrayList<Integer> outputBusSizeArray = new ArrayList<>();
     //
-    //             // // BUG This code can possibly not work in the linkage between external gates
-    //             // // (input and output).
-    //             // int i = 0, j = 0;
-    //             // for (Cable inputCable : gate.getInputCable()) {
-    //             //     if (inputCable != null) {
-    //             //         if (!excludedInputs.contains(inputCable.getInputGate()))
-    //             //             inputArray.add(inputCable.getInputGate().uuid());
-    //             //         else {
-    //             //             inputArray.add(i);
-    //             //             i--;
-    //             //         }
-    //             //         inputBusSizeArray.add(inputCable.getBusSize());
-    //             //     }
-    //             // }
-    //             // for (Cable outputCable : gate.getOutputCable()) {
-    //             //     if (outputCable != null) {
-    //             //         if (!excludedOutputs.contains(outputCable.getOutputGate()))
-    //             //             outputArray.add(outputCable.getOutputGate().uuid());
-    //             //         else {
-    //             //             outputArray.add(j);
-    //             //             j--;
-    //             //         }
-    //             //         outputBusSizeArray.add(outputCable.getBusSize());
-    //             //     }
-    //             // }
+    // // // BUG This code can possibly not work in the linkage between external
+    // gates
+    // // // (input and output).
+    // // int i = 0, j = 0;
+    // // for (Cable inputCable : gate.getInputCable()) {
+    // // if (inputCable != null) {
+    // // if (!excludedInputs.contains(inputCable.getInputGate()))
+    // // inputArray.add(inputCable.getInputGate().uuid());
+    // // else {
+    // // inputArray.add(i);
+    // // i--;
+    // // }
+    // // inputBusSizeArray.add(inputCable.getBusSize());
+    // // }
+    // // }
+    // // for (Cable outputCable : gate.getOutputCable()) {
+    // // if (outputCable != null) {
+    // // if (!excludedOutputs.contains(outputCable.getOutputGate()))
+    // // outputArray.add(outputCable.getOutputGate().uuid());
+    // // else {
+    // // outputArray.add(j);
+    // // j--;
+    // // }
+    // // outputBusSizeArray.add(outputCable.getBusSize());
+    // // }
+    // // }
     //
-    //             // // "print" the collected data with the name of the field
-    //             // gateInfoObject.put("outputTo", outputArray);
-    //             // gateInfoObject.put("inputFrom", inputArray);
-    //             // gateInfoObject.put("outputBusSize", outputBusSizeArray);
-    //             // gateInfoObject.put("inputBusSize", inputBusSizeArray);
-    //             // gateInfoObject.put("powered", gate.getPowered());
-    //             // gateInfoObject.put("uuid", gate.uuid());
-    //             // gateInfoObject.put("type", gate.getClass().getSimpleName());
-    //             // // special case
-    //             // if (gate instanceof Schema) {
-    //             //     gateInfoObject.put("filename", name);
-    //             // }
-    //             // if (gate instanceof Clock) {
-    //             //     gateInfoObject.put("cycleSpeed", ((Clock) gate).getCycleSpeed());
-    //             // }
-    //             // if (gate instanceof Button) {
-    //             //     gateInfoObject.put("inverted", ((Button) gate).getInverted());
-    //             //     gateInfoObject.put("delay", ((Button) gate).getDelay());
-    //             // }
-    //             // if (gate instanceof Lever) {
-    //             //     gateInfoObject.put("flipped", ((Lever) gate).getState(0));
-    //             // }
-    //             // if (gate instanceof Display) {
-    //             //     gateInfoObject.put("base", ((Display) gate).getBaseOutput());
-    //             // }
+    // // // "print" the collected data with the name of the field
+    // // gateInfoObject.put("outputTo", outputArray);
+    // // gateInfoObject.put("inputFrom", inputArray);
+    // // gateInfoObject.put("outputBusSize", outputBusSizeArray);
+    // // gateInfoObject.put("inputBusSize", inputBusSizeArray);
+    // // gateInfoObject.put("powered", gate.getPowered());
+    // // gateInfoObject.put("uuid", gate.uuid());
+    // // gateInfoObject.put("type", gate.getClass().getSimpleName());
+    // // // special case
+    // // if (gate instanceof Schema) {
+    // // gateInfoObject.put("filename", name);
+    // // }
+    // // if (gate instanceof Clock) {
+    // // gateInfoObject.put("cycleSpeed", ((Clock) gate).getCycleSpeed());
+    // // }
+    // // if (gate instanceof Button) {
+    // // gateInfoObject.put("inverted", ((Button) gate).getInverted());
+    // // gateInfoObject.put("delay", ((Button) gate).getDelay());
+    // // }
+    // // if (gate instanceof Lever) {
+    // // gateInfoObject.put("flipped", ((Lever) gate).getState(0));
+    // // }
+    // // if (gate instanceof Display) {
+    // // gateInfoObject.put("base", ((Display) gate).getBaseOutput());
+    // // }
     //
-    //             gatesArray.add(gateInfoObject);
-    //         });
-    //         schemaObject.put("Gates", gatesArray);
+    // gatesArray.add(gateInfoObject);
+    // });
+    // schemaObject.put("Gates", gatesArray);
     //
-    //         // save to file
+    // // save to file
     //
-    //         PrintWriter writer;
-    //         try {
-    //             writer = new PrintWriter("./data/schemas/" + name + "-schema.json", "UTF-8");
-    //         } catch (UnsupportedEncodingException e) {
-    //             throw new Error("Invalid charset format", e);
-    //         } catch (SecurityException e) {
-    //             throw new Error("Permission denied", e);
-    //         }
-    //         writer.println(schemaObject.toString(1));
-    //         writer.close();
-    //     }
+    // PrintWriter writer;
+    // try {
+    // writer = new PrintWriter("./data/schemas/" + name + "-schema.json", "UTF-8");
+    // } catch (UnsupportedEncodingException e) {
+    // throw new Error("Invalid charset format", e);
+    // } catch (SecurityException e) {
+    // throw new Error("Permission denied", e);
+    // }
+    // writer.println(schemaObject.toString(1));
+    // writer.close();
+    // }
     //
     // //#endregion
 
     // //#region load()
     //
-    //     /**
-    //      * This function imports data from a saved schema and create the schema gate
-    //      * accordingly.
-    //      *
-    //      * @param name The name of a saved schema.
-    //      * @throws Exception Throws if the schema fails to load.
-    //      */
-    //     public void importSchema(String name) throws Exception {
-    //         String data = new String(Files.readAllBytes(Paths.get("./data/schemas/" + name + "-schema.json")));
-    //         JSONObject schemaData = new JSONObject(data);
-    //         JSONArray schemaGates = schemaData.getJSONArray("Gates");
+    // /**
+    // * This function imports data from a saved schema and create the schema gate
+    // * accordingly.
+    // *
+    // * @param name The name of a saved schema.
+    // * @throws Exception Throws if the schema fails to load.
+    // */
+    // public void importSchema(String name) throws Exception {
+    // String data = new String(Files.readAllBytes(Paths.get("./data/schemas/" +
+    // name + "-schema.json")));
+    // JSONObject schemaData = new JSONObject(data);
+    // JSONArray schemaGates = schemaData.getJSONArray("Gates");
     //
-    //         for (int i = 0; i < schemaGates.length(); i++) {
-    //             JSONObject gateData = schemaGates.getJSONObject(i);
-    //             Gate newGate = null;
-    //             ArrayList<Integer> inputBusSize = new ArrayList<>();
-    //             ArrayList<Integer> outputBusSize = new ArrayList<>();
+    // for (int i = 0; i < schemaGates.length(); i++) {
+    // JSONObject gateData = schemaGates.getJSONObject(i);
+    // Gate newGate = null;
+    // ArrayList<Integer> inputBusSize = new ArrayList<>();
+    // ArrayList<Integer> outputBusSize = new ArrayList<>();
     //
-    //             for (int j = 0; j < gateData.getJSONArray("inputBusSize").length(); j++) {
-    //                 inputBusSize.add(gateData.getJSONArray("inputBusSize").getInt(j));
-    //             }
-    //             for (int j = 0; j < gateData.getJSONArray("outputBusSize").length(); j++) {
-    //                 outputBusSize.add(gateData.getJSONArray("outputBusSize").getInt(j));
-    //             }
+    // for (int j = 0; j < gateData.getJSONArray("inputBusSize").length(); j++) {
+    // inputBusSize.add(gateData.getJSONArray("inputBusSize").getInt(j));
+    // }
+    // for (int j = 0; j < gateData.getJSONArray("outputBusSize").length(); j++) {
+    // outputBusSize.add(gateData.getJSONArray("outputBusSize").getInt(j));
+    // }
     //
-    //             System.out.println(gateData.toString());
-    //             Integer ploof = !inputBusSize.isEmpty() ? inputBusSize.get(0) : outputBusSize.get(0);
+    // System.out.println(gateData.toString());
+    // Integer ploof = !inputBusSize.isEmpty() ? inputBusSize.get(0) :
+    // outputBusSize.get(0);
     //
-    //             switch (gateData.get("type").toString()) {
-    //                 case "And":
-    //                     newGate = new And(ploof);
-    //                     break;
-    //                 case "Not":
-    //                     newGate = new Not(ploof);
-    //                     break;
-    //                 case "Or":
-    //                     newGate = new Or(ploof);
-    //                     break;
-    //                 case "Button":
-    //                     newGate = new (Button)(gateData.getInt("delay"), gateData.getBoolean("inverted"));
-    //                     break;
-    //                 case "Clock":
-    //                     newGate = new Clock(gateData.getLong("cycleSpeed"));
-    //                     break;
-    //                 case "Lever":
-    //                     newGate = new Lever(gateData.getBoolean("flipped"));
-    //                     break;
-    //                 case "Ground":
-    //                     newGate = new Ground(ploof);
-    //                     break;
-    //                 case "Power":
-    //                     newGate = new Power(ploof);
-    //                     break;
-    //                 case "Display":
-    //                     newGate = new Display(ploof, gateData.getInt("base"));
-    //                     break;
-    //                 case "Schema":
-    //                     newGate = new Schema(gateData.getString("filename"));
-    //                     break;
+    // switch (gateData.get("type").toString()) {
+    // case "And":
+    // newGate = new And(ploof);
+    // break;
+    // case "Not":
+    // newGate = new Not(ploof);
+    // break;
+    // case "Or":
+    // newGate = new Or(ploof);
+    // break;
+    // case "Button":
+    // newGate = new (Button)(gateData.getInt("delay"),
+    // gateData.getBoolean("inverted"));
+    // break;
+    // case "Clock":
+    // newGate = new Clock(gateData.getLong("cycleSpeed"));
+    // break;
+    // case "Lever":
+    // newGate = new Lever(gateData.getBoolean("flipped"));
+    // break;
+    // case "Ground":
+    // newGate = new Ground(ploof);
+    // break;
+    // case "Power":
+    // newGate = new Power(ploof);
+    // break;
+    // case "Display":
+    // newGate = new Display(ploof, gateData.getInt("base"));
+    // break;
+    // case "Schema":
+    // newGate = new Schema(gateData.getString("filename"));
+    // break;
     //
-    //                 default:
-    //                     throw new Error("Unknown gate type: " + gateData.getString("type"));
-    //             }
+    // default:
+    // throw new Error("Unknown gate type: " + gateData.getString("type"));
+    // }
     //
-    //             selectedGates.add(newGate);
-    //         }
-    //     }
+    // selectedGates.add(newGate);
+    // }
+    // }
     //
     // //#endregion
 
+    // #region connectInnerInputGate
 
-    //#region connectInnerInputGate
-
-        public Cable connectInnerInputGate(Gate gate, int gateInputIndex, int schemaInnerInputIndex) throws Exception, NullPointerException, IndexOutOfBoundsException, BusSizeException{
+    /**
+     * FIXME javadoc
+     *
+     * @param gate
+     * @param gateInputIndex
+     * @param schemaInnerInputIndex
+     * @return
+     * @throws Exception
+     * @throws NullPointerException
+     * @throws IndexOutOfBoundsException
+     * @throws BusSizeException
+     */
+    public Cable connectInnerInputGate(Gate gate, int gateInputIndex, int schemaInnerInputIndex)
+            throws Exception, NullPointerException, IndexOutOfBoundsException, BusSizeException {
         // verifications
         if (gate == null) {
             throw new NullPointerException(
-                "Expected arg0 to be an instance of Gate, received null");
+                    "Expected arg0 to be an instance of Gate, received null");
         }
         if (gateInputIndex < 0 || gate.getInputBus().length <= gateInputIndex) {
             throw new IndexOutOfBoundsException(
-                "Expected 0 <= gateInputIndex < " + gate.getInputBus().length + ", received " + gateInputIndex);
+                    "Expected 0 <= gateInputIndex < " + gate.getInputBus().length + ", received " + gateInputIndex);
         }
 
-
         // set the input bus size at the right port
-        if(schemaInnerInputIndex == -1){
+        if (schemaInnerInputIndex == -1) {
             // if the port index is not specified we try to find an unused index
             int indexNotUsed = this.innerInputCable.indexOf(null);
-            if(indexNotUsed != -1){
+            if (indexNotUsed != -1) {
                 schemaInnerInputIndex = indexNotUsed;
-            }
-            else{
+            } else {
                 // if we dont find an unused index, we will put it at the end of the ArrayList
                 schemaInnerInputIndex = this.innerInputCable.size();
             }
         }
-        // The port is now precised, but we need 'schema.inputBus' to have enough place to put the value at the right index
-        while(this.inputBus.length <= schemaInnerInputIndex){
-            // FIXME : might cause a problem if done wrong (too few or too many index created)
-            // we put unused bus size and cable index (hopefully they will be used, they need to be)
+        // The port is now precised, but we need 'schema.inputBus' to have enough place
+        // to put the value at the right index
+        while (this.inputBus.length <= schemaInnerInputIndex) {
+            // FIXME : might cause a problem if done wrong (too few or too many index
+            // created)
+            // we put unused bus size and cable index (hopefully they will be used, they
+            // need to be)
             this.addInputBus(1);
             this.innerInputCable.add(null);
             this.inputCable.add(null);
 
-            assert(this.inputBus.length == this.innerInputCable.size() && this.inputBus.length == this.inputCable.size());
+            assert (this.inputBus.length == this.innerInputCable.size()
+                    && this.inputBus.length == this.inputCable.size());
         }
 
         // we set the bus size at the right index 'schemaInnerInputIndex'
@@ -445,48 +481,62 @@ public class Schema extends Gate {
         return null;
     }
 
-    //#endregion
+    // #endregion
 
-    //#region connectInnerOutputGate
+    // #region connectInnerOutputGate
 
-        public Cable connectInnerOutputGate(Gate gate, int gateOutputIndex, int schemaInnerOutputIndex) throws Exception, NullPointerException, IndexOutOfBoundsException, BusSizeException{
+    /**
+     * FIXME javadoc
+     *
+     * @param gate
+     * @param gateOutputIndex
+     * @param schemaInnerOutputIndex
+     * @return
+     * @throws Exception
+     * @throws NullPointerException
+     * @throws IndexOutOfBoundsException
+     * @throws BusSizeException
+     */
+    public Cable connectInnerOutputGate(Gate gate, int gateOutputIndex, int schemaInnerOutputIndex)
+            throws Exception, NullPointerException, IndexOutOfBoundsException, BusSizeException {
         // verifications
         if (gate == null) {
             throw new NullPointerException(
-                "Expected arg0 to be an instance of Gate, received null");
+                    "Expected arg0 to be an instance of Gate, received null");
         }
         if (gateOutputIndex < 0 || gate.getOutputBus().length <= gateOutputIndex) {
             throw new IndexOutOfBoundsException(
-                "Expected 0 <= gateOutputIndex < " + gate.getOutputBus().length + ", received " + gateOutputIndex);
+                    "Expected 0 <= gateOutputIndex < " + gate.getOutputBus().length + ", received " + gateOutputIndex);
         }
 
-
         // set the output bus size at the right port
-        if(schemaInnerOutputIndex == -1){
+        if (schemaInnerOutputIndex == -1) {
             // if the port index is not specified we try to find an unused index
             int indexNotUsed = this.innerOutputCable.indexOf(null);
-            if(indexNotUsed != -1){
+            if (indexNotUsed != -1) {
                 schemaInnerOutputIndex = indexNotUsed;
-            }
-            else{
+            } else {
                 // if we dont find an unused index, we will put it at the end of the ArrayList
                 schemaInnerOutputIndex = this.innerOutputCable.size();
             }
         }
-        // The port is now precised, but we need 'schema.outputBus' to have enough place to put the value at the right index
-         while(this.outputBus.length <= schemaInnerOutputIndex){
-            // FIXME : might cause a problem if done wrong (too few or too many index created)
-            // we put unused bus size and cable index (hopefully they will be used, they need to be)
+        // The port is now precised, but we need 'schema.outputBus' to have enough place
+        // to put the value at the right index
+        while (this.outputBus.length <= schemaInnerOutputIndex) {
+            // FIXME : might cause a problem if done wrong (too few or too many index
+            // created)
+            // we put unused bus size and cable index (hopefully they will be used, they
+            // need to be)
             this.addOutputBus(1);
             this.innerOutputCable.add(null);
             this.outputCable.add(null);
 
-            assert(this.outputBus.length == this.innerOutputCable.size() && this.outputBus.length == this.outputCable.size());
+            assert (this.outputBus.length == this.innerOutputCable.size()
+                    && this.outputBus.length == this.outputCable.size());
         }
 
         // we set the bus size at the right index 'schemaInnerOutputIndex'
         this.outputBus[schemaInnerOutputIndex] = gate.getOutputBus()[gateOutputIndex];
-
 
         // We now create a Cable between the schema and the inner gate
         // check if both gate are already linked
@@ -541,190 +591,192 @@ public class Schema extends Gate {
         return null;
     }
 
-    //#endregion
+    // #endregion
 
-    //#region loadFromJson
+    // #region loadFromJson
 
-        /**
-         * Set the schema gate inner circuit and ports from a json selection of gates
-         */
-        public final void loadFromJson(JSONObject selection){
-            // input/output gate that are set to -1 will be connected to the schema gate
+    /**
+     * Set the schema gate inner circuit and ports from a json selection of gates
+     *
+     * @param selection
+     */
+    public final void loadFromJson(JSONObject selection) {
+        // input/output gate that are set to -1 will be connected to the schema gate
 
+        try {
+            this.innerCircuit.addGatesFromJson(selection, this);
+        } catch (Exception e) {
+            System.err.println("Error circuit can't be launch " + e.getMessage());
+        }
+    }
+
+    // #endregion
+
+    // #region loadFromFile
+
+    /**
+     * Load the current schema instance from a given file.
+     * BUG check if current instance is empty?
+     *
+     * @param filePath The path to the saved schema to load.
+     */
+    public final void loadFromFile(String filePath) {
+        try {
+            this.innerCircuit.addGatesFromFile(filePath, this);
+        } catch (Exception e) {
+            System.err.println("Error circuit can't be launch " + e.getMessage());
+        }
+    }
+
+    // #endregion
+
+    // #region convertInnerCircuitToCircuit
+
+    /**
+     * Format the inner circuit to fit the standard circuit json
+     * meaning all schema inner input port will become a Lever or a Numeric gate
+     * with an assigned port
+     * and all schema inner output port will become a output gate with an assigned
+     * port
+     *
+     * @return
+     */
+    public Circuit convertInnerCircuitToCircuit() {
+        Circuit newCircuit = this.innerCircuit.copy();
+        newCircuit.setName(this.name);
+
+        Gate newGate;
+        Gate innerGate;
+        Cable newCable;
+
+        // input port :
+        for (Cable innerInputCable : this.innerInputCable) {
             try {
-                this.innerCircuit.addGatesFromJson(selection, this);
+                // setup new input gate
+                if (innerInputCable.getBusSize() > 1) {
+                    // TODO : set the gate bus size when creating the Numeric gate below
+                    // innerInputCable.getBusSize()
+                    newGate = ((Numeric) newCircuit.addNewGate("Numeric"));
+                } else {
+                    newGate = ((Lever) newCircuit.addNewGate("Lever"));
+                }
+                ((Input) newGate).setSchemaInputPort(innerInputCable.getInputPort());
+
+                // setup new cable
+                newCable = innerInputCable.copy();
+                newCable.setInputGate(newGate);
+                newCable.setInputPort(0);
+
+                // connect the two gates
+                innerGate = innerInputCable.getOutputGate();
+                innerGate.getInputCable().set(innerInputCable.getOutputPort(), newCable);
+                newGate.getOutputCable().set(0, newCable);
+
             } catch (Exception e) {
-                System.err.println("Error circuit can't be launch " + e.getMessage());
+                System.err.println(e);
             }
         }
 
-    //#endregion
-
-    //#region loadFromFile
-
-        public final void loadFromFile(String filePath){
+        // output port :
+        for (Cable innerOutputCable : this.innerOutputCable) {
             try {
-                this.innerCircuit.addGatesFromFile(filePath, this);
+                // setup new input gate
+                if (innerOutputCable.getBusSize() > 1) {
+                    // TODO : set the gate bus size when creating the Numeric gate below
+                    // innerOutputCable.getBusSize()
+                    newGate = ((Display) newCircuit.addNewGate("Display"));
+                } else {
+                    // TODO : Maybe if we add a size 1 output (like a LED) but that is of now use
+                    // right now
+                    // newGate = ((Led)newCircuit.addNewGate("Led"));
+                    newGate = ((Display) newCircuit.addNewGate("Display"));
+                }
+                ((Output) newGate).setSchemaOutputPort(innerOutputCable.getOutputPort());
+
+                // setup new cable
+                newCable = innerOutputCable.copy();
+                newCable.setOutputGate(newGate);
+                newCable.setOutputPort(0);
+
+                // connect the two gates
+                innerGate = innerOutputCable.getInputGate();
+                innerGate.getOutputCable().set(innerOutputCable.getInputPort(), newCable);
+                newGate.getInputCable().set(0, newCable);
+
             } catch (Exception e) {
-                System.err.println("Error circuit can't be launch " + e.getMessage());
+                System.err.println(e);
             }
         }
 
-    //#endregion
+        return newCircuit;
+    }
 
-    //#region convertInnerCircuitToCircuit
+    // #endregion
 
-        /**
-         * Format the inner circuit to fit the standard circuit json
-         * meaning all schema inner input port will become a Lever or a Numeric gate with an assigned port
-         * and all schema inner output port will become a output gate with an assigned port
-         *
-         * @return
-         */
-        public Circuit convertInnerCircuitToCircuit(){
-            Circuit newCircuit = this.innerCircuit.copy();
-            newCircuit.set_name(this.name);
+    // #region toJson
 
-            Gate newGate;
-            Gate innerGate;
-            Cable newCable;
+    // TODO : toJson()
 
-            // input port :
-            for(Cable innerInputCable : this.innerInputCable){
-                try {
-                    // setup new input gate
-                    if (innerInputCable.getBusSize() > 1) {
-                        // TODO : set the gate bus size when creating the Numeric gate below
-                        // innerInputCable.getBusSize()
-                        newGate = ((Numeric)newCircuit.addNewGate("Numeric"));
-                    } else {
-                        newGate = ((Lever)newCircuit.addNewGate("Lever"));
-                    }
-                    ((Input)newGate).setSchemaInputPort(innerInputCable.getInputPort());
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = super.toJson();
 
-                    // setup new cable
-                    newCable = innerInputCable.copy();
-                    newCable.setInputGate(newGate);
-                    newCable.setInputPort(0);
+        json.put("circuitPath", this.filePath);
 
-                    // connect the two gates
-                    innerGate = innerInputCable.getOutputGate();
-                    innerGate.getInputCable().set(innerInputCable.getOutputPort(), newCable);
-                    newGate.getOutputCable().set(0, newCable);
+        return json;
+    }
 
+    // #endregion
 
-                } catch (Exception e) {
-                    System.err.println(e);
-                }
+    // #region saveInnerCircuit
+
+    /**
+     * Shorthand for {@link #saveInnerCircuit(String filePath)}
+     *
+     * @throws Exception
+     */
+    public void saveInnerCircuit() throws Exception {
+        this.saveInnerCircuit(this.filePath);
+    }
+
+    /**
+     * Save the Json of the inner circuit at the given localisation
+     * We aim for './data/schema/'
+     *
+     * @param filePath
+     * @throws Exception
+     */
+    public void saveInnerCircuit(String filePath) throws Exception {
+        // Formating folderPath
+        filePath = filePath.replace("/", File.separator);
+
+        // We create the designed file
+        try {
+            File file = new File(filePath);
+            if (file.getParentFile().mkdirs() || file.createNewFile()) {
+                System.out.println(String.format("'%s' created", filePath));
+            } else {
+                System.out.println(String.format("'%s' allready exist", filePath));
             }
-
-            // output port :
-            for(Cable innerOutputCable : this.innerOutputCable){
-                try {
-                    // setup new input gate
-                    if (innerOutputCable.getBusSize() > 1) {
-                        // TODO : set the gate bus size when creating the Numeric gate below
-                        // innerOutputCable.getBusSize()
-                        newGate = ((Display)newCircuit.addNewGate("Display"));
-                    } else {
-                        // TODO : Maybe if we add a size 1 output (like a LED) but that is of now use right now
-                        // newGate = ((Led)newCircuit.addNewGate("Led"));
-                        newGate = ((Display)newCircuit.addNewGate("Display"));
-                    }
-                    ((Output)newGate).setSchemaOutputPort(innerOutputCable.getOutputPort());
-
-                    // setup new cable
-                    newCable = innerOutputCable.copy();
-                    newCable.setOutputGate(newGate);
-                    newCable.setOutputPort(0);
-
-                    // connect the two gates
-                    innerGate = innerOutputCable.getInputGate();
-                    innerGate.getOutputCable().set(innerOutputCable.getInputPort(), newCable);
-                    newGate.getInputCable().set(0, newCable);
-
-                } catch (Exception e) {
-                    System.err.println(e);
-                }
-            }
-
-            return newCircuit;
+        } catch (NullPointerException | IOException e) {
+            e.printStackTrace();
         }
 
-    //#endregion
+        // We write in the designed file
+        try {
+            FileWriter writer = new FileWriter(filePath);
 
+            // the inner circuit must be adapted to a circuit
+            //
+            writer.write(this.convertInnerCircuitToCircuit().toJson().toString(1));
+            writer.close();
 
-
-    //#region toJson
-
-        // TODO : toJson()
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public JSONObject toJson() {
-            JSONObject json = super.toJson();
-
-            json.put("circuitPath", this.filePath);
-
-            return json;
+            System.out.println("Schema inner circuit saved with success in: " + filePath);
+        } catch (IOException e) {
+            System.err.println("Error " + filePath + " can't be saved : " + e.getMessage());
         }
+    }
 
-    //#endregion
-
-    //#region saveInnerCircuit
-
-        /**
-         * Shorthand for {@link #saveInnerCircuit(String filePath)}
-         * @throws Exception
-         */
-        public void saveInnerCircuit() throws Exception{
-            this.saveInnerCircuit(this.filePath);
-        }
-
-        /**
-         * Save the Json of the inner circuit at the given localisation
-         * We aim for './data/schema/'
-         *
-         * @param folderPath
-         * @throws Exception
-         */
-        @SuppressWarnings("CallToPrintStackTrace")
-        public void saveInnerCircuit(String filePath) throws Exception{
-            // Formating folderPath
-            filePath = filePath.replace("/", File.separator);
-
-            // We create the designed file
-            try {
-                File file = new File(filePath);
-                if(file.getParentFile().mkdirs() || file.createNewFile()){
-                    System.out.println(String.format("'%s' created", filePath));
-                }
-                else{
-                    System.out.println(String.format("'%s' allready exist", filePath));
-                }
-            } catch (NullPointerException | IOException e){
-                e.printStackTrace();
-            }
-
-            // We write in the designed file
-            try{
-                FileWriter writer = new FileWriter(filePath);
-
-                // the inner circuit must be adapted to a circuit
-                //
-                writer.write(this.convertInnerCircuitToCircuit().toJson().toString(1));
-                writer.close();
-
-                System.out.println("Schema inner circuit saved with success in: " + filePath);
-            }
-            catch(IOException e){
-                System.err.println("Error " + filePath +" can't be saved : " + e.getMessage());
-            }
-        }
-
-    //#endregion
-
+    // #endregion
 
 }
