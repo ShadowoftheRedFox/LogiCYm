@@ -15,13 +15,8 @@ public class ButtonTest {
             new Button(0l);
         });
 
-        assertThrows(Exception.class, () -> {
-            new Button(0l);
-        });
-
         assertDoesNotThrow(() -> {
             new Button();
-            new Button(10l);
             new Button(10l);
         });
     }
