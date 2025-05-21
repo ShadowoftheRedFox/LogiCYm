@@ -46,6 +46,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -130,6 +131,27 @@ public class Editor extends VBox {
 
     @FXML
     private MenuItem unselectAllButton;
+
+    @FXML
+    private RadioMenuItem simulationSpeed1;
+
+    @FXML
+    private RadioMenuItem simulationSpeed10;
+
+    @FXML
+    private RadioMenuItem simulationSpeed20;
+
+    @FXML
+    private RadioMenuItem simulationSpeed5;
+
+    @FXML
+    private RadioMenuItem simulationSpeed60;
+
+    @FXML
+    private RadioMenuItem simulationSpeed1k;
+
+    @FXML
+    private RadioMenuItem simulationSpeedUnlimited;
     // #endregion
 
     @FXML
@@ -301,6 +323,34 @@ public class Editor extends VBox {
             loadSimulationFile();
         });
 
+        enableSimulationButton.setOnAction(event -> {
+            toggleSimulation(true);
+        });
+        disableSimulationButton.setOnAction(event -> {
+            toggleSimulation(false);
+        });
+
+        simulationSpeed1.setOnAction(event -> {
+            setSimulationSpeed(1);
+        });
+        simulationSpeed10.setOnAction(event -> {
+            setSimulationSpeed(10);
+        });
+        simulationSpeed20.setOnAction(event -> {
+            setSimulationSpeed(20);
+        });
+        simulationSpeed5.setOnAction(event -> {
+            setSimulationSpeed(5);
+        });
+        simulationSpeed60.setOnAction(event -> {
+            setSimulationSpeed(60);
+        });
+        simulationSpeed1k.setOnAction(event -> {
+            setSimulationSpeed(1000);
+        });
+        simulationSpeedUnlimited.setOnAction(event -> {
+            setSimulationSpeed(-1);
+        });
         // #endregion
 
         // #region Help
@@ -440,6 +490,10 @@ public class Editor extends VBox {
         manager.getStage()
                 .setTitle("LogiCYm: " + (unsavedChanges ? "Unsaved changes - " : "") + editedCircuit.getName());
         saveButton.setDisable(!unsavedChanges);
+    }
+
+    private void setSimulationSpeed(int value) {
+        // TODO edit simulation speed somewhere
     }
 
     public void resizeGrid() {
@@ -602,6 +656,11 @@ public class Editor extends VBox {
         }
 
         clearSelection();
+    }
+
+    private void toggleSimulation(boolean activated) {
+        enableSimulationButton.setDisable(activated);
+        disableSimulationButton.setDisable(!activated);
     }
 
     private void closeEditor() {
