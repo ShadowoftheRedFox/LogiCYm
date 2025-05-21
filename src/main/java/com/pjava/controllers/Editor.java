@@ -1,23 +1,30 @@
 package com.pjava.controllers;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 
 import com.pjava.src.UI.SceneManager;
 import com.pjava.src.UI.components.Pin;
-import com.pjava.src.UI.components.gates.UIAnd;
 import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
+import com.pjava.src.UI.components.gates.UIAnd;
 import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
-import com.pjava.src.UI.components.input.*;
+import com.pjava.src.UI.components.input.UIButton;
+import com.pjava.src.UI.components.input.UIClock;
+import com.pjava.src.UI.components.input.UIGround;
+import com.pjava.src.UI.components.input.UILever;
+import com.pjava.src.UI.components.input.UIPower;
 import com.pjava.src.UI.components.output.UIDisplay;
 import com.pjava.src.components.Circuit;
+import com.pjava.src.document.SimulationFileLoader;
 import com.pjava.src.utils.UIUtils;
 import com.pjava.src.utils.UIUtils.ValidationAnwser;
+import com.pjava.src.utils.UtilsSave;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -28,13 +35,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.text.Text;
-import javafx.stage.WindowEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -45,16 +52,23 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class Editor extends VBox {
     @FXML
-    public GridPane gridPane;
+    private GridPane gridPane;
     @FXML
-    public ScrollPane viewScroll;
+    private ScrollPane viewScroll;
     @FXML
     private AnchorPane container;
     @FXML
     private VBox infosContainer;
+    @FXML
+    private VBox schemaContainer;
+
     // #region Menu items
     @FXML
     private MenuItem copyButton;
@@ -112,11 +126,31 @@ public class Editor extends VBox {
 
     @FXML
     private MenuItem unselectAllButton;
+
+    @FXML
+    private RadioMenuItem simulationSpeed1;
+
+    @FXML
+    private RadioMenuItem simulationSpeed10;
+
+    @FXML
+    private RadioMenuItem simulationSpeed20;
+
+    @FXML
+    private RadioMenuItem simulationSpeed5;
+
+    @FXML
+    private RadioMenuItem simulationSpeed60;
+
+    @FXML
+    private RadioMenuItem simulationSpeed1k;
+
+    @FXML
+    private RadioMenuItem simulationSpeedUnlimited;
     // #endregion
 
-    // #region Menu items
     @FXML
-    public Button cableBtn;
+    private Button cableBtn;
     /**
      * scenemanager
      */
@@ -152,7 +186,6 @@ public class Editor extends VBox {
      */
     public Editor(SceneManager manager) {
         this.manager = manager;
-        setUnsavedChanges(false);
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Editor.fxml"));
@@ -219,7 +252,6 @@ public class Editor extends VBox {
                     break;
             }
         });
-
         saveButton.setOnAction(event -> {
             try {
                 editedCircuit.save();
@@ -246,6 +278,39 @@ public class Editor extends VBox {
         });
 
         initializeSchema();
+
+        loadInputsButton.setOnAction(event -> {
+            loadSimulationFile();
+        });
+
+        enableSimulationButton.setOnAction(event -> {
+            toggleSimulation(true);
+        });
+        disableSimulationButton.setOnAction(event -> {
+            toggleSimulation(false);
+        });
+
+        simulationSpeed1.setOnAction(event -> {
+            setSimulationSpeed(1);
+        });
+        simulationSpeed10.setOnAction(event -> {
+            setSimulationSpeed(10);
+        });
+        simulationSpeed20.setOnAction(event -> {
+            setSimulationSpeed(20);
+        });
+        simulationSpeed5.setOnAction(event -> {
+            setSimulationSpeed(5);
+        });
+        simulationSpeed60.setOnAction(event -> {
+            setSimulationSpeed(60);
+        });
+        simulationSpeed1k.setOnAction(event -> {
+            setSimulationSpeed(1000);
+        });
+        simulationSpeedUnlimited.setOnAction(event -> {
+            setSimulationSpeed(-1);
+        });
         // #endregion
 
         // #region Help
@@ -261,11 +326,50 @@ public class Editor extends VBox {
                         "1;0;1\n" +
                         "0;1;0\n");
         // #endregion
+
+        initializeSchema();
+        setUnsavedChanges(false);
     }
 
     private void initializeSchema() {
         // TODO get all schema and add the buttons here with event listeners of the said
         // schema
+
+        ArrayList<Path> paths = UtilsSave.list(UtilsSave.saveFolder);
+        if (paths == null) {
+            throw new Error("Can't find save folder");
+        }
+
+        ArrayList<Path> files = new ArrayList<Path>();
+        ArrayList<Path> folders = new ArrayList<Path>();
+
+        for (Path path : paths) {
+            if (path.toString().endsWith(UtilsSave.saveExtension)) {
+                System.out.println("schema file: " + path);
+                files.add(path);
+            } else {
+                System.out.println("schema sub folder: " + path);
+                folders.add(path);
+            }
+        }
+
+        // TODO now, create panels and add buttons inside depending on subfolders
+
+        // creating buttons and adding them to the schema container
+        for (Path file : files) {
+            Button button = new Button(file.getFileName().toString().replaceFirst("[.][^.]+$", ""));
+            button.setTextAlignment(TextAlignment.CENTER);
+            button.setAlignment(Pos.CENTER);
+            button.setMaxSize(Double.MAX_VALUE, USE_COMPUTED_SIZE);
+            button.setPrefSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
+            button.setMinSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
+            schemaContainer.getChildren().add(button);
+
+            button.setOnAction(event -> {
+                System.out.println("Schema " + button.getText());
+                // TODO ui schema and add to container
+            });
+        }
     }
 
     /**
@@ -343,11 +447,16 @@ public class Editor extends VBox {
     // #region Functions
     private void setUnsavedChanges(boolean unsavedChanges) {
         this.unsavedChanges = unsavedChanges;
-        manager.getStage().setTitle((unsavedChanges ? "Unsaved changes - " : "") + editedCircuit.getName());
+        manager.getStage()
+                .setTitle("LogiCYm: " + (unsavedChanges ? "Unsaved changes - " : "") + editedCircuit.getName());
         saveButton.setDisable(!unsavedChanges);
     }
 
-    private void resizeGrid() {
+    private void setSimulationSpeed(int value) {
+        // TODO edit simulation speed somewhere
+    }
+
+    public void resizeGrid() {
         final double paneWidth = viewScroll.getWidth();
         final double paneHeight = viewScroll.getHeight();
 
@@ -509,6 +618,11 @@ public class Editor extends VBox {
         clearSelection();
     }
 
+    private void toggleSimulation(boolean activated) {
+        enableSimulationButton.setDisable(activated);
+        disableSimulationButton.setDisable(!activated);
+    }
+
     private void closeEditor() {
         if (unsavedChanges) {
             Consumer<ValidationAnwser> callback = (res) -> {
@@ -532,6 +646,35 @@ public class Editor extends VBox {
             Platform.exit();
         }
     }
+
+    private void loadSimulationFile() {
+        // Get the primary stage from the scene
+        Stage stage = (Stage) this.getScene().getWindow();
+
+        // Open file chooser dialog and get the saved file path
+        Path filePath = SimulationFileLoader.loadSimulationFile(stage);
+
+        if (filePath != null) {
+            // Display loading message
+            System.out.println("Loading simulation data from: " + filePath);
+
+            // Run the simulation
+            boolean success = SimulationFileLoader.runSimulation(filePath);
+
+            if (success) {
+                System.out.println("Simulation loaded and running successfully!");
+                // Enable the disable simulation button
+                disableSimulationButton.setDisable(false);
+                // Disable the enable simulation button
+                enableSimulationButton.setDisable(true);
+            } else {
+                System.err.println("Failed to run simulation.");
+            }
+        } else {
+            System.out.println("Simulation file selection canceled.");
+        }
+    }
+
     // #endregion
 
     // #region Gate spawn

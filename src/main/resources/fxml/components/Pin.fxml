@@ -4,10 +4,10 @@
 <?import javafx.scene.shape.Arc?>
 <?import javafx.scene.shape.Rectangle?>
 
-<VBox fx:id="container" alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="0.0" prefWidth="100.0" style="-fx-background-color: rgba(0,0,0,0);" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pjava.src.UI.components.Pin">
+<VBox fx:id="container" alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="0.0" prefWidth="50.0" style="-fx-background-color: rgba(0,0,0,0);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pjava.src.UI.components.Pin">
    <children>
-      <Arc fx:id="pinArc1" fill="DODGERBLUE" length="90.0" radiusX="100.0" radiusY="100.0" startAngle="90.0" stroke="TRANSPARENT" strokeType="INSIDE" type="ROUND" />
-      <Rectangle fx:id="pinCenter" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="TRANSPARENT" strokeType="INSIDE" width="100.0" />
-      <Arc fx:id="pinArc2" fill="DODGERBLUE" length="90.0" radiusX="100.0" radiusY="100.0" startAngle="180.0" stroke="TRANSPARENT" strokeType="INSIDE" type="ROUND" />
+      <Arc fx:id="pinArc1" fill="DODGERBLUE" length="90.0" radiusX="50.0" radiusY="50.0" startAngle="90.0" stroke="TRANSPARENT" strokeType="INSIDE" type="ROUND" />
+      <Rectangle fx:id="pinCenter" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="TRANSPARENT" strokeType="INSIDE" width="50.0" />
+      <Arc fx:id="pinArc2" fill="DODGERBLUE" length="90.0" radiusX="50.0" radiusY="50.0" startAngle="180.0" stroke="TRANSPARENT" strokeType="INSIDE" type="ROUND" />
    </children>
 </VBox>

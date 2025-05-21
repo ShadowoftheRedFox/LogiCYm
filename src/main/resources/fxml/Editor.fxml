@@ -37,10 +37,12 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.GridPane?>
@@ -87,6 +89,22 @@
                         <MenuItem fx:id="enableSimulationButton" mnemonicParsing="false" text="Enable simulation" />
                         <MenuItem fx:id="disableSimulationButton" disable="true" mnemonicParsing="false" text="Disable simulation" />
                         <SeparatorMenuItem mnemonicParsing="false" />
+                  <Menu mnemonicParsing="false" text="Similation speed">
+                    <items>
+                        <RadioMenuItem fx:id="simulationSpeed1" mnemonicParsing="false" text="1Hz">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="speed" />
+                           </toggleGroup>
+                        </RadioMenuItem>
+                        <RadioMenuItem fx:id="simulationSpeed5" mnemonicParsing="false" text="5Hz" toggleGroup="$speed" />
+                        <RadioMenuItem fx:id="simulationSpeed10" mnemonicParsing="false" text="10Hz" toggleGroup="$speed" />
+                        <RadioMenuItem fx:id="simulationSpeed20" mnemonicParsing="false" text="20Hz" toggleGroup="$speed" />
+                        <RadioMenuItem fx:id="simulationSpeed60" mnemonicParsing="false" text="60Hz" toggleGroup="$speed" />
+                        <RadioMenuItem fx:id="simulationSpeed1k" mnemonicParsing="false" text="1kHz" toggleGroup="$speed" />
+                        <RadioMenuItem fx:id="simulationSpeedUnlimited" mnemonicParsing="false" selected="true" text="Unlimited" toggleGroup="$speed" />
+                    </items>
+                  </Menu>
+                  <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="loadInputsButton" mnemonicParsing="false" text="Load inputs" />
                     </items>
                 </Menu>
@@ -121,15 +139,15 @@
                                                             <children>
                                                                 <VBox minHeight="-Infinity" minWidth="-Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                                     <children>
-                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickAnd" text="And" VBox.vgrow="NEVER" />
-                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickOr" text="Or" />
-                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickNot" text="Not" />
-                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickClock" text="Clock" />
-                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickDisplay" text="Display" />
-                                                      <Button layoutX="10.0" layoutY="112.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickButton" text="Button" />
-                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickLever" text="Lever" />
-                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickPower" text="Power" />
-                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickGround" text="Ground" />
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickAnd" text="And" textAlignment="CENTER" VBox.vgrow="NEVER" />
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickOr" text="Or" textAlignment="CENTER" />
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickNot" text="Not" textAlignment="CENTER" />
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickClock" text="Clock" textAlignment="CENTER" />
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickDisplay" text="Display" textAlignment="CENTER" />
+                                                      <Button layoutX="10.0" layoutY="112.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickButton" text="Button" textAlignment="CENTER" />
+                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickLever" text="Lever" textAlignment="CENTER" />
+                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickPower" text="Power" textAlignment="CENTER" />
+                                                      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickGround" text="Ground" textAlignment="CENTER" />
                                                                     </children>
                                                                 </VBox>
                                                             </children>
@@ -151,11 +169,11 @@
                                                         </AnchorPane>
                                                     </content>
                                                 </TitledPane>
-                                                <TitledPane text="Schémas">
+                                                <TitledPane text="Schematics">
                                                     <content>
                                                         <AnchorPane>
                                              <children>
-                                                <VBox fx:id="schemaContainer" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                <VBox fx:id="schemaContainer" minHeight="-Infinity" minWidth="-Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                              </children></AnchorPane>
                                                     </content>
                                                 </TitledPane>
