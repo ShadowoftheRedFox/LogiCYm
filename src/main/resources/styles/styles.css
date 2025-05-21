@@ -1,18 +1,11 @@
-.root {
-    -fx-background-color: rgba(215, 221, 255);
-    background-color: rgba(215, 221, 255);
+@font-face {
+    /*the font family name provieded is ingore by javafx, use the name in teh file, which in this instance is 'Seven Segment'*/
+    font-family: 'Seven Segment';
+    src: url('../fonts/Segment.ttf');
 }
 
-.indexed-cell {
-    -fx-wrap-text: true;
-}
-
-.indexed-cell:even {
-    -fx-background-color: rgb(173, 185, 255);
-    background-color: rgba(173, 185, 255);
-}
-
-.indexed-cell:odd {
-    -fx-background-color: rgb(226, 230, 255);
-    background-color: rgba(226, 230, 255);
+/* segment figital font for displays */
+#display {
+    -fx-font-family: 'Seven Segment';
+    font-family: 'Seven Segment';
 }

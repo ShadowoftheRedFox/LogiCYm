@@ -121,6 +121,8 @@ public abstract class UIElement {
         setPosition(new Point2D(posX / 50, posY / 50));
     }
 
+    public abstract void updateVisuals();
+
     // #region Getters
     /**
      * give the name of the Gate
@@ -236,4 +238,38 @@ public abstract class UIElement {
         this.color = color;
     }
     // #endregion
+
+    /**
+     * Return the name of the class + the label + (string of the logic).
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + ": " + getName() + "(" + getLogic() + ")";
+    }
+
+    /**
+     * UIElements are equals if their logics are equals. Otherwise default equals.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof UIElement)) {
+            return false;
+        }
+        if (((UIElement) obj).getLogic() == null) {
+            return super.equals(obj);
+        }
+        return ((UIElement) obj).getLogic().equals(getLogic());
+    }
+
+    /**
+     * UIElements hashcode is the one from their logic. Default hashCode if the
+     * logic is null.
+     */
+    @Override
+    public int hashCode() {
+        if (getLogic() == null) {
+            return super.hashCode();
+        }
+        return getLogic().hashCode();
+    }
 }

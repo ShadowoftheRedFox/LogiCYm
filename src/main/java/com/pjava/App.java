@@ -41,7 +41,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         Scene scene = new Scene(new BorderPane(), 400, 200);
 
-        this.manager = new SceneManager(scene);
+        this.manager = new SceneManager(scene, stage);
         this.manager.addScreen("main", new MainController(this.manager));
         this.manager.addScreen("ploof", new PloofController(this.manager));
         this.manager.addScreen("workbench", new WorkBenchController(this.manager));

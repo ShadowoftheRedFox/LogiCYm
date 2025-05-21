@@ -8,26 +8,27 @@ import org.json.JSONObject;
 import com.pjava.src.components.Gate;
 import com.pjava.src.components.Circuit;
 import com.pjava.src.components.gates.*;
-public class CircuitTest{
+
+public class CircuitTest {
 
     /**
-     *  We try '.toJson()' with a gate
-     *  We print the result
+     * We try '.toJson()' with a gate
+     * We print the result
      */
     @Test
-    void test1(){
+    void test1() {
         System.out.println("\ntest 1 : toJson for a gate");
         And and = new And();
         System.out.println(and.toJson().toString());
     }
 
     /**
-     *  We try adding gates in a 'circuit' instance
-     *  Then we print the result
+     * We try adding gates in a 'circuit' instance
+     * Then we print the result
      */
     @Test
     @SuppressWarnings("CallToPrintStackTrace")
-    void test2(){
+    void test2() {
         System.out.println("\ntest 2 : add gate and custom label");
         Circuit circuit = new Circuit();
 
@@ -36,7 +37,7 @@ public class CircuitTest{
             circuit.addNewGate("Or", "or1");
 
             Gate a = circuit.addNewGate("Not", "not1");
-            Gate b = circuit.addGate(circuit.get_allGates().get("not1"),"not1_copy");
+            Gate b = circuit.addGate(circuit.get_allGates().get("not1"), "not1_copy");
 
             Gate c = circuit.addNewGate("Not", "not2");
             Gate d = circuit.addGate(circuit.get_allGates().get("not2"));
@@ -47,15 +48,13 @@ public class CircuitTest{
 
             assertEquals(a, b);
             assertEquals(c, d);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.err.println(e);
         }
 
-
-
         System.out.println("circuit to JSON by hand :\nnuméro : clé : Gate");
         int j = 0;
-        for(String i : circuit.get_allGates().keySet()){
+        for (String i : circuit.get_allGates().keySet()) {
             System.out.println(String.format("%d : %s : %s", j, i, circuit.get_allGates().get(i).toJson()));
             j++;
         }
@@ -66,13 +65,13 @@ public class CircuitTest{
 
     @Test
     @SuppressWarnings("CallToPrintStackTrace")
-    void test3(){
+    void test3() {
 
         System.out.println("\ntest 3 : save");
         Circuit circuit2 = new Circuit();
         Circuit circuit2_bis = new Circuit("bbonqjour");
 
-        try{
+        try {
             circuit2.addNewGate("And");
             circuit2.addNewGate("Or");
             circuit2.addNewGate("Not");
@@ -96,15 +95,14 @@ public class CircuitTest{
             circuit.save("", "Bonjour");
             circuit.save("", "Bonjour.json");
 
-        }catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-
     @Test
-    void test4(){
+    void test4() {
         System.out.println("\ntest 4 : copy to himself");
         Circuit circuit3 = new Circuit();
 
@@ -114,14 +112,15 @@ public class CircuitTest{
             circuit3.addNewGate("Lever", "l1");
             circuit3.addNewGate("Not", "n1");
 
-            circuit3.connectGate("p1","n1", 0, 0);
+            circuit3.connectGate("p1", "n1", 0, 0);
 
             circuit3.save("test", "sirkui_3");
 
             System.out.println("Selection :");
             int j = 0;
-            for(String i : circuit3.get_allGates().keySet()){
-                System.out.println(String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.get_allGates().get(i).toJson()));
+            for (String i : circuit3.get_allGates().keySet()) {
+                System.out.println(
+                        String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.get_allGates().get(i).toJson()));
                 j++;
             }
 
@@ -129,8 +128,9 @@ public class CircuitTest{
 
             System.out.println("\nResult :");
             j = 0;
-            for(String i : circuit3.get_allGates().keySet()){
-                System.out.println(String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.get_allGates().get(i).toJson()));
+            for (String i : circuit3.get_allGates().keySet()) {
+                System.out.println(
+                        String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.get_allGates().get(i).toJson()));
                 j++;
             }
 
@@ -140,57 +140,51 @@ public class CircuitTest{
 
     }
 
-
     @Test
     @SuppressWarnings("CallToPrintStackTrace")
-    void test5(){
+    void test5() {
         System.out.println("\ntest 5 : loading circuit files");
         Circuit circuit4 = new Circuit();
-        try{
+        try {
             circuit4.addGatesFromFile("save4/circuit_1.json");
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             System.err.println(e);
         }
 
         System.out.println("\nLoading 'save4/circuit_1.json'..");
         System.out.println("numéro : clé : Gate");
         int j = 0;
-        for(String i : circuit4.get_allGates().keySet()){
+        for (String i : circuit4.get_allGates().keySet()) {
             System.out.println(String.format("%d : %s : %s", j, i, circuit4.get_allGates().get(i).toJson()));
             j++;
         }
 
-
         // from test 3 : [circuit2_bis] data/bbonqjour.json
-        try{
+        try {
             circuit4.addGatesFromFile("bbonqjour");
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             System.err.println(e);
         }
 
         System.out.println("\nLoading 'bbonqjour'..");
         System.out.println("numéro : clé : Gate");
         j = 0;
-        for(String i : circuit4.get_allGates().keySet()){
+        for (String i : circuit4.get_allGates().keySet()) {
             System.out.println(String.format("%d : %s : %s", j, i, circuit4.get_allGates().get(i).toJson()));
             j++;
         }
 
-
         // from test 4 : [circuit3] data/test/sirkui_3
-        try{
+        try {
             circuit4.addGatesFromFile("test/sirkui_3");
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             System.err.println(e);
         }
 
         System.out.println("\nLoading 'test/sirkuit_3'..");
         System.out.println("numéro : clé : Gate");
         j = 0;
-        for(String i : circuit4.get_allGates().keySet()){
+        for (String i : circuit4.get_allGates().keySet()) {
             System.out.println(String.format("%d : %s : %s", j, i, circuit4.get_allGates().get(i).toJson()));
             j++;
         }

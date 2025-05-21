@@ -2,6 +2,7 @@ package com.pjava.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import com.pjava.src.UI.SceneManager;
 import com.pjava.src.UI.components.Pin;
@@ -13,11 +14,14 @@ import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
 import com.pjava.src.UI.components.input.*;
 import com.pjava.src.UI.components.output.UIDisplay;
+import com.pjava.src.utils.UIUtlis;
+import com.pjava.src.utils.UIUtlis.ValidationAnwser;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
@@ -26,6 +30,7 @@ import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
+import javafx.stage.WindowEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
@@ -33,11 +38,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Line;
 
 public class Editor extends VBox {
     @FXML
@@ -124,7 +129,7 @@ public class Editor extends VBox {
     /**
      * list of nodes selected
      */
-    private ArrayList<Node> selectedNodes = new ArrayList<Node>();
+    private ArrayList<UIElement> selectedNodes = new ArrayList<UIElement>();
     private ArrayList<UICable> cableLines = new ArrayList<UICable>();
 
     /**
@@ -181,9 +186,31 @@ public class Editor extends VBox {
             clearSelection();
         });
 
+        manager.getStage().setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                event.consume();
+                closeEditor();
+            };
+        });
         quitButton.setOnAction(event -> {
-            // TODO popup to ask to save?
-            Platform.exit();
+            closeEditor();
+        });
+
+        deleteButton.setOnAction(event -> {
+            deleteSelectedElement();
+        });
+        manager.getScene().setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case DELETE:
+                    deleteSelectedElement();
+                    break;
+                case BACK_SPACE:
+                    deleteSelectedElement();
+                    break;
+                default:
+                    break;
+            }
         });
         // #endregion
 
@@ -219,42 +246,14 @@ public class Editor extends VBox {
             throw new Error("Stand alone pin");
         }
 
-        // Créer le câble en tant que Node
+        // TODO case if either gate already has a one sided cable connected
+        // create a new cable controller
         UICable cableController = UICable.create();
-        // Node cableNode = cableController.getNode();
-
-        // Ajouter le câble au conteneur
-        // container.getChildren().add(cableNode);
-
-        // Connecter le câble
+        // connect cable
         cableController.connect(source, target, sourceGate, targetGate);
-
-        // Ajouter le câble aux gates connectées
-        // TODO cable to pins, not to gate
-        // TODO english comments
-        sourceGate.addConnectedCable(cableController);
-        targetGate.addConnectedCable(cableController);
-
-        Line cable = new Line();
-
-        cable.setLayoutX(0);
-        cable.setLayoutY(0);
-
-        cable.setStartX(source.getCenter().getX());
-        cable.setStartY(source.getCenter().getY());
-        cable.setEndX(target.getCenter().getX());
-        cable.setEndY(target.getCenter().getY());
-
-        cable.strokeWidthProperty().set(5);
-        cable.setStroke(Color.RED);
-        cable.setFill(Color.RED);
-
-        container.getChildren().add(cable);
         cableLines.add(cableController);
-
-        System.out.println("cabling from "
-                + cable.getStartX() + ":" + cable.getStartY() + " to "
-                + cable.getEndX() + ":" + cable.getEndY());
+        container.getChildren().add(cableController.getNode());
+        cableController.getNode().toBack();
 
         lastInputPinPressed = null;
         lastOutputPinPressed = null;
@@ -293,8 +292,9 @@ public class Editor extends VBox {
     }
 
     private void pressSelection(MouseEvent event) {
-        // press is not on a blank space
-        if (!gridPane.equals(event.getTarget())) {
+        // make sure selection always start on the grid
+        if (!gridPane.equals(event.getTarget()) &&
+                !(event.getTarget() instanceof Pane)) {
             return;
         }
 
@@ -346,10 +346,19 @@ public class Editor extends VBox {
         // TODO look for selected elements with selectedNodes
         container.getChildren().remove(selectionRectangle);
         selectionRectangle = null;
+        deleteButton.setDisable(false);
     }
 
     private void clearSelection() {
+        for (UIElement selectedElement : selectedNodes) {
+            if (selectedElement != null) {
+                selectedElement.getNode().setStyle("-fx-background-color: #ffffff00");
+            }
+        }
+
         selectedNodes.clear();
+        deleteButton.setDisable(true);
+        replaceInfos(null);
     }
 
     private void replaceInfos(Node content) {
@@ -358,6 +367,63 @@ public class Editor extends VBox {
         if (content != null) {
             // add content to the container
             infosContainer.getChildren().add(content);
+        }
+    }
+
+    private void selectElement(UIElement element) {
+        clearSelection();
+        if (element != null) {
+            selectedNodes.add(element);
+            element.getNode().setStyle("-fx-background-color: #0000ff80");
+        }
+        deleteButton.setDisable(element == null);
+    }
+
+    private void deleteSelectedElement() {
+        deleteButton.setDisable(true);
+        if (selectedNodes.size() == 0) {
+            return;
+        }
+
+        System.out.println("Deleting " + selectedNodes.size() + " elements");
+        for (UIElement selectedElement : selectedNodes) {
+            String elementName = selectedElement.toString();
+            System.out.println("deleting " + elementName);
+
+            // remove from the scene
+            container.getChildren().remove(selectedElement.getNode());
+
+            // disconnect everything
+            if (selectedElement instanceof UIGate) {
+                ((UIGate) selectedElement).disconnect();
+            } else if (selectedElement instanceof UICable) {
+                ((UICable) selectedElement).disconnect();
+            } else {
+                System.out.println("Something unexpected have been selected: " + selectedElement);
+            }
+        }
+
+        clearSelection();
+    }
+
+    private void closeEditor() {
+        // TODO check if need to save here
+        boolean needToSave = true;
+        if (needToSave) {
+            Consumer<ValidationAnwser> callback = (res) -> {
+                if (res == ValidationAnwser.APPROVED) {
+                    // save here
+                    Platform.exit();
+                } else if (res == ValidationAnwser.DENIED) {
+                    // don't save
+                    Platform.exit();
+                }
+            };
+
+            UIUtlis.validationPopup("There are unsaved changes.\nDo you wish to save them?", callback, "Save changes",
+                    "Dismiss changes", "Cancel");
+        } else {
+            Platform.exit();
         }
     }
     // #endregion
@@ -373,6 +439,7 @@ public class Editor extends VBox {
         pinsListener(andController);
         andController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(andController.getInfos().getNode());
+            selectElement(andController);
         });
     }
 
@@ -386,6 +453,7 @@ public class Editor extends VBox {
         pinsListener(orController);
         orController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(orController.getInfos().getNode());
+            selectElement(orController);
         });
     }
 
@@ -399,6 +467,7 @@ public class Editor extends VBox {
         pinsListener(notController);
         notController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(notController.getInfos().getNode());
+            selectElement(notController);
         });
     }
 
@@ -412,6 +481,7 @@ public class Editor extends VBox {
         pinsListener(buttonController);
         buttonController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(buttonController.getInfos().getNode());
+            selectElement(buttonController);
         });
     }
 
@@ -425,6 +495,7 @@ public class Editor extends VBox {
         pinsListener(clockController);
         clockController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(clockController.getInfos().getNode());
+            selectElement(clockController);
         });
     }
 
@@ -438,6 +509,7 @@ public class Editor extends VBox {
         pinsListener(leverController);
         leverController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(leverController.getInfos().getNode());
+            selectElement(leverController);
         });
     }
 
@@ -451,6 +523,7 @@ public class Editor extends VBox {
         pinsListener(powerController);
         powerController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(powerController.getInfos().getNode());
+            selectElement(powerController);
         });
     }
 
@@ -464,6 +537,7 @@ public class Editor extends VBox {
         pinsListener(groundController);
         groundController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(groundController.getInfos().getNode());
+            selectElement(groundController);
         });
     }
 
@@ -477,6 +551,7 @@ public class Editor extends VBox {
         pinsListener(displayController);
         displayController.getNode().setOnMousePressed(mouseEvent -> {
             replaceInfos(displayController.getInfos().getNode());
+            selectElement(displayController);
         });
     }
 
@@ -499,6 +574,7 @@ public class Editor extends VBox {
             });
         }
     }
+
     @FXML
     public void clickCable(ActionEvent event) {
         System.out.println("Click Cable!");
