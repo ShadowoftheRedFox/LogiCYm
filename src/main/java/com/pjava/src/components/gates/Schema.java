@@ -17,6 +17,7 @@ import com.pjava.src.components.input.Lever;
 import com.pjava.src.components.input.Numeric;
 import com.pjava.src.components.output.Display;
 import com.pjava.src.components.output.Output;
+import com.pjava.src.utils.UtilsSave;
 
 
 // TODO : override Gate.updateState() for it to directly '.updateState()' the inner gate connected to a port
@@ -85,7 +86,7 @@ public class Schema extends Gate {
         this.setName(schemaName);
         this.loadFromJson(selection);
 
-        this.filePath = String.format("./data/schema/%s.json", schemaName);
+        this.filePath = String.format("%sschema/%s.json", UtilsSave.saveFolder.toString(), schemaName);
         this.saveInnerCircuit();
     }
 

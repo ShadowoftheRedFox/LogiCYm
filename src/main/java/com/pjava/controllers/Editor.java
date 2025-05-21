@@ -257,7 +257,6 @@ public class Editor extends VBox {
                     break;
             }
         });
-
         saveButton.setOnAction(event -> {
             try {
                 editedCircuit.save();
