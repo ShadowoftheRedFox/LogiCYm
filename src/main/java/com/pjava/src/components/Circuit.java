@@ -430,6 +430,7 @@ public class Circuit {
 
                 String type = gate_Json.getString("type");
                 String oldId = String.valueOf(gate_Json.getInt("uuid"));
+                // FIXME : needs more info for each gates
                 tempCircuit.addNewGate(type, oldId);
             }
 
@@ -489,10 +490,11 @@ public class Circuit {
 
                 String type = gate_Json.getString("type");
                 String oldId = String.valueOf(gate_Json.getInt("uuid"));
+                // FIXME : needs more info for each gates
                 tempCircuit.addNewGate(type, oldId);
             }
 
-            // 1.bis : We whant to turn all InputLever/Output into schema port
+            // 1.bis : We whant to turn all Input(Lever/Numeric)  and Output into schema port
             // Input
             for (String key : tempCircuit.getInputGates().keySet()) {
                 Input gate = tempCircuit.getInputGates().get(key);
@@ -630,8 +632,11 @@ public class Circuit {
 
                     if (targetGateOldId.equals("-1")) {
                         if (targetGateOutputIndex != -1) {
-                            schema.connectInnerInputGate(tempCircuit.getAllGates().get(baseGateOldId),
-                                    baseGateInputIndex, targetGateOutputIndex);
+                            Gate.connectInnerInputGate(
+                                schema,
+                                targetGateOutputIndex,
+                                tempCircuit.getAllGates().get(baseGateOldId),
+                                baseGateInputIndex);
                             if (!innerInputGatesWithIndex.containsKey(i)) {
                                 innerInputGatesWithIndex.put(i, new ArrayList<>());
                             }
@@ -650,8 +655,11 @@ public class Circuit {
 
                     if (targetGateOldId.equals("-1")) {
                         if (targetGateInputIndex != -1) {
-                            schema.connectInnerOutputGate(tempCircuit.getAllGates().get(baseGateOldId),
-                                    baseGateOutputIndex, targetGateInputIndex);
+                            Gate.connectInnerOutputGate(
+                                schema,
+                                targetGateInputIndex,
+                                tempCircuit.getAllGates().get(baseGateOldId),
+                                baseGateOutputIndex);
                             if (!innerOuputGatesWithIndex.containsKey(i)) {
                                 innerOuputGatesWithIndex.put(i, new ArrayList<>());
                             }
@@ -683,8 +691,11 @@ public class Circuit {
 
                     // the target gate is the schema
                     if (targetGateOldId.equals("-1")) {
-                        schema.connectInnerOutputGate(tempCircuit.getAllGates().get(baseGateOldId),
-                                baseGateOutputIndex, targetGateInputIndex);
+                        Gate.connectInnerOutputGate(
+                            schema,
+                            targetGateInputIndex,
+                            tempCircuit.getAllGates().get(baseGateOldId),
+                            baseGateOutputIndex);
                         continue;
                     }
 
@@ -706,8 +717,11 @@ public class Circuit {
 
                     // the target gate is the schema
                     if (targetGateOldId.equals("-1")) {
-                        schema.connectInnerInputGate(tempCircuit.getAllGates().get(baseGateOldId), baseGateInputIndex,
-                                targetGateOutputIndex);
+                        Gate.connectInnerInputGate(
+                            schema,
+                            targetGateOutputIndex,
+                            tempCircuit.getAllGates().get(baseGateOldId),
+                            baseGateInputIndex);
                     }
                 }
             }
@@ -810,25 +824,6 @@ public class Circuit {
         } else {
             System.err.println(String.format("Warnig : gate '%s' not found in circuit '%s'", label, this.name));
         }
-    }
-
-    // #endregion
-
-    // #region copy
-
-    public Circuit copy() {
-        Circuit res = null;
-        res = new Circuit();
-
-        for (Gate gate : this.getAllGates().values()) {
-            try {
-                res.addGate(gate);
-            } catch (Exception e) {
-                System.err.println(e);
-            }
-        }
-
-        return res;
     }
 
     // #endregion

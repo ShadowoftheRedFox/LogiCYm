@@ -134,7 +134,8 @@ public class Cable extends Element {
      *
      * @return
      */
-    public Cable copy() {
+    @Override
+    public Cable clone() {
         Cable res = null;
         try {
             res = new Cable(this.getBusSize());
@@ -232,7 +233,7 @@ public class Cable extends Element {
      * @param gate
      * @throws Exception
      */
-    public void setInputGate(Gate gate) throws Exception {
+    private void setInputGate(Gate gate) throws Exception {
         if (gate == null) {
             throw new Exception("null input gate");
         }
@@ -247,7 +248,7 @@ public class Cable extends Element {
      * @param gate
      * @throws Exception
      */
-    public void setOutputGate(Gate gate) throws Exception {
+    private  void setOutputGate(Gate gate) throws Exception {
         if (gate == null) {
             throw new Exception("null output gate");
         }
