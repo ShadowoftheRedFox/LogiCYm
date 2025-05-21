@@ -22,7 +22,6 @@ import com.pjava.src.components.Circuit;
 import com.pjava.src.utils.UIUtils;
 import com.pjava.src.utils.UIUtils.ValidationAnwser;
 
-
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -55,9 +54,9 @@ import java.nio.file.Path;
 
 public class Editor extends VBox {
     @FXML
-    public GridPane gridPane;
+    private GridPane gridPane;
     @FXML
-    public ScrollPane viewScroll;
+    private ScrollPane viewScroll;
     @FXML
     private AnchorPane container;
     @FXML
@@ -123,7 +122,7 @@ public class Editor extends VBox {
 
     // #region Menu items
     @FXML
-    public Button cableBtn;
+    private Button cableBtn;
     /**
      * scenemanager
      */
@@ -159,7 +158,6 @@ public class Editor extends VBox {
      */
     public Editor(SceneManager manager) {
         this.manager = manager;
-        setUnsavedChanges(false);
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Editor.fxml"));
@@ -250,6 +248,7 @@ public class Editor extends VBox {
                 unselectAllButton.setDisable(newValue);
             };
         });
+
         initializeSchema();
 
         loadInputsButton.setOnAction(event -> {
@@ -271,6 +270,9 @@ public class Editor extends VBox {
                         "1;0;1\n" +
                         "0;1;0\n");
         // #endregion
+
+        initializeSchema();
+        setUnsavedChanges(false);
     }
 
     private void initializeSchema() {
@@ -353,11 +355,12 @@ public class Editor extends VBox {
     // #region Functions
     private void setUnsavedChanges(boolean unsavedChanges) {
         this.unsavedChanges = unsavedChanges;
-        manager.getStage().setTitle((unsavedChanges ? "Unsaved changes - " : "") + editedCircuit.getName());
+        manager.getStage()
+                .setTitle("LogiCYm: " + (unsavedChanges ? "Unsaved changes - " : "") + editedCircuit.getName());
         saveButton.setDisable(!unsavedChanges);
     }
 
-    private void resizeGrid() {
+    public void resizeGrid() {
         final double paneWidth = viewScroll.getWidth();
         final double paneHeight = viewScroll.getHeight();
 
@@ -542,20 +545,21 @@ public class Editor extends VBox {
             Platform.exit();
         }
     }
+
     private void loadSimulationFile() {
         // Get the primary stage from the scene
         Stage stage = (Stage) this.getScene().getWindow();
-        
+
         // Open file chooser dialog and get the saved file path
         Path filePath = SimulationFileLoader.loadSimulationFile(stage);
-        
+
         if (filePath != null) {
             // Display loading message
             System.out.println("Loading simulation data from: " + filePath);
-            
+
             // Run the simulation
             boolean success = SimulationFileLoader.runSimulation(filePath);
-            
+
             if (success) {
                 System.out.println("Simulation loaded and running successfully!");
                 // Enable the disable simulation button
@@ -570,7 +574,6 @@ public class Editor extends VBox {
         }
     }
 
-    
     // #endregion
 
     // #region Gate spawn

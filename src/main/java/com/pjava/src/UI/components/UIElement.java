@@ -64,8 +64,7 @@ public abstract class UIElement {
             UIElement controller = loader.getController();
 
             // create a gate infos instance
-            FXMLLoader infosLoader = new FXMLLoader(
-                    UIElement.class.getResource("/fxml/components/ComponentInfos.fxml"));
+            FXMLLoader infosLoader = new FXMLLoader(UIElement.class.getResource("/fxml/ComponentInfos.fxml"));
             Node infosNode = infosLoader.load();
             // and add it to the gate controller
             controller.infos = infosLoader.getController();

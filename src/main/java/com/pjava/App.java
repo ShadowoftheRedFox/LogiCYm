@@ -3,9 +3,6 @@ package com.pjava;
 import java.io.IOException;
 
 import com.pjava.controllers.Editor;
-import com.pjava.controllers.MainController;
-import com.pjava.controllers.PloofController;
-import com.pjava.controllers.WorkBenchController;
 import com.pjava.src.UI.SceneManager;
 
 import javafx.application.Application;
@@ -42,9 +39,6 @@ public class App extends Application {
         Scene scene = new Scene(new BorderPane(), 400, 200);
 
         this.manager = new SceneManager(scene, stage);
-        this.manager.addScreen("main", new MainController(this.manager));
-        this.manager.addScreen("ploof", new PloofController(this.manager));
-        this.manager.addScreen("workbench", new WorkBenchController(this.manager));
         this.manager.addScreen("editor", new Editor(this.manager));
 
         Image haerin = new Image("/img/haerin.jpg"); // silly
