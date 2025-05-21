@@ -28,8 +28,6 @@ import com.pjava.src.components.input.Numeric;
 import com.pjava.src.components.input.Power;
 import com.pjava.src.components.output.Display;
 import com.pjava.src.components.output.Output;
-import com.pjava.src.utils.UIUtils;
-import com.pjava.src.utils.Utils;
 import com.pjava.src.utils.UtilsSave;
 
 // TODO : Format d'une selection
@@ -37,6 +35,7 @@ import com.pjava.src.utils.UtilsSave;
 // TODO : recup ces arguments quand on passe du json
 // TODO : disconnectGate()
 // TODO : input de n bus
+// TODO : selection
 
 public class Circuit {
 
@@ -432,6 +431,7 @@ public class Circuit {
 
                 String type = gate_Json.getString("type");
                 String oldId = String.valueOf(gate_Json.getInt("uuid"));
+                // FIXME : needs more info for each gates
                 tempCircuit.addNewGate(type, oldId);
             }
 
@@ -491,10 +491,11 @@ public class Circuit {
 
                 String type = gate_Json.getString("type");
                 String oldId = String.valueOf(gate_Json.getInt("uuid"));
+                // FIXME : needs more info for each gates
                 tempCircuit.addNewGate(type, oldId);
             }
 
-            // 1.bis : We whant to turn all InputLever/Output into schema port
+            // 1.bis : We whant to turn all Input(Lever/Numeric)  and Output into schema port
             // Input
             for (String key : tempCircuit.getInputGates().keySet()) {
                 Input gate = tempCircuit.getInputGates().get(key);
@@ -551,7 +552,7 @@ public class Circuit {
                 gate_JsonArray.remove(input_jsonIndex);
 
                 // remove from the circuit
-                tempCircuit.removeGate(key);
+                tempCircuit.delGate(key);
             }
 
             // output
@@ -608,7 +609,7 @@ public class Circuit {
                 gate_JsonArray.remove(output_jsonIndex);
 
                 // remove from the circuit
-                tempCircuit.removeGate(key);
+                tempCircuit.delGate(key);
             }
 
             // 2 : Once all the gate are created, we connect them thanks to their old uuid
@@ -632,8 +633,11 @@ public class Circuit {
 
                     if (targetGateOldId.equals("-1")) {
                         if (targetGateOutputIndex != -1) {
-                            schema.connectInnerInputGate(tempCircuit.getAllGates().get(baseGateOldId),
-                                    baseGateInputIndex, targetGateOutputIndex);
+                            Gate.connectInnerInputGate(
+                                schema,
+                                targetGateOutputIndex,
+                                tempCircuit.getAllGates().get(baseGateOldId),
+                                baseGateInputIndex);
                             if (!innerInputGatesWithIndex.containsKey(i)) {
                                 innerInputGatesWithIndex.put(i, new ArrayList<>());
                             }
@@ -652,8 +656,11 @@ public class Circuit {
 
                     if (targetGateOldId.equals("-1")) {
                         if (targetGateInputIndex != -1) {
-                            schema.connectInnerOutputGate(tempCircuit.getAllGates().get(baseGateOldId),
-                                    baseGateOutputIndex, targetGateInputIndex);
+                            Gate.connectInnerOutputGate(
+                                schema,
+                                targetGateInputIndex,
+                                tempCircuit.getAllGates().get(baseGateOldId),
+                                baseGateOutputIndex);
                             if (!innerOuputGatesWithIndex.containsKey(i)) {
                                 innerOuputGatesWithIndex.put(i, new ArrayList<>());
                             }
@@ -685,8 +692,11 @@ public class Circuit {
 
                     // the target gate is the schema
                     if (targetGateOldId.equals("-1")) {
-                        schema.connectInnerOutputGate(tempCircuit.getAllGates().get(baseGateOldId),
-                                baseGateOutputIndex, targetGateInputIndex);
+                        Gate.connectInnerOutputGate(
+                            schema,
+                            targetGateInputIndex,
+                            tempCircuit.getAllGates().get(baseGateOldId),
+                            baseGateOutputIndex);
                         continue;
                     }
 
@@ -708,8 +718,11 @@ public class Circuit {
 
                     // the target gate is the schema
                     if (targetGateOldId.equals("-1")) {
-                        schema.connectInnerInputGate(tempCircuit.getAllGates().get(baseGateOldId), baseGateInputIndex,
-                                targetGateOutputIndex);
+                        Gate.connectInnerInputGate(
+                            schema,
+                            targetGateOutputIndex,
+                            tempCircuit.getAllGates().get(baseGateOldId),
+                            baseGateInputIndex);
                     }
                 }
             }
@@ -767,10 +780,11 @@ public class Circuit {
 
     // #region delGate
 
-    public void removeGate(String label) {
+    public void delGate(String label) {
         if (this.getAllGates().containsKey(label)) {
             Gate gate = this.getAllGates().get(label);
 
+            gate.disconnect();
             this.getAllGates().remove(label);
 
             if (gate instanceof Input) {
@@ -793,24 +807,17 @@ public class Circuit {
 
     // #endregion
 
-    // #region copy
 
-    public Circuit copy() {
-        Circuit res = null;
-        res = new Circuit();
+    // #region delGateFromIdList
 
-        for (Gate gate : this.getAllGates().values()) {
-            try {
-                res.addGate(gate);
-            } catch (Exception e) {
-                System.err.println(e);
-            }
+    public void delGateFromIdList(ArrayList<Integer> idGates) {
+        for (int id : idGates) {
+            delGate(String.valueOf(id));
         }
-
-        return res;
     }
 
     // #endregion
+
 
     // #region toJson
 
@@ -881,8 +888,8 @@ public class Circuit {
                 folderPath = "";
             }
 
-            if (!folderPath.startsWith("/data")) {
-                folderPath = UtilsSave.saveFolder + folderPath;
+            if (!folderPath.startsWith(UtilsSave.saveFolder.toString().replace(".", ""))) {
+                folderPath = UtilsSave.saveFolder.toString() + folderPath;
             }
 
             folderPath = "." + folderPath;
