@@ -248,7 +248,7 @@ public abstract class Gate extends Element {
                     // one of them is a Cable, the other is null, then get the Cable and connect
                     if (thisOutputCable != null && arg0InputCable == null) {
                         if (thisOutputCable.outputGate != null) {
-                            throw new Exception("connection possible but bus allready full");
+                            throw new Exception("connection possible but bus already full");
                         }
                         thisOutputCable.outputGate = arg0;
                         arg0.inputCable.set(j, thisOutputCable);
@@ -261,7 +261,7 @@ public abstract class Gate extends Element {
                         return thisOutputCable;
                     } else if (thisOutputCable == null && arg0InputCable != null) {
                         if (arg0InputCable.inputGate != null) {
-                            throw new Exception("connection possible but bus allready full");
+                            throw new Exception("connection possible but bus already full");
                         }
                         arg0InputCable.inputGate = this;
                         this.outputCable.set(i, arg0InputCable);
@@ -282,7 +282,7 @@ public abstract class Gate extends Element {
 
         // if we're here, either no match or connection impossible
         if (matchedButFull) {
-            throw new Exception("connection possible but bus allready full");
+            throw new Exception("connection possible but bus already full");
         }
 
         return null;
@@ -342,7 +342,7 @@ public abstract class Gate extends Element {
                 // incompatible sizes
                 return null;
             } else {
-                throw new Exception("connection possible but bus allready full");
+                throw new Exception("connection possible but bus already full");
             }
         } else // check if both cable are empty
         if (thisOutputCable == null && arg0InputCable == null) {
@@ -361,7 +361,7 @@ public abstract class Gate extends Element {
         } else // if either is null
         if (thisOutputCable != null && arg0InputCable == null) {
             if (thisOutputCable.outputGate != null) {
-                throw new Exception("connection possible but bus allready full");
+                throw new Exception("connection possible but bus already full");
             }
             thisOutputCable.outputGate = arg0;
             arg0.inputCable.set(arg0InputIndex, thisOutputCable);
@@ -371,7 +371,7 @@ public abstract class Gate extends Element {
             return thisOutputCable;
         } else if (thisOutputCable == null && arg0InputCable != null) {
             if (arg0InputCable.inputGate != null) {
-                throw new Exception("connection possible but bus allready full");
+                throw new Exception("connection possible but bus already full");
             }
             arg0InputCable.inputGate = this;
             this.outputCable.set(thisOutputIndex, arg0InputCable);

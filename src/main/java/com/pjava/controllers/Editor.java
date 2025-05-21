@@ -1,5 +1,6 @@
 package com.pjava.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -39,6 +40,10 @@ import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
@@ -255,6 +260,40 @@ public class Editor extends VBox {
         saveButton.setOnAction(event -> {
             try {
                 editedCircuit.save();
+            } catch (Exception e) {
+                UIUtils.errorPopup(e.getMessage());
+            }
+        });
+
+        saveAsButton.setOnAction(event -> {
+            try {
+                FileChooser fileChooser = new FileChooser();
+                File intialDirectory = new File("./data");
+                fileChooser.setTitle("Select file to save as");
+                fileChooser.setInitialDirectory(intialDirectory);
+                FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON Files (*.json)", "*.json");
+                fileChooser.getExtensionFilters().addAll(jsonFilter);
+
+                File saveFile = fileChooser.showOpenDialog(manager.getStage());
+
+                editedCircuit.save(saveFile.getParent(), saveFile.getName());
+            } catch (Exception e) {
+                UIUtils.errorPopup(e.getMessage());
+            }
+        });
+
+        openFileButton.setOnAction(event -> {
+            try {
+                FileChooser fileChooser = new FileChooser();
+                File intialDirectory = new File("./data");
+                fileChooser.setTitle("Select file to open");
+                fileChooser.setInitialDirectory(intialDirectory);
+                FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON Files (*.json)", "*.json");
+                fileChooser.getExtensionFilters().addAll(jsonFilter);
+
+                File file = fileChooser.showOpenDialog(manager.getStage());
+
+                editedCircuit.addGatesFromFile(file.getPath());
             } catch (Exception e) {
                 UIUtils.errorPopup(e.getMessage());
             }
@@ -860,5 +899,10 @@ public class Editor extends VBox {
     @FXML
     public void clickSplitter(ActionEvent event) {
         System.out.println("Click Splitter!");
+    }
+
+    @FXML
+    public void clickSchema(ActionEvent event) {
+        System.out.println("Click Schema!");
     }
 }

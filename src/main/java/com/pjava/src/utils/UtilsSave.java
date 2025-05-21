@@ -30,11 +30,34 @@ public abstract class UtilsSave {
      * @param content The content to put inside the file.
      */
     public static void writeFile(Path path, String content) {
+        if (path == null) {
+            return;
+        }
+        if (content == null) {
+            content = "";
+        }
         try {
             byte[] bs = content.getBytes();
             Files.write(path, bs);
         } catch (IOException e) {
             System.err.println("read error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Make the directory of the given path.
+     *
+     * @param path The path to create.
+     * @return The success.
+     */
+    public static boolean mkdir(Path path) {
+        if (path == null) {
+            return false;
+        }
+        try {
+            return path.toFile().mkdirs();
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -45,6 +68,9 @@ public abstract class UtilsSave {
      * @return The content of the file, null if error.
      */
     public static List<String> readFile(Path path) {
+        if (path == null) {
+            return null;
+        }
         try {
             List<String> lines = Files.readAllLines(path);
             for (String line : lines) {
@@ -63,6 +89,9 @@ public abstract class UtilsSave {
      * @param path Check if the given file exists
      */
     public static boolean isFileExists(Path path) {
+        if (path == null) {
+            return false;
+        }
         if (Files.exists(path)) {
             System.out.println("File exists");
             return true;
@@ -78,9 +107,7 @@ public abstract class UtilsSave {
      * @return the merged path
      */
     public static Path Merge(Path path, String name) {
-        String merge = path + "/" + name;
-        Path result = Paths.get(merge);
-        return result;
+        return Paths.get(path.toString(), name);
     }
 
     /**
@@ -89,6 +116,9 @@ public abstract class UtilsSave {
      * @return the array of paths to the files, null if error.
      */
     public static ArrayList<Path> list(Path path) {
+        if (path == null) {
+            return null;
+        }
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
             ArrayList<Path> array = new ArrayList<Path>();
             for (Path entry : stream) {
@@ -103,7 +133,7 @@ public abstract class UtilsSave {
     }
 
     public static void main(String[] args) {
-        Path save = Paths.get("H:/Documents/GitHub/LogiCYm/save");
+        Path save = Paths.get("./data");
         String name = "simu.txt";
         Path path = Merge(save, name);
         String str = "Poulet";

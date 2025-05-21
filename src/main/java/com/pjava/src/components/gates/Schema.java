@@ -592,7 +592,7 @@ public class Schema extends Gate {
             if (file.getParentFile().mkdirs() || file.createNewFile()) {
                 System.out.println(String.format("'%s' created", filePath));
             } else {
-                System.out.println(String.format("'%s' allready exist", filePath));
+                System.out.println(String.format("'%s' already exist", filePath));
             }
         } catch (NullPointerException | IOException e) {
             e.printStackTrace();

@@ -153,6 +153,7 @@ public class Numeric extends Input {
         JSONObject json = super.toJson();
 
         json.put("base", this.inputBase);
+        json.put("value", this.value);
 
         return json;
     }

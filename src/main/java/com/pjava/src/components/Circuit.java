@@ -28,6 +28,7 @@ import com.pjava.src.components.input.Numeric;
 import com.pjava.src.components.input.Power;
 import com.pjava.src.components.output.Display;
 import com.pjava.src.components.output.Output;
+import com.pjava.src.utils.UtilsSave;
 
 // TODO : Format d'une selection
 // TODO : custom argument quand on crée un nouveau gate
@@ -551,7 +552,7 @@ public class Circuit {
                 gate_JsonArray.remove(input_jsonIndex);
 
                 // remove from the circuit
-                tempCircuit.removeGate(key);
+                tempCircuit.delGate(key);
             }
 
             // output
@@ -608,7 +609,7 @@ public class Circuit {
                 gate_JsonArray.remove(output_jsonIndex);
 
                 // remove from the circuit
-                tempCircuit.removeGate(key);
+                tempCircuit.delGate(key);
             }
 
             // 2 : Once all the gate are created, we connect them thanks to their old uuid
@@ -752,29 +753,6 @@ public class Circuit {
      * @throws Exception
      */
     public final void addGatesFromFile(String filePath, Schema schema) throws Exception {
-        // We format filePath
-        if ((filePath != null) && (!filePath.isBlank())) {
-            filePath = filePath.replace(".", "");
-
-            if (!filePath.startsWith("/")) {
-                filePath = "/" + filePath;
-            }
-        } else {
-            throw new Exception("Empty filePath");
-        }
-
-        if (!filePath.startsWith("/data")) {
-            filePath = "/data" + filePath;
-        }
-
-        filePath = "." + filePath;
-
-        if (filePath.endsWith("json")) {
-            filePath = filePath.substring(0, filePath.length() - 4);
-        }
-
-        filePath = filePath + ".json";
-
         filePath = filePath.replace("/", File.separator);
 
         // We then read and create a json object from the file
@@ -847,6 +825,7 @@ public class Circuit {
         // adding gates within the circuit to a JSON array
         JSONArray gate_JsonArray = new JSONArray();
         for (Gate gate : allGates.values()) {
+            System.out.println(gate);
             gate_JsonArray.put(gate.toJson());
         }
 
@@ -898,25 +877,27 @@ public class Circuit {
      */
     public void save(String folderPath, String fileName) throws Exception {
         // Formating folderPath
-        if ((folderPath != null) && (!folderPath.isBlank())) {
-            folderPath = folderPath.replace(".", "");
+        if (!new File(folderPath).exists()) {
+            if ((folderPath != null) && (!folderPath.isBlank())) {
+                folderPath = folderPath.replace(".", "");
 
-            if (!folderPath.startsWith("/")) {
-                folderPath = "/" + folderPath;
+                if (!folderPath.startsWith("/")) {
+                    folderPath = "/" + folderPath;
+                }
+            } else {
+                folderPath = "";
             }
-        } else {
-            folderPath = "";
-        }
 
-        if (!folderPath.startsWith("/data")) {
-            folderPath = "/data" + folderPath;
+            if (!folderPath.startsWith(UtilsSave.saveFolder.toString().replace(".", ""))) {
+                folderPath = UtilsSave.saveFolder.toString() + folderPath;
+            }
+
+            folderPath = "." + folderPath;
         }
 
         if (!folderPath.endsWith("/")) {
             folderPath = folderPath + "/";
         }
-
-        folderPath = "." + folderPath;
 
         // Formating fileName
         if (fileName.endsWith(".json")) {
@@ -924,8 +905,7 @@ public class Circuit {
         }
 
         // Creating filePath :
-        String filePath = String.format("%s%s.json", folderPath, fileName);
-        filePath = filePath.replace("/", File.separator);
+        String filePath = String.format("%s%s.json", folderPath, fileName).replace("/", File.separator);
 
         // We create the designed file
         try {
@@ -933,7 +913,7 @@ public class Circuit {
             if (file.getParentFile().mkdirs() || file.createNewFile()) {
                 System.out.println(String.format("'%s' created", filePath));
             } else {
-                System.out.println(String.format("'%s' allready exist", filePath));
+                System.out.println(String.format("'%s' already exist", filePath));
             }
         } catch (NullPointerException | IOException e) {
             e.printStackTrace();
