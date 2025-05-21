@@ -182,6 +182,95 @@ public class Circuit {
 
     // #endregion
 
+    // #region selectGates
+
+        /**
+         * Create the formated json of a selection of gates.
+         * All port with a cable going toward a gate that is not in the selection
+         * will be set to 'gate : -1', 'port : -1'.
+         *
+         * @param labelGates
+         * @return
+         */
+        public JSONObject selectGates(ArrayList<String> labelGates){
+            JSONObject selection_Json = new JSONObject();
+
+            ArrayList<Gate> selectedGates = new ArrayList<>();
+            for(String label : labelGates){
+                selectedGates.add(this.allGates.get(label));
+            }
+
+            JSONArray gate_JsonArray = new JSONArray();
+            for (Gate gate : selectedGates) {
+                //System.out.println(gate);
+                gate_JsonArray.put(gate.toJson());
+            }
+
+            // In the Json, we set to -1 the input/output cables going out of the selection
+            selectedGates.forEach(gate -> {
+                // detection for input cable :
+                gate.getInputCable().forEach(cable -> {
+                    if (cable != null) {
+                        // if the cable is connected to a gate out of the selection
+                        if (!selectedGates.contains(cable.getInputGate())) {
+                            int gateId = gate.uuid();
+                            int targetId = cable.getInputGate().uuid();
+
+                            // we find the json of the connection
+                            for (int jsonIndex = 0; jsonIndex < gate_JsonArray.length(); jsonIndex++) {
+                                if (gate_JsonArray.getJSONObject(jsonIndex).getInt("uuid") == gateId) {
+                                    JSONArray gateInput_JsonArray = gate_JsonArray.getJSONObject(jsonIndex).getJSONArray("inputFrom");
+
+                                    // we find the port of the connection
+                                    for (int gateInputIndex = 0; gateInputIndex < gateInput_JsonArray.length(); gateInputIndex++) {
+                                        if (gateInput_JsonArray.getJSONArray(gateInputIndex).getInt(0) == targetId) {
+
+                                            // we set the target get to be connected to the schéma port
+                                            gateInput_JsonArray.getJSONArray(gateInputIndex).put(0, -1);
+                                            gateInput_JsonArray.getJSONArray(gateInputIndex).put(1, -1);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // detection for output cable :
+                gate.getOutputCable().forEach(cable -> {
+                    if (cable != null) {
+                        if (!selectedGates.contains(cable.getOutputGate())) {
+                            int gateId = gate.uuid();
+                            int targetId = cable.getOutputGate().uuid();
+
+                            // we find the json of the connection
+                            for (int jsonIndex = 0; jsonIndex < gate_JsonArray.length(); jsonIndex++) {
+                                if (gate_JsonArray.getJSONObject(jsonIndex).getInt("uuid") == gateId) {
+                                    JSONArray gateOutput_JsonArray = gate_JsonArray.getJSONObject(jsonIndex).getJSONArray("outputTo");
+
+                                    // we find the port of the connection
+                                    for (int gateOutputIndex = 0; gateOutputIndex < gateOutput_JsonArray.length(); gateOutputIndex++) {
+                                        if (gateOutput_JsonArray.getJSONArray(gateOutputIndex).getInt(0) == targetId) {
+
+                                            // we set the target get to be connected to the schéma port
+                                            gateOutput_JsonArray.getJSONArray(gateOutputIndex).put(0, -1);
+                                            gateOutput_JsonArray.getJSONArray(gateOutputIndex).put(1, -1);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+
+            selection_Json.put("Gate", gate_JsonArray);
+
+            return selection_Json;
+        }
+
+    //#endregion
+
 
     // #region setSchemaInputGatePort
 
@@ -856,7 +945,7 @@ public class Circuit {
         // adding gates within the circuit to a JSON array
         JSONArray gate_JsonArray = new JSONArray();
         for (Gate gate : allGates.values()) {
-            System.out.println(gate);
+            //System.out.println(gate);
             gate_JsonArray.put(gate.toJson());
         }
 
