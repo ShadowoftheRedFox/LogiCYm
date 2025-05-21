@@ -806,6 +806,7 @@ public class Circuit {
         if (this.getAllGates().containsKey(label)) {
             Gate gate = this.getAllGates().get(label);
 
+            gate.disconnect();
             this.getAllGates().remove(label);
 
             if (gate instanceof Input) {
