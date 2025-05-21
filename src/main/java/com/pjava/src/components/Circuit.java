@@ -38,6 +38,7 @@ import com.pjava.src.components.output.Output;
 // TODO : recup ces arguments quand on passe du json
 // TODO : disconnectGate()
 // TODO : input de n bus
+// TODO : selection
 
 public class Circuit{
 

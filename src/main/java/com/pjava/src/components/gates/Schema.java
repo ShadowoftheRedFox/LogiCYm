@@ -29,6 +29,8 @@ import com.pjava.src.errors.BusSizeException;
 // TODO : override Gate.updateState() for it to directly '.updateState()' the inner gate connected to a port
 // the output are forwarded too
 
+// TODO : mettre les connection interne du schéma dans cable
+
 // ToDo cables position
 // ToDo position, label, rotation of gates
 // ToDo unit tests
