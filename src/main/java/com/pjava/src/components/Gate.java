@@ -6,6 +6,8 @@ import java.util.BitSet;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
+import com.pjava.src.components.gates.Schema;
+
 import com.pjava.src.errors.BusSizeException;
 import com.pjava.src.utils.Cyclic;
 
@@ -381,6 +383,228 @@ public abstract class Gate extends Element {
 
         return null;
     }
+
+    // #region connectInnerInputGate
+
+    /**
+     * FIXME javadoc
+     *
+     * @param gate
+     * @param gateInputIndex
+     * @param schemaInnerInputIndex
+     * @return
+     * @throws Exception
+     * @throws NullPointerException
+     * @throws IndexOutOfBoundsException
+     * @throws BusSizeException
+     */
+    public static Cable connectInnerInputGate(Schema schema, int schemaInnerInputIndex, Gate gate, int gateInputIndex)
+            throws Exception, NullPointerException, IndexOutOfBoundsException, BusSizeException {
+        // verifications
+        if (gate == null) {
+            throw new NullPointerException(
+                    "Expected arg0 to be an instance of Gate, received null");
+        }
+        if (gateInputIndex < 0 || gate.getInputBus().length <= gateInputIndex) {
+            throw new IndexOutOfBoundsException(
+                    "Expected 0 <= gateInputIndex < " + gate.getInputBus().length + ", received " + gateInputIndex);
+        }
+
+        // set the input bus size at the right port
+        if (schemaInnerInputIndex == -1) {
+            // if the port index is not specified we try to find an unused index
+            int indexNotUsed = schema.getInnerInputCable().indexOf(null);
+            if (indexNotUsed != -1) {
+                schemaInnerInputIndex = indexNotUsed;
+            } else {
+                // if we dont find an unused index, we will put it at the end of the ArrayList
+                schemaInnerInputIndex = schema.getInnerInputCable().size();
+            }
+        }
+        // The port is now precised, but we need 'schema.inputBus' to have enough place
+        // to put the value at the right index
+        while (schema.inputBus.length <= schemaInnerInputIndex) {
+            // FIXME : might cause a problem if done wrong (too few or too many index
+            // created)
+            // we put unused bus size and cable index (hopefully they will be used, they
+            // need to be)
+            schema.addInputBus(1);
+            schema.getInnerInputCable().add(null);
+            schema.inputCable.add(null);
+
+            assert (schema.inputBus.length == schema.getInnerInputCable().size()
+                    && schema.inputBus.length == schema.inputCable.size());
+        }
+
+        // we set the bus size at the right index 'schemaInnerInputIndex'
+        schema.inputBus[schemaInnerInputIndex] = gate.getInputBus()[gateInputIndex];
+
+        // We now create a Cable between the schema and the inner gate
+        // check if both gate are already linked
+        Cable thisInnerInputCable = schema.getInnerInputCable().get(schemaInnerInputIndex);
+        Cable gateInputCable = gate.getInputCable().get(gateInputIndex);
+        if (thisInnerInputCable != null && gateInputCable != null) {
+            if (thisInnerInputCable.equals(gateInputCable)) {
+                return thisInnerInputCable;
+            } else if (thisInnerInputCable.getBusSize() != gateInputCable.getBusSize()) {
+                // incompatible sizes
+                return null;
+            } else {
+                throw new Exception("connection possible but bus allready full");
+            }
+        } else // check if both cable are empty
+        if (thisInnerInputCable == null && gateInputCable == null) {
+            Cable result = new Cable(schema.outputBus[schemaInnerInputIndex]);
+            result.inputGate = schema;
+            result.outputGate = gate;
+            result.setInputPort(schemaInnerInputIndex);
+            result.setOutputPort(gateInputIndex);
+
+            schema.getInnerInputCable().set(schemaInnerInputIndex, result);
+            gate.getInputCable().set(gateInputIndex, result);
+
+            result.updatePower();
+            result.updateState();
+            return result;
+        } else // if either is null
+        if (thisInnerInputCable != null && gateInputCable == null) {
+            if (thisInnerInputCable.getOutputGate() != null) {
+                throw new Exception("connection possible but bus allready full");
+            }
+            thisInnerInputCable.outputGate = gate;
+            gate.getInputCable().set(gateInputIndex, thisInnerInputCable);
+
+            gate.updatePower();
+            gate.updateState();
+            return thisInnerInputCable;
+        } else if (thisInnerInputCable == null && gateInputCable != null) {
+            if (gateInputCable.getInputGate() != null) {
+                throw new Exception("connection possible but bus allready full");
+            }
+            gateInputCable.inputGate = schema;
+            schema.getInnerInputCable().set(schemaInnerInputIndex, gateInputCable);
+
+            gateInputCable.updatePower();
+            gateInputCable.updateState();
+            return gateInputCable;
+        }
+
+        return null;
+    }
+
+    // #endregion
+
+    // #region connectInnerOutputGate
+    // TODO : verif that schema's attributes are accessible
+
+    /**
+     * FIXME javadoc
+     *
+     * @param gate
+     * @param gateOutputIndex
+     * @param schemaInnerOutputIndex
+     * @return
+     * @throws Exception
+     * @throws NullPointerException
+     * @throws IndexOutOfBoundsException
+     * @throws BusSizeException
+     */
+    public static Cable connectInnerOutputGate(Schema shema, int schemaInnerOutputIndex, Gate gate, int gateOutputIndex)
+            throws Exception, NullPointerException, IndexOutOfBoundsException, BusSizeException {
+        // verifications
+        if (gate == null) {
+            throw new NullPointerException(
+                    "Expected arg0 to be an instance of Gate, received null");
+        }
+        if (gateOutputIndex < 0 || gate.getOutputBus().length <= gateOutputIndex) {
+            throw new IndexOutOfBoundsException(
+                    "Expected 0 <= gateOutputIndex < " + gate.getOutputBus().length + ", received " + gateOutputIndex);
+        }
+
+        // set the output bus size at the right port
+        if (schemaInnerOutputIndex == -1) {
+            // if the port index is not specified we try to find an unused index
+            int indexNotUsed = shema.getInnerOutputCable().indexOf(null);
+            if (indexNotUsed != -1) {
+                schemaInnerOutputIndex = indexNotUsed;
+            } else {
+                // if we dont find an unused index, we will put it at the end of the ArrayList
+                schemaInnerOutputIndex = shema.getInnerOutputCable().size();
+            }
+        }
+        // The port is now precised, but we need 'schema.outputBus' to have enough place
+        // to put the value at the right index
+        while (shema.outputBus.length <= schemaInnerOutputIndex) {
+            // FIXME : might cause a problem if done wrong (too few or too many index
+            // created)
+            // we put unused bus size and cable index (hopefully they will be used, they
+            // need to be)
+            shema.addOutputBus(1);
+            shema.getInnerOutputCable().add(null);
+            shema.outputCable.add(null);
+
+            assert (shema.outputBus.length == shema.getInnerOutputCable().size()
+                    && shema.outputBus.length == shema.outputCable.size());
+        }
+
+        // we set the bus size at the right index 'schemaInnerOutputIndex'
+        shema.outputBus[schemaInnerOutputIndex] = gate.getOutputBus()[gateOutputIndex];
+
+        // We now create a Cable between the schema and the inner gate
+        // check if both gate are already linked
+        Cable thisInnerOutputCable = shema.getInnerOutputCable().get(schemaInnerOutputIndex);
+        Cable gateOutputCable = gate.getOutputCable().get(gateOutputIndex);
+        if (thisInnerOutputCable != null && gateOutputCable != null) {
+            if (thisInnerOutputCable.equals(gateOutputCable)) {
+                return thisInnerOutputCable;
+            } else if (thisInnerOutputCable.getBusSize() != gateOutputCable.getBusSize()) {
+                // incompatible sizes
+                return null;
+            } else {
+                throw new Exception("connection possible but bus allready full");
+            }
+        } else // check if both cable are empty
+        if (thisInnerOutputCable == null && gateOutputCable == null) {
+            Cable result = new Cable(shema.outputBus[schemaInnerOutputIndex]);
+            result.inputGate = gate;
+            result.outputGate = shema;
+            result.setInputPort(gateOutputIndex);
+            result.setOutputPort(schemaInnerOutputIndex);
+
+            shema.getInnerOutputCable().set(schemaInnerOutputIndex, result);
+            gate.getOutputCable().set(gateOutputIndex, result);
+
+            result.updatePower();
+            result.updateState();
+            return result;
+        } else // if either is null
+        if (thisInnerOutputCable != null && gateOutputCable == null) {
+            if (thisInnerOutputCable.getInputGate() != null) {
+                throw new Exception("connection possible but bus allready full");
+            }
+            thisInnerOutputCable.inputGate = gate;
+            gate.getOutputCable().set(gateOutputIndex, thisInnerOutputCable);
+
+            gate.updatePower();
+            gate.updateState();
+            return thisInnerOutputCable;
+        } else if (thisInnerOutputCable == null && gateOutputCable != null) {
+            if (gateOutputCable.getOutputGate() != null) {
+                throw new Exception("connection possible but bus allready full");
+            }
+            gateOutputCable.outputGate = shema;
+            shema.getInnerOutputCable().set(schemaInnerOutputIndex, gateOutputCable);
+
+            gateOutputCable.updatePower();
+            gateOutputCable.updateState();
+            return gateOutputCable;
+        }
+
+        return null;
+    }
+
+    // #endregion
+
 
     /**
      * Disconnect a cable from any input or output of this gate, also removing
