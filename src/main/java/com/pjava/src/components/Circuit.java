@@ -551,7 +551,7 @@ public class Circuit {
                 gate_JsonArray.remove(input_jsonIndex);
 
                 // remove from the circuit
-                tempCircuit.removeGate(key);
+                tempCircuit.delGate(key);
             }
 
             // output
@@ -608,7 +608,7 @@ public class Circuit {
                 gate_JsonArray.remove(output_jsonIndex);
 
                 // remove from the circuit
-                tempCircuit.removeGate(key);
+                tempCircuit.delGate(key);
             }
 
             // 2 : Once all the gate are created, we connect them thanks to their old uuid
