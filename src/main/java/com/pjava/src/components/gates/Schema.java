@@ -11,10 +11,15 @@ import org.json.JSONObject;
 import com.pjava.src.components.Cable;
 import com.pjava.src.components.Circuit;
 import com.pjava.src.components.Gate;
+import com.pjava.src.components.input.Input;
 import com.pjava.src.components.input.Lever;
+import com.pjava.src.components.input.Numeric;
+import com.pjava.src.components.output.Display;
 import com.pjava.src.components.output.Output;
 import com.pjava.src.errors.BusSizeException;
 
+
+// TODO : gate numeric a tranformer en port et inversement (transformer les port en Numeric)
 
 // TODO : Quand on sauvegarde un schéma, on sauvegarde le circuit interne du schéma dans un fichier séparé
 // et dans le circuit principal, le gate schéma garde en mémoire l'emplacement de ce circuit et ses port.
@@ -565,40 +570,46 @@ public class Schema extends Gate {
 
     //#endregion
 
-    // TODO
-    //#region innerCircuitToCircuit
+    //#region convertInnerCircuitToCircuit
 
         /**
          * Format the inner circuit to fit the standard circuit json
-         * meaning all schema inner input port will become a lever gate with an assigned port
+         * meaning all schema inner input port will become a Lever or a Numeric gate with an assigned port
          * and all schema inner output port will become a output gate with an assigned port
          *
          * @return
          */
-        public Circuit innerCircuitToCircuit(){
+        public Circuit convertInnerCircuitToCircuit(){
             Circuit newCircuit = this.innerCircuit.copy();
             newCircuit.set_name(this.name);
 
-            Gate newGate = null;
-            Gate innerGate = null;
-            Cable newCable = null;
+            Gate newGate;
+            Gate innerGate;
+            Cable newCable;
 
             // input port :
             for(Cable innerInputCable : this.innerInputCable){
                 try {
                     // setup new input gate
-                    newGate = ((Lever)newCircuit.addNewGate("Lever"));
-                    ((Lever)newGate).setSchemaInputPort(innerInputCable.getInputPort());
+                    if (innerInputCable.getBusSize() > 1) {
+                        // TODO : set the gate bus size when creating the Numeric gate below
+                        // innerInputCable.getBusSize()
+                        newGate = ((Numeric)newCircuit.addNewGate("Numeric"));
+                    } else {
+                        newGate = ((Lever)newCircuit.addNewGate("Lever"));
+                    }
+                    ((Input)newGate).setSchemaInputPort(innerInputCable.getInputPort());
 
                     // setup new cable
                     newCable = innerInputCable.copy();
                     newCable.setInputGate(newGate);
                     newCable.setInputPort(0);
 
-                    // set the inner gate connected
-                    innerGate
+                    // connect the two gates
+                    innerGate = innerInputCable.getOutputGate();
+                    innerGate.getInputCable().set(innerInputCable.getOutputPort(), newCable);
+                    newGate.getOutputCable().set(0, newCable);
 
-                    temp.getOutputCable().set(0, tempCable);
 
                 } catch (Exception e) {
                     System.err.println(e);
@@ -606,11 +617,34 @@ public class Schema extends Gate {
             }
 
             // output port :
-            for(Cable outputCable : this.innerOutputCable){
+            for(Cable innerOutputCable : this.innerOutputCable){
+                try {
+                    // setup new input gate
+                    if (innerOutputCable.getBusSize() > 1) {
+                        // TODO : set the gate bus size when creating the Numeric gate below
+                        // innerOutputCable.getBusSize()
+                        newGate = ((Display)newCircuit.addNewGate("Display"));
+                    } else {
+                        // TODO : Maybe if we add a size 1 output (like a LED) but that is of now use right now
+                        // newGate = ((Led)newCircuit.addNewGate("Led"));
+                        newGate = ((Display)newCircuit.addNewGate("Display"));
+                    }
+                    ((Output)newGate).setSchemaOutputPort(innerOutputCable.getOutputPort());
 
+                    // setup new cable
+                    newCable = innerOutputCable.copy();
+                    newCable.setOutputGate(newGate);
+                    newCable.setOutputPort(0);
+
+                    // connect the two gates
+                    innerGate = innerOutputCable.getInputGate();
+                    innerGate.getOutputCable().set(innerOutputCable.getInputPort(), newCable);
+                    newGate.getInputCable().set(0, newCable);
+
+                } catch (Exception e) {
+                    System.err.println(e);
+                }
             }
-
-
 
             return newCircuit;
         }
@@ -623,17 +657,14 @@ public class Schema extends Gate {
 
         // TODO : toJson()
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public JSONObject toJson() {
             JSONObject json = super.toJson();
 
-            // le path vers le circuit
-
-            // JSONArray inputBusArray = new JSONArray();
-            // for (int size : getInputBus()) {
-            //     inputBusArray.put(size);
-            // }
-            // json.put("inputBus", inputBusArray);
+            json.put("circuitPath", this.filePath);
 
             return json;
         }
@@ -647,65 +678,20 @@ public class Schema extends Gate {
          * @throws Exception
          */
         public void saveInnerCircuit() throws Exception{
-            this.saveInnerCircuit("");
+            this.saveInnerCircuit(this.filePath);
         }
 
         /**
-         * Shorthand for {@link #saveInnerCircuit(String folderPath, String fileName)}
-         * @throws Exception
-         */
-        public void saveInnerCircuit(String folderPath) throws Exception{
-            this.saveInnerCircuit(folderPath, this.name);
-        }
-
-        /**
-         * Save the Json of the inner circuit at the given localisation from './data/schema/'
-         * The file name will be the name of the circuit
-         *
-         * see below folderPath exemple
-         * ""           -> "./data/schema/"
-         * file         -> "./data/schema/file/"
-         * /file        -> "./data/schema/file/"
-         * data/file    -> "./data/schema/file/"
-         * /data/file   -> "./data/schema/file/"
-         * ./data/file  -> "./data/schema/file/"
+         * Save the Json of the inner circuit at the given localisation
+         * We aim for './data/schema/'
          *
          * @param folderPath
          * @throws Exception
          */
         @SuppressWarnings("CallToPrintStackTrace")
-        public void saveInnerCircuit(String folderPath, String fileName) throws Exception{
+        public void saveInnerCircuit(String filePath) throws Exception{
             // Formating folderPath
-            if((folderPath != null) && (!folderPath.isBlank())){
-                folderPath = folderPath.replace(".", "");
-
-                if(!folderPath.startsWith("/")){
-                    folderPath = "/" + folderPath;
-                }
-            }
-            else{
-                folderPath = "";
-            }
-
-            if(!folderPath.startsWith("/data")){
-                folderPath = "/data" + folderPath;
-            }
-
-            if(!folderPath.endsWith("/")){
-                folderPath = folderPath + "/";
-            }
-
-            folderPath = "." + folderPath;
-
-            // Formating fileName
-            if(fileName.endsWith(".json")){
-                fileName = fileName.substring(0, fileName.length()-5);
-            }
-
-            // Creating filePath :
-            String filePath = String.format("%s%s.json", folderPath, fileName) ;
             filePath = filePath.replace("/", File.separator);
-
 
             // We create the designed file
             try {
@@ -726,10 +712,10 @@ public class Schema extends Gate {
 
                 // the inner circuit must be adapted to a circuit
                 //
-                writer.write(this.toJson().toString(1));
+                writer.write(this.convertInnerCircuitToCircuit().toJson().toString(1));
                 writer.close();
 
-                System.out.println("Circuit saved with success in: " + filePath);
+                System.out.println("Schema inner circuit saved with success in: " + filePath);
             }
             catch(IOException e){
                 System.err.println("Error " + filePath +" can't be saved : " + e.getMessage());

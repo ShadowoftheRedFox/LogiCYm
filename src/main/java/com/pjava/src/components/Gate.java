@@ -804,7 +804,7 @@ public abstract class Gate extends Element {
     // #endregion
 
     /**
-     * {@inheritDoc Element#toJson()}
+     * {@inheritDoc}
      */
     @Override
     public JSONObject toJson() {

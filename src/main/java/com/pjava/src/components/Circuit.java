@@ -12,6 +12,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.pjava.src.components.cables.Merger;
+import com.pjava.src.components.cables.NodeSplitter;
+import com.pjava.src.components.cables.Splitter;
 import com.pjava.src.components.gates.And;
 import com.pjava.src.components.gates.Not;
 import com.pjava.src.components.gates.Or;
@@ -21,8 +24,12 @@ import com.pjava.src.components.input.Clock;
 import com.pjava.src.components.input.Ground;
 import com.pjava.src.components.input.Input;
 import com.pjava.src.components.input.Lever;
+import com.pjava.src.components.input.Numeric;
 import com.pjava.src.components.input.Power;
+import com.pjava.src.components.output.Display;
 import com.pjava.src.components.output.Output;
+
+
 
 
 
@@ -181,7 +188,7 @@ public class Circuit{
     //#endregion
 
 
-    //#region .setSchemaInputGatePort
+    //#region setSchemaInputGatePort
 
         /**
          * set the schéma input index of an Input gate
@@ -206,7 +213,7 @@ public class Circuit{
 
     //#endregion
 
-    //#region .setSchemaOutputGatePort
+    //#region setSchemaOutputGatePort
 
         /**
          * set the schéma output index of an Output gate
@@ -231,7 +238,7 @@ public class Circuit{
 
     //#endregion
 
-    //#region .connectGate
+    //#region connectGate
 
         /**
          * @param fromGate The gate whose output port you want to connect
@@ -262,7 +269,7 @@ public class Circuit{
 
     //#endregion
 
-    //#region .addGate
+    //#region addGate
 
         /**
          * Set the label as Gate.uuid
@@ -316,8 +323,8 @@ public class Circuit{
 
     //#endregion
 
-    //#region .addNewGate
-        // TODO : needs more parameters to customise gate creation (busSize, delay, etc..)
+    //#region addNewGate
+        // FIXME : needs more parameters to set correct values upon creation (busSize, delay, etc..)
 
 
         /**
@@ -340,33 +347,59 @@ public class Circuit{
 
         Gate newGate;
         switch(type){
+            // Input
             case "Power":
-            newGate = new Power();
+                newGate = new Power();
             break;
             case "Ground":
-            newGate = new Ground();
-            break;
-            case "Not":
-            newGate = new Not();
-            break;
-            case "And":
-            newGate = new And();
-            break;
-            case "Or":
-            newGate = new Or();
+                newGate = new Ground();
             break;
             case "Lever":
-            newGate = new Lever();
+                newGate = new Lever();
+            break;
+            case "Numeric":
+                newGate = new Numeric();
             break;
             case "Button":
-            newGate = new Button();
+                newGate = new Button();
             break;
             case "Clock":
-            newGate = new Clock();
+                newGate = new Clock();
+            break;
+
+            // Output
+            case "Display":
+                newGate = new Display();
+            break;
+
+            // Gate
+            case "Not":
+                newGate = new Not();
+            break;
+            case "And":
+                newGate = new And();
+            break;
+            case "Or":
+                newGate = new Or();
             break;
             case "Schema":
-            newGate = new Schema(label);
+                // FIXME : Must be replaced of course
+                newGate = new Schema("bonjour", "Bonjour.json");
             break;
+
+            // Cable
+            case "NodeSplitter":
+                newGate = new NodeSplitter();
+            break;
+            case "Splitter":
+                // FIXME : Must be replaced too of course
+                newGate = new Splitter(2);
+            break;
+            case "Merger":
+                // FIXME : This one too of course
+                newGate = new Merger(new int[]{1});
+            break;
+
             default:
                 throw new Exception(String.format("No match found for the string '%s'", type));
         }
@@ -464,7 +497,7 @@ public class Circuit{
                 // Input
                 for (String key : tempCircuit.get_inputGates().keySet()){
                     Input gate = tempCircuit.get_inputGates().get(key);
-                    if(!(gate instanceof Lever)){
+                    if(!(gate instanceof Lever || gate instanceof Numeric)){
                         continue;
                     }
 
@@ -763,6 +796,7 @@ public class Circuit{
         }
 
     //#endregion
+
 
     //#region copy
 

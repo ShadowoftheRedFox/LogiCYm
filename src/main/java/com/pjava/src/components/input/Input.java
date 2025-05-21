@@ -12,15 +12,20 @@ import com.pjava.src.components.Gate;
  */
 public abstract class Input extends Gate {
 
+    /**
+     * assigned input port in a schema
+     * -1 = unset
+     */
     private int schemaInputPort = -1;
+
 
     /**
      * Create a new Input with the given amount of outputs.
      *
      * @param busOutput The output buses array.
      */
-    public Input(int busOutput) {
-        super(1, busOutput);
+    public Input(int[] busOutput) {
+        super(new int[] {}, busOutput);
         super.setPowered(true);
     }
 
@@ -90,6 +95,9 @@ public abstract class Input extends Gate {
     protected final void setPowered(boolean powered) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public JSONObject toJson(){
         JSONObject json = super.toJson();
@@ -99,10 +107,16 @@ public abstract class Input extends Gate {
         return json;
     }
 
+    /**
+     * set schemaInputPort
+     */
     public void setSchemaInputPort(int port){
         schemaInputPort = port;
     }
 
+    /**
+     * get schemaInputPort
+     */
     public int getSchemaInputPort(){
         return schemaInputPort;
     }
