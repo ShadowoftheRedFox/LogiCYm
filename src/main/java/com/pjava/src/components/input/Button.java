@@ -2,6 +2,8 @@ package com.pjava.src.components.input;
 
 import java.util.BitSet;
 
+import org.json.JSONObject;
+
 /**
  * A button input.
  * Button can be pressed and is released after a delay has passed.
@@ -124,6 +126,13 @@ public class Button extends Input {
         return inverted;
     }
     // #endregion
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = super.toJson();
+        json.put("delay", delay);
+        return json;
+    }
 
     // #region Setters
     /**
