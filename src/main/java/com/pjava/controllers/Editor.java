@@ -16,6 +16,9 @@ import com.pjava.src.UI.components.input.*;
 import com.pjava.src.UI.components.output.UIDisplay;
 import com.pjava.src.utils.UIUtlis;
 import com.pjava.src.utils.UIUtlis.ValidationAnwser;
+import com.pjava.src.document.FileReaderSimulation;
+import com.pjava.src.document.SimulationFileLoader;
+
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -28,8 +31,10 @@ import javafx.geometry.HPos;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -43,6 +48,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import java.nio.file.Path;
 
 public class Editor extends VBox {
     @FXML
@@ -211,6 +217,9 @@ public class Editor extends VBox {
                 default:
                     break;
             }
+        });
+        loadInputsButton.setOnAction(event -> {
+            loadSimulationFile();
         });
         // #endregion
 
@@ -468,6 +477,35 @@ public class Editor extends VBox {
             Platform.exit();
         }
     }
+    private void loadSimulationFile() {
+        // Get the primary stage from the scene
+        Stage stage = (Stage) this.getScene().getWindow();
+        
+        // Open file chooser dialog and get the saved file path
+        Path filePath = SimulationFileLoader.loadSimulationFile(stage);
+        
+        if (filePath != null) {
+            // Display loading message
+            System.out.println("Loading simulation data from: " + filePath);
+            
+            // Run the simulation
+            boolean success = SimulationFileLoader.runSimulation(filePath);
+            
+            if (success) {
+                System.out.println("Simulation loaded and running successfully!");
+                // Enable the disable simulation button
+                disableSimulationButton.setDisable(false);
+                // Disable the enable simulation button
+                enableSimulationButton.setDisable(true);
+            } else {
+                System.err.println("Failed to run simulation.");
+            }
+        } else {
+            System.out.println("Simulation file selection canceled.");
+        }
+    }
+
+    
     // #endregion
 
     // #region Gate spawn
