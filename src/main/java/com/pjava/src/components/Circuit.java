@@ -31,11 +31,12 @@ import com.pjava.src.components.output.Output;
 import com.pjava.src.utils.UtilsSave;
 
 // TODO : Format d'une selection
-// TODO : custom argument quand on crée un nouveau gate
+// TODO : selection a partir d'une liste de clés
+// TODO : custom argument à ajouter à partir du json une fois le gate créé dans addGatesFromJson
+// TODO : Taille de port input et output dans addNewGate
 // TODO : recup ces arguments quand on passe du json
 // TODO : disconnectGate()
 // TODO : input de n bus
-// TODO : selection
 
 public class Circuit {
 
@@ -181,29 +182,44 @@ public class Circuit {
 
     // #endregion
 
+
     // #region setSchemaInputGatePort
 
     /**
      * set the schéma input index of an Input gate
+     * verify if the port is in boundaries an is not taken
      *
      * @param inputGateLabel
      * @param port
      * @throws Exception
+     *
+     * @return the port assigned
      */
-    public void setSchemaInputGatePort(String inputGateLabel, int port) throws Exception {
-        if (port < 0 || this.inputGates.size() <= port) {
-            throw new Exception(String.format("Port value '%d' is out of boundaries : must be between 0 - %d", port,
+    public int setSchemaInputGatePort(String inputGateLabel, int targetPort) throws Exception {
+        if (targetPort < 0 || this.inputGates.size() <= targetPort) {
+            throw new Exception(String.format("Port value '%d' is out of boundaries : must be between 0 - %d", targetPort,
                     this.inputGates.size()));
         }
 
-        for (String label : this.inputGates.keySet()) {
-            if (this.inputGates.get(label).getSchemaInputPort() == port) {
-                throw new Exception(
-                        String.format("The input port '%d' is already used by the input gate '%s'", port, label));
+        // assigned port of the given input gate
+        int assignedPort = this.inputGates.get(inputGateLabel).getSchemaInputPort();
+
+        if(assignedPort != targetPort){
+            // check if targetPort is allready taken
+            for (String label : this.inputGates.keySet()) {
+                if (this.inputGates.get(label).getSchemaInputPort() == targetPort) {
+                    // TODO : popup
+                    System.out.println(String.format("The input port '%d' is already used by the input gate '%s'", targetPort, label));
+                    return assignedPort;
+                }
             }
+
+            // The target port is not taken, we can get it
+            this.inputGates.get(inputGateLabel).setSchemaInputPort(targetPort);
+            assignedPort = targetPort;
         }
 
-        this.inputGates.get(inputGateLabel).setSchemaInputPort(port);
+        return assignedPort;
     }
 
     // #endregion
@@ -212,25 +228,39 @@ public class Circuit {
 
     /**
      * set the schéma output index of an Output gate
+     * verify if the port is in boundaries an is not taken
      *
      * @param outputGateLabel
      * @param port
      * @throws Exception
+     *
+     * @return the port assigned
      */
-    public void setSchemaOutputGatePort(String outputGateLabel, int port) throws Exception {
-        if (port < 0 || this.outputGates.size() <= port) {
-            throw new Exception(String.format("Port value '%d' is out of boundaries : must be between 0 - %d", port,
+    public int setSchemaOutputGatePort(String outputGateLabel, int targetPort) throws Exception {
+        if (targetPort < 0 || this.outputGates.size() <= targetPort) {
+            throw new Exception(String.format("Port value '%d' is out of boundaries : must be between 0 - %d", targetPort,
                     this.outputGates.size()));
         }
 
-        for (String label : this.outputGates.keySet()) {
-            if (this.outputGates.get(label).getSchemaOutputPort() == port) {
-                throw new Exception(
-                        String.format("The output port '%d' is already used by the input gate '%s'", port, label));
+        // assigned port of the given input gate
+        int assignedPort = this.outputGates.get(outputGateLabel).getSchemaOutputPort();
+
+        if(assignedPort != targetPort){
+            // check if targetPort is allready taken
+            for (String label : this.outputGates.keySet()) {
+                if (this.outputGates.get(label).getSchemaOutputPort() == targetPort) {
+                    // TODO : popup
+                    System.out.println(String.format("The output port '%d' is already used by the output gate '%s'", targetPort, label));
+                    return assignedPort;
+                }
             }
+
+            // The target port is not taken, we can get it
+            this.outputGates.get(outputGateLabel).setSchemaOutputPort(targetPort);
+            assignedPort = targetPort;
         }
 
-        this.outputGates.get(outputGateLabel).setSchemaOutputPort(port);
+        return assignedPort;
     }
 
     // #endregion
@@ -265,6 +295,7 @@ public class Circuit {
     }
 
     // #endregion
+
 
     // #region addGate
 
@@ -778,6 +809,7 @@ public class Circuit {
 
     // #endregion
 
+
     // #region delGate
 
     public void delGate(String label) {
@@ -807,12 +839,11 @@ public class Circuit {
 
     // #endregion
 
-
     // #region delGateFromIdList
 
-    public void delGateFromIdList(ArrayList<Integer> idGates) {
-        for (int id : idGates) {
-            delGate(String.valueOf(id));
+    public void delGateFromIdList(ArrayList<String> labelGates) {
+        for (String label : labelGates) {
+            delGate(label);
         }
     }
 
@@ -891,8 +922,10 @@ public class Circuit {
             if (!folderPath.startsWith(UtilsSave.saveFolder.toString().replace(".", ""))) {
                 folderPath = UtilsSave.saveFolder.toString() + folderPath;
             }
+            else{
+                folderPath = "." + folderPath;
+            }
 
-            folderPath = "." + folderPath;
         }
 
         if (!folderPath.endsWith("/")) {
