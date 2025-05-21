@@ -207,4 +207,8 @@ public class Pin extends VBox {
     public Iterator<EventHandler<? super MouseEvent>> onPressed() {
         return pressedListener.iterator();
     }
+
+    public Color getColor() {
+        return color;
+    }
 }

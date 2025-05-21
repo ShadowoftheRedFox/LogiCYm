@@ -7,6 +7,8 @@ import com.pjava.src.components.Cable;
 import com.pjava.src.components.Gate;
 
 import javafx.geometry.Point2D;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 
 public abstract class UIGate extends UIElement {
     /**
@@ -31,7 +33,9 @@ public abstract class UIGate extends UIElement {
     @Override
     public void updateVisuals() {
         for (UICable connectedCables : getConnectedCables()) {
-            connectedCables.updateVisuals();
+            if (connectedCables != null) {
+                connectedCables.updateVisuals();
+            }
         }
     }
 
@@ -43,7 +47,12 @@ public abstract class UIGate extends UIElement {
      */
     public void addConnectedCable(UICable cable) {
         if (!connectedCables.contains(cable)) {
-            connectedCables.add(cable);
+            // try to fill the first null
+            if (connectedCables.indexOf(null) >= 0) {
+                connectedCables.set(connectedCables.indexOf(null), cable);
+            } else {
+                connectedCables.add(cable);
+            }
         }
     }
 
@@ -57,7 +66,16 @@ public abstract class UIGate extends UIElement {
             return;
         }
         cable.disconnect(this);
-        connectedCables.remove(cable);
+        if (connectedCables.indexOf(cable) >= 0) {
+            // recolor pin
+            if (cable.getInputPin() != null) {
+                cable.getInputPin().setColor(Color.BLUE);
+            }
+            if (cable.getOutputPin() != null) {
+                cable.getOutputPin().setColor(Color.RED);
+            }
+            connectedCables.set(connectedCables.indexOf(cable), null);
+        }
     }
 
     /**
@@ -67,6 +85,26 @@ public abstract class UIGate extends UIElement {
         for (UICable connectedCables : connectedCables) {
             disconnect(connectedCables);
         }
+    }
+
+    public UICable getCableFromPin(Pin pin) {
+        if (pin == null) {
+            return null;
+        }
+        for (UICable cable : connectedCables) {
+            if (cable != null && (pin.equals(cable.getInputPin()) || pin.equals(cable.getInputPin()))) {
+                return cable;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected void dragged(MouseEvent event) {
+        // disconnect the gate from everything if it moves
+        // TODO move cable with the gate instead of disconnecting
+        disconnect();
+        super.dragged(event);
     }
 
     // #region Getters

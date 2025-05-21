@@ -56,6 +56,11 @@ public class UICable extends UIElement {
         cableLine.setLayoutY(0);
         cableLine.setStroke(Color.BLACK);
         cableLine.setFill(Color.BLACK);
+
+        cableLine.setOnMousePressed(event -> pressed(event));
+        cableLine.setOnMouseReleased(event -> released(event));
+        cableLine.setOnMouseDragged(event -> dragged(event));
+
         updateCableColor();
     }
 
@@ -131,8 +136,8 @@ public class UICable extends UIElement {
         updateCablePosition();
 
         // if its connected it becomes green
-        output.setColor(Color.GREEN);
         input.setColor(Color.GREEN);
+        output.setColor(Color.GREEN);
 
         // connect, so cable should be visible
         cableLine.setVisible(true);
@@ -185,11 +190,13 @@ public class UICable extends UIElement {
      */
     private boolean updateCableColor() {
         cableLine.strokeWidthProperty().set(5);
-        Color color = Color.RED;
+        Color color = Color.PURPLE;
 
         if (getLogic() != null) {
             // TODO check for multiple lines
-            if (getLogic().getState(0)) {
+            if (!getLogic().getPowered()) {
+                color = Color.RED;
+            } else if (getLogic().getState(0)) {
                 color = Color.LIGHTGREEN;
             } else {
                 color = Color.DARKGREEN;

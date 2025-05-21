@@ -230,7 +230,7 @@ public class Editor extends VBox {
     }
 
     /**
-     * Crée un câble entre deux pins
+     * Connect gate wit the two selected pins
      */
     private void createCableBetweenPins(Pin source, Pin target) {
         if (source == null || target == null) {
@@ -238,7 +238,7 @@ public class Editor extends VBox {
             return;
         }
 
-        // Vérifier si les pins sont associés à des gates
+        // check pins are connected to gates controller
         UIGate sourceGate = (UIGate) source.originController;
         UIGate targetGate = (UIGate) target.originController;
 
@@ -247,13 +247,55 @@ public class Editor extends VBox {
         }
 
         // TODO case if either gate already has a one sided cable connected
-        // create a new cable controller
-        UICable cableController = UICable.create();
-        // connect cable
-        cableController.connect(source, target, sourceGate, targetGate);
-        cableLines.add(cableController);
-        container.getChildren().add(cableController.getNode());
-        cableController.getNode().toBack();
+
+        UICable sourceCable = sourceGate.getCableFromPin(source);
+        UICable targetCable = targetGate.getCableFromPin(target);
+
+        // check if either gate are full at the given pins
+        if (sourceCable != null && targetCable != null) {
+            System.out.println("Pins already connected");
+        } else
+        // check if source has a spot
+        if (sourceCable != null && targetCable == null) {
+            if (sourceCable.getOutputGate() != null) {
+                System.out.println("Cable not able to connect");
+                return;
+            }
+
+            sourceCable.connect(source, target, sourceGate, targetGate);
+        } else
+        // check if target has a spot
+        if (sourceCable == null && targetCable != null) {
+            if (targetCable.getOutputGate() != null) {
+                System.out.println("Cable not able to connect");
+                return;
+            }
+
+            targetCable.connect(source, target, sourceGate, targetGate);
+            return;
+        } else {
+            // create a new cable controller
+            UICable cableController = UICable.create();
+            // connect cable
+            cableController.connect(source, target, sourceGate, targetGate);
+            cableLines.add(cableController);
+            container.getChildren().add(cableController.getNode());
+            cableController.getNode().toBack();
+
+            // FIXME selection doesn't work
+            cableController.getLine().setOnMousePressed(event -> {
+                selectElement(cableController);
+                replaceInfos(cableController.getInfos().getNode());
+            });
+        }
+
+        // remove color if yellow and forget the pins
+        if (lastInputPinPressed.getColor() == Color.YELLOW) {
+            lastInputPinPressed.setColor(Color.BLUE);
+        }
+        if (lastOutputPinPressed.getColor() == Color.YELLOW) {
+            lastOutputPinPressed.setColor(Color.RED);
+        }
 
         lastInputPinPressed = null;
         lastOutputPinPressed = null;
@@ -563,13 +605,21 @@ public class Editor extends VBox {
     private void pinsListener(UIGate gate) {
         for (Pin pin : gate.getInputPins()) {
             pin.setOnPressed(event -> {
+                if (lastInputPinPressed != null) {
+                    lastInputPinPressed.setColor(Color.BLUE);
+                }
                 lastInputPinPressed = pin;
+                pin.setColor(Color.YELLOW);
                 createCableBetweenPins(lastOutputPinPressed, lastInputPinPressed);
             });
         }
         for (Pin pin : gate.getOutputPins()) {
             pin.setOnPressed(event -> {
+                if (lastOutputPinPressed != null) {
+                    lastOutputPinPressed.setColor(Color.RED);
+                }
                 lastOutputPinPressed = pin;
+                pin.setColor(Color.YELLOW);
                 createCableBetweenPins(lastOutputPinPressed, lastInputPinPressed);
             });
         }
