@@ -16,15 +16,9 @@ public class ButtonTest {
             new Button(0l);
         });
 
-        assertThrows(Exception.class, () -> {
-            new Button(0l, false);
-        });
-
         assertDoesNotThrow(() -> {
             new Button();
             new Button(10l);
-            new Button(false);
-            new Button(10l, false);
         });
     }
 
@@ -34,14 +28,6 @@ public class ButtonTest {
         assertFalse(button.getState(0));
         button.press();
         assertTrue(button.getState(0));
-    }
-
-    @Test
-    void invert() throws Exception {
-        Button button = new Button(true);
-        assertTrue(button.getState(0));
-        button.press();
-        assertFalse(button.getState(0));
     }
 
     @Test
