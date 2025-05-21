@@ -40,8 +40,14 @@ import com.pjava.src.errors.BusSizeException;
 public class Schema extends Gate {
 
     // #region Attributes
+    /**
+     * Name of the schema.
+     */
     private String name;
 
+    /**
+     * FIXME javadoc
+     */
     private String filePath = null;
 
     /**
@@ -58,7 +64,13 @@ public class Schema extends Gate {
      * private ArrayList<Cable> outputCable = new ArrayList<Cable>();
      */
 
+    /**
+     * FIXME javadoc
+     */
     private ArrayList<Cable> innerInputCable = new ArrayList<>();
+    /**
+     * FIXME javadoc
+     */
     private ArrayList<Cable> innerOutputCable = new ArrayList<>();
 
     // #endregion
@@ -71,7 +83,7 @@ public class Schema extends Gate {
      * 'data/schema/SCHEMA_NAME.json'
      *
      * @param schemaName The name of the schema file.
-     * @param json       json of a selection to create the schema
+     * @param selection  JSON of a selection to create the schema
      * @throws Exception Throws if the schema fails to save, or name is invalid, or
      *                   gates array is invalid.
      */
@@ -87,7 +99,7 @@ public class Schema extends Gate {
      * Create a new schema with the given names and a file.
      *
      * @param schemaName The name of the schema.
-     * @param json       file of a circuit to create the schema
+     * @param filePath   File path to a circuit to create the schema
      * @throws Exception Throws if the schema fails to save, or name is invalid, or
      *                   gates array is invalid.
      */
@@ -361,6 +373,18 @@ public class Schema extends Gate {
 
     // #region connectInnerInputGate
 
+    /**
+     * FIXME javadoc
+     *
+     * @param gate
+     * @param gateInputIndex
+     * @param schemaInnerInputIndex
+     * @return
+     * @throws Exception
+     * @throws NullPointerException
+     * @throws IndexOutOfBoundsException
+     * @throws BusSizeException
+     */
     public Cable connectInnerInputGate(Gate gate, int gateInputIndex, int schemaInnerInputIndex)
             throws Exception, NullPointerException, IndexOutOfBoundsException, BusSizeException {
         // verifications
@@ -459,6 +483,18 @@ public class Schema extends Gate {
 
     // #region connectInnerOutputGate
 
+    /**
+     * FIXME javadoc
+     *
+     * @param gate
+     * @param gateOutputIndex
+     * @param schemaInnerOutputIndex
+     * @return
+     * @throws Exception
+     * @throws NullPointerException
+     * @throws IndexOutOfBoundsException
+     * @throws BusSizeException
+     */
     public Cable connectInnerOutputGate(Gate gate, int gateOutputIndex, int schemaInnerOutputIndex)
             throws Exception, NullPointerException, IndexOutOfBoundsException, BusSizeException {
         // verifications
@@ -559,6 +595,8 @@ public class Schema extends Gate {
 
     /**
      * Set the schema gate inner circuit and ports from a json selection of gates
+     *
+     * @param selection
      */
     public final void loadFromJson(JSONObject selection) {
         // input/output gate that are set to -1 will be connected to the schema gate
@@ -574,6 +612,12 @@ public class Schema extends Gate {
 
     // #region loadFromFile
 
+    /**
+     * Load the current schema instance from a given file.
+     * BUG check if current instance is empty?
+     *
+     * @param filePath The path to the saved schema to load.
+     */
     public final void loadFromFile(String filePath) {
         try {
             this.innerCircuit.addGatesFromFile(filePath, this);
@@ -671,9 +715,6 @@ public class Schema extends Gate {
 
     // TODO : toJson()
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JSONObject toJson() {
         JSONObject json = super.toJson();
@@ -700,10 +741,9 @@ public class Schema extends Gate {
      * Save the Json of the inner circuit at the given localisation
      * We aim for './data/schema/'
      *
-     * @param folderPath
+     * @param filePath
      * @throws Exception
      */
-    @SuppressWarnings("CallToPrintStackTrace")
     public void saveInnerCircuit(String filePath) throws Exception {
         // Formating folderPath
         filePath = filePath.replace("/", File.separator);

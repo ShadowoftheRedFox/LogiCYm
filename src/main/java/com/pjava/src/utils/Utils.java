@@ -192,7 +192,7 @@ public abstract class Utils {
          * Specific handler for ExecutionException. By default, fallback to
          * {@link #handle(Exception)}.
          *
-         * @param ie The ExecutionException to handle.
+         * @param ee The ExecutionException to handle.
          */
         default void handleExecution(ExecutionException ee) {
             handle(ee);
@@ -202,7 +202,7 @@ public abstract class Utils {
          * Specific handler for TimeoutException. By default, fallback to
          * {@link #handle(Exception)}.
          *
-         * @param ie The TimeoutException to handle.
+         * @param te The TimeoutException to handle.
          */
         default void handleTimeout(TimeoutException te) {
             handle(te);
