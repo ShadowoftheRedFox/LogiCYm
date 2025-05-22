@@ -1168,8 +1168,7 @@ public class Editor extends VBox {
                         // Update action buttons
                         updateSelectionActions();
 
-                        // Consume the event to prevent other handlers
-                        event.consume();
+
                         break;
                     }
 
