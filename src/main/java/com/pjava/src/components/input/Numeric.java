@@ -31,13 +31,23 @@ public class Numeric extends Input {
     private int inputBase = 2;
 
     /**
-     * Create a new display with default base of 2 and maximum cable bus size of 1.
+     * Create a new display with default maximum cable bus size of 1.
      *
      * @throws Exception Should not throw.
      * @see Display
      */
     public Numeric() throws Exception {
-        this(1, 2);
+        this(1);
+    }
+
+    /**
+     * Create a new display with default base of 2
+     *
+     * @param outputSize The size of the input of the display.
+     * @throws Exception Throws if base is not between 2 and 16 included.
+     */
+    public Numeric(int outputSize) throws Exception {
+        this(outputSize, 2);
     }
 
     /**
@@ -65,6 +75,7 @@ public class Numeric extends Input {
         setInputBase(base);
         setInputValue(initialValue);
     }
+
 
     // #region Setters
 

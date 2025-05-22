@@ -49,6 +49,7 @@ public class Clock extends Input {
         setCycleSpeed(cycleSpeed);
     }
 
+
     /**
      * Make a cycle instantaneously.
      */

@@ -12,6 +12,18 @@ import com.pjava.src.errors.BusSizeException;
  * inputs.
  */
 public class Merger extends Gate {
+
+    /**
+     * Create a default merger, 2 input bus of size 1.
+     *
+     * @param busInput The list of bus sizes.
+     * @throws Exception Throws if inputs is null, empty or if the sum of each bus
+     *                   is greater than 32.
+     */
+    public Merger() throws Exception {
+        this(new int[] { 1, 1 });
+    }
+
     /**
      * Create a new merger, with the given input buses.
      *
@@ -23,9 +35,9 @@ public class Merger extends Gate {
         // placholder buses
         super(new int[] { 1 }, new int[] { 1 });
         // setup true buses
-        setOutputBus(new int[] { sumOfIntArray(busInput) });
         setInputBus(busInput);
     }
+
 
     /**
      * Get the sum of the provided array of buses, throwing exceptions if the
@@ -91,6 +103,7 @@ public class Merger extends Gate {
 
     /**
      * {@inheritDoc} Disconnect the output cable since the output bus size changes.
+     * Change the output bus to the sum of the input bus size.
      */
     @Override
     public void addInputBus(int size) throws BusSizeException {
@@ -99,34 +112,49 @@ public class Merger extends Gate {
         sumOfIntArray(getInputBus());
         // since there are changes, disconnect the output cable
         disconnect(getOutputCable().get(0));
+        // we update the output size
+        setOutputBus(new int[] { sumOfIntArray(this.inputBus) });
     }
 
     /**
      * {@inheritDoc} Disconnect the output cable since the output bus size changes.
+     * Change the output bus to the sum of the input bus size.
      */
     @Override
     public void removeInputBus(int index) throws IllegalArgumentException {
         super.removeInputBus(index);
         // since there are changes, disconnect the output cable
         disconnect(getOutputCable().get(0));
+        // we update the output size
+        try {
+            setOutputBus(new int[] { sumOfIntArray(this.inputBus) });
+        } catch (Exception e) {
+            System.err.println(e);
+        }
     }
 
     /**
      * {@inheritDoc} Disconnect the output cable if the output bus size changes.
+     * Change the output bus to the sum of the input bus size.
      */
     @Override
     public boolean setInputBus(int[] inputBus) throws BusSizeException, NullPointerException {
+        /*
         // if no input (yet), because of initialization, skip it
         if (getOutputBus().length == 0) {
             return false;
         }
+        */
         // check new size is valid, and check if output change at all
         if (sumOfIntArray(inputBus) != getOutputBus()[0]) {
             // since there are changes, disconnect the output cable
             disconnect(getOutputCable().get(0));
             System.out.println("output isn't the same size as input sum! Output: " + getOutputBus()[0] + " sum: "
                     + sumOfIntArray(inputBus));
-            return false;
+            System.out.println("Changing the output size to the input sum..");
+            setOutputBus(new int[] { sumOfIntArray(inputBus) });
+
+            // return false;
         }
         return super.setInputBus(inputBus);
     }

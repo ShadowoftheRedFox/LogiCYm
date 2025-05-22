@@ -34,6 +34,7 @@ public class Ground extends Input {
         value.clear();
     }
 
+
     @Override
     public BitSet getState() {
         // in case the internal values changed

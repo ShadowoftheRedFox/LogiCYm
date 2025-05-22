@@ -24,6 +24,7 @@ public class Lever extends Input {
         state.set(0, flipped);
     }
 
+
     /**
      * Flip the lever.
      */

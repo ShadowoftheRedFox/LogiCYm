@@ -26,13 +26,24 @@ public class Display extends Output {
     private int outputBase = 2;
 
     /**
-     * Create a new display with default base of 2 and maximum cable bus size of 1.
+     * Create a new display with default maximum cable bus size of 1.
      *
      * @throws Exception Should not throw.
      * @see #Display(int, int)
      */
     public Display() throws Exception {
-        this(1, 2);
+        this(1);
+    }
+
+    /**
+     * Create a new display with default base 2.
+     *
+     * @param inputSize The size of the input of the display.
+     * @throws Exception Should not throw.
+     * @see #Display(int, int)
+     */
+    public Display(int inputSize) throws Exception {
+        this(inputSize, 2);
     }
 
     /**
