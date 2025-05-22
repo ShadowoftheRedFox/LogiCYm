@@ -130,23 +130,7 @@ public abstract class UIGate extends UIElement {
         return inputPins;
     }
 
-    /**
-     * returns the list of pins output
-     *
-     * @return ( list of output pins)
-     */
-    public List<Pin> getOutputPins() {
-        return outputPins;
-    }
 
-    /**
-     * to get the UICable connected
-     *
-     * @return a UICable
-     */
-    public List<UICable> getConnectedCables() {
-        return connectedCables;
-    }
 
     /**
      * used to get all the cable connecte to the gate sended
@@ -206,4 +190,31 @@ public abstract class UIGate extends UIElement {
         this.height = height;
     }
     // #endregion
+
+    /**
+     * returns the list of pins output
+     *
+     * @return ( list of output pins)
+     */
+    public List<Pin> getOutputPins() {
+        return outputPins;
+    }
+
+    /**
+     * in the name
+     *
+     * @param cable an UICable
+     */
+    public void removeConnectedCable(UICable cable) {
+        connectedCables.remove(cable);
+    }
+
+    /**
+     * to get the UICable connected
+     *
+     * @return a UICable
+     */
+    public List<UICable> getConnectedCables() {
+        return connectedCables;
+    }
 }

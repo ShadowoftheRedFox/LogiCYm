@@ -12,6 +12,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.Node;
 
 public abstract class UIElement {
     /**
@@ -58,9 +59,10 @@ public abstract class UIElement {
         try {
             // load the gate's fxml
             FXMLLoader loader = new FXMLLoader(UIElement.class.getResource("/fxml/components/" + fxml + ".fxml"));
-            loader.load();
+            Node node = loader.load();
             // and get the controller instance
             UIElement controller = loader.getController();
+            node.setUserData(controller);
 
             // create a gate infos instance
             FXMLLoader infosLoader = new FXMLLoader(UIElement.class.getResource("/fxml/ComponentInfos.fxml"));
