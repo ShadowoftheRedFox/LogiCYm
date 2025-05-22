@@ -398,6 +398,23 @@ public class Circuit {
         return addNewGate(type, "");
     }
 
+
+    /**
+     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * Setting custom base parameters
+     * The label will be set to the new gate uuid.
+     *
+     * Creates and adds a new gate with custom bus sizes.
+     *
+     * @param type the type of gate to create
+     * @param busSize size of input and output bus
+     * @return the newly created and added gate
+     * @throws Exception if the gate type doesn't exist or creation fails
+     */
+    public Gate addNewGate(String type, int busSize) throws Exception {
+        return addNewGate(type, "", new int[]{busSize}, new int[]{busSize}, null, null);
+    }
+
     /**
      * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * Setting custom base parameters
@@ -424,11 +441,11 @@ public class Circuit {
      *
      * @param type the type of gate to create
      * @param schemaFile the path to the schema definition file
-     * @param unused_int_to_create_this_shorthand unused parameter for method signature differentiation
+     * @param unused_bool_to_create_this_shorthand unused parameter for method signature differentiation
      * @return the newly created and added schema gate
      * @throws Exception if the file cannot be loaded or gate creation fails
      */
-    public Gate addNewGate(String type, String schemaFile, int unused_int_to_create_this_shorthand) throws Exception {
+    public Gate addNewGate(String type, String schemaFile, boolean unused_bool_to_create_this_shorthand) throws Exception {
         return addNewGate(type, "", schemaFile);
     }
 
@@ -462,6 +479,22 @@ public class Circuit {
      */
     public Gate addNewGate(String type, String label) throws Exception {
         return addNewGate(type, label, null, null, null, null);
+    }
+
+    /**
+     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * Setting custom base parameters.
+     *
+     * Creates and adds a new gate with custom label and bus sizes
+     *
+     * @param type the type of gate to create
+     * @param label the custom label for the gate (if empty, UUID will be used)
+     * @param busSize size of input and output bus
+     * @return the newly created and added gate
+     * @throws Exception if the gate type doesn't exist, label is already taken, or creation fails
+     */
+    public Gate addNewGate(String type, String label, int busSize) throws Exception {
+        return addNewGate(type, label, new int[]{busSize}, new int[]{busSize}, null, null);
     }
 
     /**

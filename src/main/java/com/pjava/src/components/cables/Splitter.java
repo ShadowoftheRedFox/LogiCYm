@@ -65,6 +65,9 @@ public class Splitter extends Gate {
      * @see #getState(int)
      */
     public BitSet getState(Cable cable) throws NullPointerException, Exception {
+        if(!getPowered()){
+            return null;
+        }
         if (cable == null) {
             throw new NullPointerException("Expected cable to be an instance of Cable, received null");
         }
