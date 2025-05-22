@@ -44,6 +44,7 @@ public class Button extends Input {
         setDelay(delay);
     }
 
+
     /**
      * Press the button. It will switch state for a period of time equals to
      * {@link #delay}.

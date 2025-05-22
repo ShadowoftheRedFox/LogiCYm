@@ -1,7 +1,6 @@
 package com.pjava.components.cables;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 
 import com.pjava.src.components.cables.Merger;

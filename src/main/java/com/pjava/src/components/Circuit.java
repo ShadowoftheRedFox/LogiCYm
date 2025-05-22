@@ -30,13 +30,8 @@ import com.pjava.src.components.output.Display;
 import com.pjava.src.components.output.Output;
 import com.pjava.src.utils.UtilsSave;
 
-// TODO : Format d'une selection
-// TODO : selection a partir d'une liste de clés
-// TODO : custom argument à ajouter à partir du json une fois le gate créé dans addGatesFromJson
-// TODO : Taille de port input et output dans addNewGate
-// TODO : recup ces arguments quand on passe du json
-// TODO : disconnectGate()
-// TODO : input de n bus
+
+// TODO : Chercher dans le code les endroits ou la mis à jour de addNewGate et addGate n'ont pas été fait (regarder les todo et fixme)
 
 public class Circuit {
 
@@ -89,15 +84,39 @@ public class Circuit {
 
     // #region Constructor
 
+    /**
+     * Shorthand for {@link #Circuit(String name)}
+     */
     public Circuit() {
-        this(String.format("circuit_%d", nbCircuit));
+        this(String.format("circuit_%d", nbCircuit+1));
     }
 
+    /**
+     * Create an empty circuit with just a name.
+     *
+     * @param name
+     */
     public Circuit(String name) {
         this.setName(name);
         nbCircuit++;
     }
 
+    /**
+     * Shorthand for {@link #Circuit(String name, JSONObject selection)}
+     * Generate a circuit name.
+     *
+     * @param selection
+     */
+    public Circuit(JSONObject selection) {
+        this(String.format("circuit_%d", nbCircuit+1), selection);
+    }
+
+    /**
+     * Create a circuit from a selection.
+     *
+     * @param name
+     * @param selection
+     */
     public Circuit(String name, JSONObject selection) {
         this.setName(name);
         nbCircuit++;
@@ -108,13 +127,23 @@ public class Circuit {
         }
     }
 
+    /**
+     * This will create a new circuit from a file
+     * If name is set to 'null' then the circuit will take the saved name
+     *
+     * @param name Can be 'null' to take the save name
+     * @param filePath Complete starting by './data/'
+     */
     public Circuit(String name, String filePath) {
-        this.setName(name);
         nbCircuit++;
         try {
-            this.addGatesFromFile(filePath);
+            this.loadGatesFromFile(filePath);
         } catch (Exception e) {
             System.err.println(e);
+        }
+
+        if(name != null){
+            this.setName(name);
         }
     }
 
@@ -265,36 +294,6 @@ public class Circuit {
 
     // #endregion
 
-    // #region connectGate
-
-    /**
-     * @param fromGate The gate whose output port you want to connect
-     * @param toGate   The gate whose input port you want to connect
-     * @param fromPort The index of the output port
-     * @param toPort   The index of the input port
-     * @return The cable created
-     * @throws Exception
-     */
-    public Cable connectGate(String fromGate, String toGate, int fromPort, int toPort) throws Exception {
-        if (!this.allGates.containsKey(fromGate)) {
-            throw new Exception(String.format("Key not found : %s", fromGate));
-        }
-        if (!this.allGates.containsKey(toGate)) {
-            throw new Exception(String.format("Key not found : %s", toGate));
-        }
-
-        Cable res = null;
-
-        try {
-            res = this.allGates.get(fromGate).connect(this.allGates.get(toGate), fromPort, toPort);
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-
-        return res;
-    }
-
-    // #endregion
 
 
     // #region addGate
@@ -349,10 +348,12 @@ public class Circuit {
     // #endregion
 
     // #region addNewGate
-    // FIXME : needs more parameters to set correct values upon creation (busSize,
-    // delay, etc..)
 
     /**
+     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * The default size of the input/output bus of the gate will be used.
+     * The label will be set to the new gate uuid.
+     *
      * @param type
      * @return The gate created
      * @throws Exception
@@ -362,29 +363,149 @@ public class Circuit {
     }
 
     /**
-     * create a gate and add it to the circuit using {@code addGate()}
+     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * Setting custom base parameters
+     * The label will be set to the new gate uuid.
      *
-     * @param type  A string of the gate type to be created
-     * @param label The key for this gate
-     * @return The gate that has just been created
+     * @param type
+     * @return The gate created
+     * @throws Exception
+     */
+    public Gate addNewGate(String type, int[] sizeBusInput, int[] sizeBusOutput) throws Exception {
+        return addNewGate(type, "");
+    }
+
+    /**
+     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * When loading a schema from a file.
+     * The label will be set to the new gate uuid.
+     *
+     * @param type
+     * @param schemaFile
+     * @param unusedInt Set to watever you whant, it is here just to create this shorthand by differenciating from {@link #addNewGate(String type, String label)}
+     * @return
+     * @throws Exception
+     */
+    public Gate addNewGate(String type, String schemaFile, int unused_int_to_create_this_shorthand) throws Exception {
+        return addNewGate(type, "", schemaFile);
+    }
+
+    /**
+     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * When loading a schema from a json selection.
+     * The label will be set to the new gate uuid.
+     *
+     * @param type
+     * @param schemaJson
+     * @return
+     * @throws Exception
+     */
+    public Gate addNewGate(String type, JSONObject schemaJson) throws Exception {
+        return addNewGate(type, "", schemaJson);
+    }
+
+
+    /**
+     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * The default size of the input/output bus of the gate will be used.
+     *
+     * @param type
+     * @param label
+     * @return
      * @throws Exception
      */
     public Gate addNewGate(String type, String label) throws Exception {
+        return addNewGate(type, label, null, null, null, null);
+    }
+
+    /**
+     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * Setting custom base parameters
+     * The default size of the input/output bus of the gate will be used.
+     *
+     * @param type
+     * @param label
+     * @return
+     * @throws Exception
+     */
+    public Gate addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput) throws Exception {
+        return addNewGate(type, label, null, null, null, null);
+    }
+
+    /**
+     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * When loading a schema from a file.
+     *
+     * @param type
+     * @param label
+     * @return
+     * @throws Exception
+     */
+    public Gate addNewGate(String type, String label, String schemaFile) throws Exception {
+        return addNewGate(type, label, null, null, schemaFile, null);
+    }
+
+    /**
+     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * When loading a schema from a json selection.
+     *
+     * @param type
+     * @param label
+     * @return
+     * @throws Exception
+     */
+    public Gate addNewGate(String type, String label, JSONObject schemaJson) throws Exception {
+        return addNewGate(type, label, null, null, null, schemaJson);
+    }
+
+
+    /**
+     * create a gate and add it to the circuit using {@code addGate()}
+     * The base informations can be sent and will be picked depending on the gate type.
+     * If set to 'null', the default version of the gate will be created.
+     *
+     * Please note that a schema needs eather a file or a json selection to load from.
+     *
+     * @param type
+     * @param label
+     * @param sizeBusInput
+     * @param sizeBusOutput
+     * @param schemaFile
+     * @param schemaJson
+     * @return
+     * @throws Exception
+     */
+    public Gate addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson) throws Exception {
 
         Gate newGate;
         switch (type) {
             // Input
             case "Power":
-                newGate = new Power();
+                if(sizeBusOutput != null){
+                    newGate = new Power(sizeBusOutput[0]);
+                }
+                else{
+                    newGate = new Power();
+                }
                 break;
             case "Ground":
-                newGate = new Ground();
+                if(sizeBusOutput != null){
+                    newGate = new Ground(sizeBusOutput[0]);
+                }
+                else{
+                    newGate = new Ground();
+                }
                 break;
             case "Lever":
                 newGate = new Lever();
                 break;
             case "Numeric":
-                newGate = new Numeric();
+                if(sizeBusOutput != null){
+                    newGate = new Numeric(sizeBusOutput[0]);
+                }
+                else{
+                    newGate = new Numeric();
+                }
                 break;
             case "Button":
                 newGate = new Button();
@@ -395,35 +516,75 @@ public class Circuit {
 
             // Output
             case "Display":
-                newGate = new Display();
+                if(sizeBusInput != null){
+                    newGate = new Display(sizeBusInput[0]);
+                }
+                else{
+                    newGate = new Display();
+                }
                 break;
 
             // Gate
             case "Not":
-                newGate = new Not();
+                if(sizeBusOutput != null){
+                    newGate = new Not(sizeBusOutput[0]);
+                }
+                else{
+                    newGate = new Not();
+                }
                 break;
             case "And":
-                newGate = new And();
+                if(sizeBusOutput != null){
+                    newGate = new And(sizeBusOutput[0]);
+                }
+                else{
+                    newGate = new And();
+                }
                 break;
             case "Or":
-                newGate = new Or();
+                if(sizeBusOutput != null){
+                    newGate = new Or(sizeBusOutput[0]);
+                }
+                else{
+                    newGate = new Or();
+                }
                 break;
             case "Schema":
-                // FIXME : Must be replaced of course
-                newGate = new Schema("bonjour", "Bonjour.json");
+                if(schemaFile != null && !schemaFile.isBlank()){
+                    newGate = new Schema(schemaFile);
+                }
+                else if(schemaJson != null){
+                    newGate = new Schema(schemaJson);
+                }
+                else{
+                    throw new Exception("A schema needs eather a file or a json selection to load from");
+                }
                 break;
 
             // Cable
             case "NodeSplitter":
-                newGate = new NodeSplitter();
+                if(sizeBusInput != null){
+                    newGate = new NodeSplitter(sizeBusInput[0]);
+                }
+                else{
+                    newGate = new NodeSplitter();
+                }
                 break;
             case "Splitter":
-                // FIXME : Must be replaced too of course
-                newGate = new Splitter(2);
+                if(sizeBusInput != null){
+                    newGate = new Splitter(sizeBusInput[0]);
+                }
+                else{
+                    newGate = new Splitter();
+                }
                 break;
             case "Merger":
-                // FIXME : This one too of course
-                newGate = new Merger(new int[] { 1 });
+                if(sizeBusInput != null){
+                    newGate = new Merger(sizeBusInput);
+                }
+                else{
+                    newGate = new Merger();
+                }
                 break;
 
             default:
@@ -442,6 +603,8 @@ public class Circuit {
     // #endregion
 
     // #region addGatesFromJson
+    // TODO : after creating a gate, load the specific informations
+    // TODO : see where to find their specific information in the json
 
     /**
      * add gates to the circuit and connects them
@@ -462,8 +625,75 @@ public class Circuit {
 
                 String type = gate_Json.getString("type");
                 String oldId = String.valueOf(gate_Json.getInt("uuid"));
-                // FIXME : needs more info for each gates
-                tempCircuit.addNewGate(type, oldId);
+
+                ArrayList<Integer> listToInt = new ArrayList<Integer>();
+                JSONArray busSize_JsonArray = gate_Json.getJSONArray("inputBus");
+                for(int j = 0; i<busSize_JsonArray.length(); i++){
+                    listToInt.add(busSize_JsonArray.getInt(j));
+                }
+                int[] sizeBusInput = listToInt.stream().mapToInt(Integer::intValue).toArray();
+
+                listToInt.clear();
+                busSize_JsonArray = gate_Json.getJSONArray("outputBus");
+                for(int j = 0; i<busSize_JsonArray.length(); i++){
+                    listToInt.add(busSize_JsonArray.getInt(j));
+                }
+                int[] sizeBusOutput = listToInt.stream().mapToInt(Integer::intValue).toArray();
+
+                String schemaFile = gate_Json.optString("circuitPath");
+
+                // We create a gate with basic informations
+                Gate addedGate = null;
+                addedGate = tempCircuit.addNewGate(
+                    type,
+                    oldId,
+                    sizeBusInput,
+                    sizeBusOutput,
+                    schemaFile,
+                    null);
+
+                // We add custom information to this gate
+                switch (type) {
+                    case "Lever":
+                        if(gate_Json.optBoolean("flipped")){
+                            ((Lever)addedGate).flip();
+                        }
+                        break;
+                    case "Button":
+                        long delayFound = gate_Json.optLong("delay", -1);
+                        if(delayFound != -1 && delayFound != ((Button)addedGate).getDelay()){
+                            ((Button)addedGate).setDelay(delayFound);
+                        }
+                        break;
+                    case "Clock":
+                        long cycleSpeedFound = gate_Json.optLong("cycleSpeed", -1);
+                        if(cycleSpeedFound != -1 && cycleSpeedFound != ((Clock)addedGate).getCycleSpeed()){
+                            ((Clock)addedGate).setCycleSpeed(cycleSpeedFound);
+                        }
+                        break;
+                    case "Numeric":
+                        int baseFound = gate_Json.optInt("base", -1);
+                        String valueFound = gate_Json.optString("value", "");
+                        if(baseFound != -1 && baseFound != ((Numeric)addedGate).getInputBase()){
+                            ((Numeric)addedGate).setInputBase(baseFound);
+                        }
+                        if(!valueFound.isBlank() && !valueFound.equals(((Numeric)addedGate).getValue())){
+                            ((Numeric)addedGate).setInputValue(valueFound);
+                        }
+                        break;
+                    case "Display":
+                        baseFound = gate_Json.optInt("base", -1);
+                        if(baseFound != -1 && baseFound != ((Display)addedGate).getBaseOutput()){
+                            ((Display)addedGate).setBaseOutput(baseFound);
+                        }
+                        break;
+                    case "NodeSplitter":
+                        int busNumberFound = sizeBusOutput.length;
+                        if(busNumberFound > ((NodeSplitter)addedGate).getOutputNumber()){
+                            ((NodeSplitter)addedGate).addOutput(busNumberFound - ((NodeSplitter)addedGate).getOutputNumber());
+                        }
+                        break;
+                }
             }
 
             // 2 : Once all the gate are created, we connect them thanks to their old uuid
@@ -522,8 +752,75 @@ public class Circuit {
 
                 String type = gate_Json.getString("type");
                 String oldId = String.valueOf(gate_Json.getInt("uuid"));
-                // FIXME : needs more info for each gates
-                tempCircuit.addNewGate(type, oldId);
+
+                ArrayList<Integer> listToInt = new ArrayList<Integer>();
+                JSONArray busSize_JsonArray = gate_Json.getJSONArray("inputBus");
+                for(int j = 0; i<busSize_JsonArray.length(); i++){
+                    listToInt.add(busSize_JsonArray.getInt(j));
+                }
+                int[] sizeBusInput = listToInt.stream().mapToInt(Integer::intValue).toArray();
+
+                listToInt.clear();
+                busSize_JsonArray = gate_Json.getJSONArray("outputBus");
+                for(int j = 0; i<busSize_JsonArray.length(); i++){
+                    listToInt.add(busSize_JsonArray.getInt(j));
+                }
+                int[] sizeBusOutput = listToInt.stream().mapToInt(Integer::intValue).toArray();
+
+                String schemaFile = gate_Json.optString("circuitPath");
+
+                // We create a gate with basic informations
+                Gate addedGate = null;
+                addedGate = tempCircuit.addNewGate(
+                    type,
+                    oldId,
+                    sizeBusInput,
+                    sizeBusOutput,
+                    schemaFile,
+                    null);
+
+                // We add custom information to this gate
+                switch (type) {
+                    case "Lever":
+                        if(gate_Json.optBoolean("flipped")){
+                            ((Lever)addedGate).flip();
+                        }
+                        break;
+                    case "Button":
+                        long delayFound = gate_Json.optLong("delay", -1);
+                        if(delayFound != -1 && delayFound != ((Button)addedGate).getDelay()){
+                            ((Button)addedGate).setDelay(delayFound);
+                        }
+                        break;
+                    case "Clock":
+                        long cycleSpeedFound = gate_Json.optLong("cycleSpeed", -1);
+                        if(cycleSpeedFound != -1 && cycleSpeedFound != ((Clock)addedGate).getCycleSpeed()){
+                            ((Clock)addedGate).setCycleSpeed(cycleSpeedFound);
+                        }
+                        break;
+                    case "Numeric":
+                        int baseFound = gate_Json.optInt("base", -1);
+                        String valueFound = gate_Json.optString("value", "");
+                        if(baseFound != -1 && baseFound != ((Numeric)addedGate).getInputBase()){
+                            ((Numeric)addedGate).setInputBase(baseFound);
+                        }
+                        if(!valueFound.isBlank() && !valueFound.equals(((Numeric)addedGate).getValue())){
+                            ((Numeric)addedGate).setInputValue(valueFound);
+                        }
+                        break;
+                    case "Display":
+                        baseFound = gate_Json.optInt("base", -1);
+                        if(baseFound != -1 && baseFound != ((Display)addedGate).getBaseOutput()){
+                            ((Display)addedGate).setBaseOutput(baseFound);
+                        }
+                        break;
+                    case "NodeSplitter":
+                        int busNumberFound = sizeBusOutput.length;
+                        if(busNumberFound > ((NodeSplitter)addedGate).getOutputNumber()){
+                            ((NodeSplitter)addedGate).addOutput(busNumberFound - ((NodeSplitter)addedGate).getOutputNumber());
+                        }
+                        break;
+                }
             }
 
             // 1.bis : We whant to turn all Input(Lever/Numeric)  and Output into schema port
@@ -769,21 +1066,22 @@ public class Circuit {
 
     // #endregion
 
-    // #region addGatesFromFile
+    // #region loadGatesFromFile
 
-    public final void addGatesFromFile(String filePath) throws Exception {
-        addGatesFromFile(filePath, null);
+    public final void loadGatesFromFile(String filePath) throws Exception {
+        loadGatesFromFile(filePath, null);
     }
 
     /**
      * Load the Json of the circuit at the given localisation from './data/'
      * It then calls {@link #addGatesFromJson(JSONObject)} to finish the job.
+     * Set the name of the circuit to the circuit loaded name.
      *
      * @param filePath
      * @param schema
      * @throws Exception
      */
-    public final void addGatesFromFile(String filePath, Schema schema) throws Exception {
+    public final void loadGatesFromFile(String filePath, Schema schema) throws Exception {
         filePath = filePath.replace("/", File.separator);
 
         // We then read and create a json object from the file
@@ -796,7 +1094,10 @@ public class Circuit {
 
             JSONObject circuit_Json = new JSONObject(content.toString());
 
-            // we are dealing with a schema
+            // As we are loading the circuit from a file, we set the name to the loaded circuit
+            this.setName(circuit_Json.getString("name"));
+
+            // if we are dealing with a schema
             if (schema != null) {
                 this.addGatesFromJson(circuit_Json, schema);
             } else {
@@ -808,6 +1109,7 @@ public class Circuit {
     }
 
     // #endregion
+
 
 
     // #region delGate
@@ -850,19 +1152,146 @@ public class Circuit {
     // #endregion
 
 
+    // #region connectGate
+
+    /**
+     * @param fromGate The gate whose output port you want to connect
+     * @param toGate   The gate whose input port you want to connect
+     * @param fromPort The index of the output port
+     * @param toPort   The index of the input port
+     * @return The cable created
+     * @throws Exception
+     */
+    public Cable connectGate(String fromGate, String toGate, int fromPort, int toPort) throws Exception {
+        if (!this.allGates.containsKey(fromGate)) {
+            throw new Exception(String.format("Key not found : %s", fromGate));
+        }
+        if (!this.allGates.containsKey(toGate)) {
+            throw new Exception(String.format("Key not found : %s", toGate));
+        }
+
+        Cable res = null;
+
+        try {
+            res = this.allGates.get(fromGate).connect(this.allGates.get(toGate), fromPort, toPort);
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+
+        return res;
+    }
+
+    // #endregion
+
+    // #region selectGatesFromIdList
+
+        /**
+         * Create the formated json of a selection of gates.
+         * All port with a cable going toward a gate that is not in the selection
+         * will be overriden to [-1, -1].
+         *
+         * Additionnal note : the format is [int gateIdex, int gatePort].
+         *
+         * @param labelGates
+         * @return
+         */
+        public JSONObject selectGatesFromIdList(ArrayList<String> labelGates){
+            JSONObject selection_Json = new JSONObject();
+
+            // selection in Gate Array
+            ArrayList<Gate> selectedGates = new ArrayList<>();
+            for(String label : labelGates){
+                selectedGates.add(this.allGates.get(label));
+            }
+
+            // selection in Json Array
+            JSONArray gate_JsonArray = new JSONArray();
+            for (Gate gate : selectedGates) {
+                //System.out.println(gate);
+                gate_JsonArray.put(gate.toJson());
+            }
+
+            // In the Json Array, we override to -1 the input/output cables going out of the selection
+            selectedGates.forEach(gate -> {
+                // detection for input cable :
+                gate.getInputCable().forEach(cable -> {
+                    if (cable != null) {
+                        // if the cable is connected to a gate out of the selection
+                        if (!selectedGates.contains(cable.getInputGate())) {
+                            int gateId = gate.uuid();
+                            int targetId = cable.getInputGate().uuid();
+
+                            // we find the json of the connection
+                            for (int jsonIndex = 0; jsonIndex < gate_JsonArray.length(); jsonIndex++) {
+                                if (gate_JsonArray.getJSONObject(jsonIndex).getInt("uuid") == gateId) {
+                                    JSONArray gateInput_JsonArray = gate_JsonArray.getJSONObject(jsonIndex).getJSONArray("inputFrom");
+
+                                    // we find the port of the connection
+                                    for (int gateInputIndex = 0; gateInputIndex < gateInput_JsonArray.length(); gateInputIndex++) {
+                                        if (gateInput_JsonArray.getJSONArray(gateInputIndex).getInt(0) == targetId) {
+
+                                            // we set the target get to be connected to the schéma port
+                                            gateInput_JsonArray.getJSONArray(gateInputIndex).put(0, -1);
+                                            gateInput_JsonArray.getJSONArray(gateInputIndex).put(1, -1);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // detection for output cable :
+                gate.getOutputCable().forEach(cable -> {
+                    if (cable != null) {
+                        if (!selectedGates.contains(cable.getOutputGate())) {
+                            int gateId = gate.uuid();
+                            int targetId = cable.getOutputGate().uuid();
+
+                            // we find the json of the connection
+                            for (int jsonIndex = 0; jsonIndex < gate_JsonArray.length(); jsonIndex++) {
+                                if (gate_JsonArray.getJSONObject(jsonIndex).getInt("uuid") == gateId) {
+                                    JSONArray gateOutput_JsonArray = gate_JsonArray.getJSONObject(jsonIndex).getJSONArray("outputTo");
+
+                                    // we find the port of the connection
+                                    for (int gateOutputIndex = 0; gateOutputIndex < gateOutput_JsonArray.length(); gateOutputIndex++) {
+                                        if (gateOutput_JsonArray.getJSONArray(gateOutputIndex).getInt(0) == targetId) {
+
+                                            // we set the target get to be connected to the schéma port
+                                            gateOutput_JsonArray.getJSONArray(gateOutputIndex).put(0, -1);
+                                            gateOutput_JsonArray.getJSONArray(gateOutputIndex).put(1, -1);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+
+            selection_Json.put("Gate", gate_JsonArray);
+
+            return selection_Json;
+        }
+
+    //#endregion
+
+
+
     // #region toJson
 
     public JSONObject toJson() {
         // adding gates within the circuit to a JSON array
         JSONArray gate_JsonArray = new JSONArray();
         for (Gate gate : allGates.values()) {
-            System.out.println(gate);
+            //System.out.println(gate);
             gate_JsonArray.put(gate.toJson());
         }
 
         // Creating the JSON object
         JSONObject circuit_Json = new JSONObject();
         circuit_Json.put("Gate", gate_JsonArray);
+        circuit_Json.put("name", this.name);
 
         return circuit_Json;
     }

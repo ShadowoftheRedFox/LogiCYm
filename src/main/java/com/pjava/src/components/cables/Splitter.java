@@ -13,6 +13,18 @@ import com.pjava.src.errors.BusSizeException;
  * {@link #getState(Cable)} should be used.
  */
 public class Splitter extends Gate {
+
+    /**
+     * Create a default splitter,
+     * input bus size is set to 2.
+     *
+     * @param input The size of the input bus.
+     * @throws Exception Throws if {@link #setInputBus(int[])} throws.
+     */
+    public Splitter() throws Exception {
+        this(2);
+    }
+
     /**
      * Create a new splitter with the given input bus size. Create the same number
      * of output cable, each of bus size equal to 1.
@@ -24,6 +36,7 @@ public class Splitter extends Gate {
         super(new int[] { input }, new int[0]);
         setInputBus(new int[] { input });
     }
+
 
     /**
      * A mirror of the input. Use {@link #getState(Cable)} or {@link #getState(int)}
