@@ -35,6 +35,8 @@ import com.pjava.src.utils.UtilsSave;
 // TODO : connect back and front
 // TODO : UI : Input gates who can't be accessible outside shouldn't have a schema port (not assignable by the user)
 
+// TODO : test with a complex circuit
+
 public class Circuit {
 
     // #region Attributes
