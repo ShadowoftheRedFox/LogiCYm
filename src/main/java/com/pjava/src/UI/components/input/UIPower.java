@@ -43,6 +43,11 @@ public class UIPower extends UIGate {
     public Power getLogic() {
         return (Power) super.getLogic();
     }
+    /**
+     * set the logic of a Power Gate
+     *
+     * @param power a power gate
+     */
 
     private void setLogic(Power power) {
         super.setLogic(power);

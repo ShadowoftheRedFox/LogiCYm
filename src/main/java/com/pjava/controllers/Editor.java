@@ -181,7 +181,14 @@ public class Editor extends VBox {
     private Pin lastInputPinPressed = null;
     private Pin lastOutputPinPressed = null;
 
+    /**
+     * list of element in the page
+     */
     private Circuit editedCircuit = new Circuit("Unamed circuit");
+
+    /**
+     * verification if they don'save
+     */
     private boolean unsavedChanges = false;
 
     /**
@@ -484,16 +491,25 @@ public class Editor extends VBox {
     }
 
     // #region Functions
+
+
     private void setUnsavedChanges(boolean unsavedChanges) {
         this.unsavedChanges = unsavedChanges;
         manager.getStage()
                 .setTitle("LogiCYm: " + (unsavedChanges ? "Unsaved changes - " : "") + editedCircuit.getName());
         saveButton.setDisable(!unsavedChanges);
     }
-
+    /**
+     * Change the speed simulation
+     * @param value the value of hz
+     */
     private void setSimulationSpeed(int value) {
         // TODO edit simulation speed somewhere
     }
+
+    /**
+     * Create the grid in page
+     */
 
     public void resizeGrid() {
         final double paneWidth = viewScroll.getWidth();
@@ -526,6 +542,11 @@ public class Editor extends VBox {
         }
     }
 
+    /**
+     * change color around the gate when element is selected and canceled the previous selection
+     * @param event clic on element
+     */
+
     private void pressSelection(MouseEvent event) {
         // make sure selection always start on the grid
         if (!gridPane.equals(event.getTarget()) &&
@@ -554,6 +575,10 @@ public class Editor extends VBox {
         selectionRectangle.toFront();
     }
 
+/**
+ * change the position and the size when element is selected and slide
+ * @param event
+ */
     private void dragSelection(MouseEvent event) {
         // drag detected but not a selection
         if (selectionRectangle == null) {
@@ -576,6 +601,10 @@ public class Editor extends VBox {
             selectionRectangle.setHeight(-height);
         }
     }
+    /**
+     * end the selection of the element when is unselected
+     * @param event
+     */
 
     private void endSelection(MouseEvent event) {
         // TODO look for selected elements with selectedNodes
@@ -583,6 +612,9 @@ public class Editor extends VBox {
         selectionRectangle = null;
         deleteButton.setDisable(false);
     }
+    /**
+     * Clears the current selection of elements on the UI.
+     */
 
     private void clearSelection() {
         for (UIElement selectedElement : selectedNodes) {
@@ -595,6 +627,10 @@ public class Editor extends VBox {
         replaceInfos(null);
         deleteButton.setDisable(true);
     }
+    /**
+     * Clears the panel and adds the provided Node if it is not null.
+     * @param content The Node to display in the information panel, or null to clear it
+     */
 
     private void replaceInfos(Node content) {
         // clear container
@@ -604,7 +640,10 @@ public class Editor extends VBox {
             infosContainer.getChildren().add(content);
         }
     }
-
+    /**
+     * grabs the element selected
+     * @param element the element selected
+     */
     private void selectElement(UIElement element) {
         clearSelection();
         if (element != null) {
@@ -613,7 +652,10 @@ public class Editor extends VBox {
         }
         deleteButton.setDisable(element == null);
     }
-
+    /**
+     * grabs a group of element selected
+     * @param array collection of element selected
+     */
     private void selectElement(Collection<UIElement> array) {
         clearSelection();
         if (array != null) {
@@ -627,7 +669,9 @@ public class Editor extends VBox {
         }
         deleteButton.setDisable(selectedNodes.size() == 0);
     }
-
+    /**
+     * delete the element selected 
+     */
     private void deleteSelectedElement() {
         deleteButton.setDisable(true);
         if (selectedNodes.size() == 0) {
@@ -661,7 +705,9 @@ public class Editor extends VBox {
         enableSimulationButton.setDisable(activated);
         disableSimulationButton.setDisable(!activated);
     }
-
+    /**
+     * when editor is close make propose if they want to save the circuit
+     */
     private void closeEditor() {
         if (unsavedChanges) {
             Consumer<ValidationAnwser> callback = (res) -> {
@@ -686,6 +732,9 @@ public class Editor extends VBox {
         }
     }
 
+    /**
+     * open the file of the computer and select a file for simulate input
+     */
     private void loadSimulationFile() {
         // Get the primary stage from the scene
         Stage stage = (Stage) this.getScene().getWindow();
@@ -717,6 +766,7 @@ public class Editor extends VBox {
     // #endregion
 
     // #region Gate spawn
+    
     @FXML
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
