@@ -40,10 +40,6 @@ import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
@@ -59,6 +55,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -271,7 +268,8 @@ public class Editor extends VBox {
                 File intialDirectory = new File("./data");
                 fileChooser.setTitle("Select file to save as");
                 fileChooser.setInitialDirectory(intialDirectory);
-                FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON Files (*.json)", "*.json");
+                FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON Files (*.json)",
+                        "*.json");
                 fileChooser.getExtensionFilters().addAll(jsonFilter);
 
                 File saveFile = fileChooser.showOpenDialog(manager.getStage());
@@ -288,7 +286,8 @@ public class Editor extends VBox {
                 File intialDirectory = new File("./data");
                 fileChooser.setTitle("Select file to open");
                 fileChooser.setInitialDirectory(intialDirectory);
-                FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON Files (*.json)", "*.json");
+                FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON Files (*.json)",
+                        "*.json");
                 fileChooser.getExtensionFilters().addAll(jsonFilter);
 
                 File file = fileChooser.showOpenDialog(manager.getStage());
@@ -299,8 +298,8 @@ public class Editor extends VBox {
             }
         });
 
+        selectElement(allController);
         selectAllButton.setOnAction(event -> {
-            selectElement(allController);
         });
 
         unselectAllButton.setOnAction(event -> {
@@ -465,8 +464,8 @@ public class Editor extends VBox {
             cableController.getNode().toBack();
 
             // FIXME selection doesn't work
+            selectElement(cableController);
             cableController.getLine().setOnMousePressed(event -> {
-                selectElement(cableController);
                 replaceInfos(cableController.getInfos().getNode());
             });
         }
@@ -726,8 +725,8 @@ public class Editor extends VBox {
 
         pinsListener(andController);
         andController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(andController.getInfos().getNode());
             selectElement(andController);
+            replaceInfos(andController.getInfos().getNode());
         });
         allController.add(andController);
     }
@@ -741,8 +740,8 @@ public class Editor extends VBox {
 
         pinsListener(orController);
         orController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(orController.getInfos().getNode());
             selectElement(orController);
+            replaceInfos(orController.getInfos().getNode());
         });
         allController.add(orController);
     }
@@ -756,8 +755,8 @@ public class Editor extends VBox {
 
         pinsListener(notController);
         notController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(notController.getInfos().getNode());
             selectElement(notController);
+            replaceInfos(notController.getInfos().getNode());
         });
         allController.add(notController);
     }
@@ -771,8 +770,8 @@ public class Editor extends VBox {
 
         pinsListener(buttonController);
         buttonController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(buttonController.getInfos().getNode());
             selectElement(buttonController);
+            replaceInfos(buttonController.getInfos().getNode());
         });
         allController.add(buttonController);
     }
@@ -786,8 +785,8 @@ public class Editor extends VBox {
 
         pinsListener(clockController);
         clockController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(clockController.getInfos().getNode());
             selectElement(clockController);
+            replaceInfos(clockController.getInfos().getNode());
         });
         allController.add(clockController);
     }
@@ -801,8 +800,8 @@ public class Editor extends VBox {
 
         pinsListener(leverController);
         leverController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(leverController.getInfos().getNode());
             selectElement(leverController);
+            replaceInfos(leverController.getInfos().getNode());
         });
         allController.add(leverController);
     }
@@ -816,8 +815,8 @@ public class Editor extends VBox {
 
         pinsListener(powerController);
         powerController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(powerController.getInfos().getNode());
             selectElement(powerController);
+            replaceInfos(powerController.getInfos().getNode());
         });
         allController.add(powerController);
     }
@@ -831,8 +830,8 @@ public class Editor extends VBox {
 
         pinsListener(groundController);
         groundController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(groundController.getInfos().getNode());
             selectElement(groundController);
+            replaceInfos(groundController.getInfos().getNode());
         });
         allController.add(groundController);
     }
@@ -846,8 +845,8 @@ public class Editor extends VBox {
 
         pinsListener(displayController);
         displayController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(displayController.getInfos().getNode());
             selectElement(displayController);
+            replaceInfos(displayController.getInfos().getNode());
         });
         allController.add(displayController);
     }
