@@ -26,6 +26,8 @@ import com.pjava.src.document.SimulationFileLoader;
 import com.pjava.src.utils.UIUtils;
 import com.pjava.src.utils.UIUtils.ValidationAnwser;
 import com.pjava.src.utils.UtilsSave;
+import javafx.scene.text.Text;
+
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -53,7 +55,6 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -61,9 +62,9 @@ import javafx.stage.WindowEvent;
 
 public class Editor extends VBox {
     @FXML
-    private GridPane gridPane;
+    public GridPane gridPane;
     @FXML
-    private ScrollPane viewScroll;
+    public ScrollPane viewScroll;
     @FXML
     private AnchorPane container;
     @FXML
@@ -167,8 +168,7 @@ public class Editor extends VBox {
     /**
      * list of nodes selected
      */
-    private ArrayList<UIElement> allController = new ArrayList<UIElement>();
-    private ArrayList<UIElement> selectedNodes = new ArrayList<UIElement>();
+    private ArrayList<Node> selectedNodes = new ArrayList<Node>();
     private ArrayList<UICable> cableLines = new ArrayList<UICable>();
 
     /**
@@ -224,6 +224,7 @@ public class Editor extends VBox {
         });
         viewScroll.setOnScroll(event -> resizeGrid());
 
+        setupElementSelection();
         resizeGrid();
 
         // #region Listeners
@@ -247,15 +248,15 @@ public class Editor extends VBox {
         });
 
         deleteButton.setOnAction(event -> {
-            deleteSelectedElement();
+            deleteSelectedElements(event);
         });
         manager.getScene().setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case DELETE:
-                    deleteSelectedElement();
+                    deleteSelectedElements(null);
                     break;
                 case BACK_SPACE:
-                    deleteSelectedElement();
+                    deleteSelectedElements(null);
                     break;
                 default:
                     break;
@@ -305,7 +306,6 @@ public class Editor extends VBox {
             }
         });
 
-        selectElement(allController);
         selectAllButton.setOnAction(event -> {
         });
 
@@ -605,31 +605,8 @@ public class Editor extends VBox {
      * @param event
      */
 
-    private void endSelection(MouseEvent event) {
-        // TODO look for selected elements with selectedNodes
-        container.getChildren().remove(selectionRectangle);
-        selectionRectangle = null;
-        deleteButton.setDisable(false);
-    }
-    /**
-     * Clears the current selection of elements on the UI.
-     */
 
-    private void clearSelection() {
-        for (UIElement selectedElement : selectedNodes) {
-            if (selectedElement != null) {
-                selectedElement.getNode().setStyle("-fx-background-color: #ffffff00");
-            }
-        }
-
-        selectedNodes.clear();
-        replaceInfos(null);
-        deleteButton.setDisable(true);
-    }
-    /**
-     * Clears the panel and adds the provided Node if it is not null.
-     * @param content The Node to display in the information panel, or null to clear it
-     */
+    // #endregion
 
     private void replaceInfos(Node content) {
         // clear container
@@ -646,8 +623,7 @@ public class Editor extends VBox {
     private void selectElement(UIElement element) {
         clearSelection();
         if (element != null) {
-            selectedNodes.add(element);
-            element.getNode().setStyle("-fx-background-color: #0000ff80");
+            selectedNodes.add(element.getNode());
         }
         deleteButton.setDisable(element == null);
     }
@@ -658,46 +634,11 @@ public class Editor extends VBox {
     private void selectElement(Collection<UIElement> array) {
         clearSelection();
         if (array != null) {
-            selectedNodes.addAll(array);
-            selectedNodes.forEach(element -> {
-                if (element == null) {
-                    selectedNodes.remove(element);
-                }
-                element.getNode().setStyle("-fx-background-color: #0000ff80");
-            });
-        }
-        deleteButton.setDisable(selectedNodes.size() == 0);
-    }
-    /**
-     * delete the element selected 
-     */
-    private void deleteSelectedElement() {
-        deleteButton.setDisable(true);
-        if (selectedNodes.size() == 0) {
-            return;
-        }
-
-        System.out.println("Deleting " + selectedNodes.size() + " elements");
-        for (UIElement selectedElement : selectedNodes) {
-            String elementName = selectedElement.toString();
-            System.out.println("deleting " + elementName);
-
-            // remove from the scene
-            container.getChildren().remove(selectedElement.getNode());
-            // remove them from the controller list
-            allController.remove(selectedElement);
-
-            // disconnect everything
-            if (selectedElement instanceof UIGate) {
-                ((UIGate) selectedElement).disconnect();
-            } else if (selectedElement instanceof UICable) {
-                ((UICable) selectedElement).disconnect();
-            } else {
-                System.out.println("Something unexpected have been selected: " + selectedElement);
+            for(UIElement element : array){
+                selectedNodes.add(element.getNode());
             }
         }
-
-        clearSelection();
+        deleteButton.setDisable(selectedNodes.size() == 0);
     }
 
     private void toggleSimulation(boolean activated) {
@@ -765,7 +706,7 @@ public class Editor extends VBox {
     // #endregion
 
     // #region Gate spawn
-    
+
     @FXML
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
@@ -778,7 +719,6 @@ public class Editor extends VBox {
             selectElement(andController);
             replaceInfos(andController.getInfos().getNode());
         });
-        allController.add(andController);
     }
 
     @FXML
@@ -793,7 +733,6 @@ public class Editor extends VBox {
             selectElement(orController);
             replaceInfos(orController.getInfos().getNode());
         });
-        allController.add(orController);
     }
 
     @FXML
@@ -808,7 +747,6 @@ public class Editor extends VBox {
             selectElement(notController);
             replaceInfos(notController.getInfos().getNode());
         });
-        allController.add(notController);
     }
 
     @FXML
@@ -823,7 +761,6 @@ public class Editor extends VBox {
             selectElement(buttonController);
             replaceInfos(buttonController.getInfos().getNode());
         });
-        allController.add(buttonController);
     }
 
     @FXML
@@ -838,7 +775,6 @@ public class Editor extends VBox {
             selectElement(clockController);
             replaceInfos(clockController.getInfos().getNode());
         });
-        allController.add(clockController);
     }
 
     @FXML
@@ -853,7 +789,6 @@ public class Editor extends VBox {
             selectElement(leverController);
             replaceInfos(leverController.getInfos().getNode());
         });
-        allController.add(leverController);
     }
 
     @FXML
@@ -868,7 +803,6 @@ public class Editor extends VBox {
             selectElement(powerController);
             replaceInfos(powerController.getInfos().getNode());
         });
-        allController.add(powerController);
     }
 
     @FXML
@@ -883,7 +817,6 @@ public class Editor extends VBox {
             selectElement(groundController);
             replaceInfos(groundController.getInfos().getNode());
         });
-        allController.add(groundController);
     }
 
     @FXML
@@ -898,7 +831,6 @@ public class Editor extends VBox {
             selectElement(displayController);
             replaceInfos(displayController.getInfos().getNode());
         });
-        allController.add(displayController);
     }
 
     /**
@@ -950,8 +882,323 @@ public class Editor extends VBox {
         System.out.println("Click Splitter!");
     }
 
+    /**
+     * Ends the selection process by checking which nodes are inside the selection
+     * rectangle,
+     * highlights selected nodes, and updates the UI accordingly.
+     *
+     * @param event the MouseEvent triggering the end of selection
+     */
+    private void endSelection(MouseEvent event) {
+        if (selectionRectangle == null) {
+            return;
+        }
+
+        // Coordinates of the selection rectangle
+        double selectionMinX = selectionRectangle.getLayoutX();
+        double selectionMinY = selectionRectangle.getLayoutY();
+        double selectionMaxX = selectionMinX + selectionRectangle.getWidth();
+        double selectionMaxY = selectionMinY + selectionRectangle.getHeight();
+
+        System.out.println("Selection rectangle: " + selectionMinX + "," + selectionMinY + " -> " + selectionMaxX + ","
+                + selectionMaxY);
+
+        // Iterate over all children of the container
+        for (Node node : container.getChildren()) {
+            // Ignore the selection rectangle itself
+            if (node == selectionRectangle) {
+                continue;
+            }
+
+            // Check if this is a UI element with userData
+            if (node.getUserData() instanceof UIElement) {
+                UIElement element = (UIElement) node.getUserData();
+
+                // Get coordinates of the element
+                double elementMinX = node.getLayoutX();
+                double elementMinY = node.getLayoutY();
+                double elementMaxX = elementMinX + node.getBoundsInLocal().getWidth();
+                double elementMaxY = elementMinY + node.getBoundsInLocal().getHeight();
+
+                System.out.println("Element " + element.getName() + ": " + elementMinX + "," + elementMinY + " -> "
+                        + elementMaxX + "," + elementMaxY);
+
+                // Check if the element is inside the selection rectangle
+                boolean isInSelection = (elementMinX >= selectionMinX &&
+                        elementMaxX <= selectionMaxX &&
+                        elementMinY >= selectionMinY &&
+                        elementMaxY <= selectionMaxY);
+
+                // Add the element to the selection if it is inside the rectangle
+                if (isInSelection) {
+                    System.out.println("Selected element: " + element.getName());
+                    selectedNodes.add(node);
+                    highlightSelectedNode(node);
+                }
+            }
+        }
+
+        // Update action buttons based on the selection
+        updateSelectionActions();
+
+        // Remove the selection rectangle
+        container.getChildren().remove(selectionRectangle);
+        selectionRectangle = null;
+    }
+
+    /**
+     * Highlights a selected node by adding a visual effect.
+     *
+     * @param node the Node to highlight
+     */
+    private void highlightSelectedNode(Node node) {
+        // Add a visual effect to indicate the node is selected
+        node.setEffect(new javafx.scene.effect.DropShadow(5, Color.BLUE));
+    }
+
+    /**
+     * Removes the highlight effect from a deselected node.
+     *
+     * @param node the Node to unhighlight
+     */
+    private void unhighlightNode(Node node) {
+        node.setEffect(null);
+    }
+
+    /**
+     * Clears the selection by removing highlights and clearing the selection list.
+     */
+    private void clearSelection() {
+        // Remove highlight from all selected nodes
+        for (Node node : selectedNodes) {
+            unhighlightNode(node);
+        }
+        // Clear the selection list
+        selectedNodes.clear();
+        // Update action buttons
+        updateSelectionActions();
+    }
+
+    /**
+     * Updates the state of action buttons based on whether there is a selection.
+     */
+    private void updateSelectionActions() {
+        boolean hasSelection = !selectedNodes.isEmpty();
+
+        // Enable/disable buttons based on selection state
+        deleteButton.setDisable(!hasSelection);
+        copyButton.setDisable(!hasSelection);
+        cutButton.setDisable(!hasSelection);
+        // Paste button is always disabled if clipboard is empty
+        // It should be enabled separately when something is copied
+    }
+
+    /**
+     * Deletes all selected elements from the container and handles disconnection of
+     * cables if applicable.
+     *
+     * @param event the ActionEvent triggering the deletion
+     */
     @FXML
-    public void clickSchema(ActionEvent event) {
-        System.out.println("Click Schema!");
+    private void deleteSelectedElements(ActionEvent event) {
+        // Use a new list to avoid ConcurrentModificationException
+        ArrayList<Node> nodesToRemove = new ArrayList<>(selectedNodes);
+
+        for (Node node : nodesToRemove) {
+            // If it's a UIElement, handle disconnections
+            if (node.getUserData() instanceof UIElement) {
+                UIElement element = (UIElement) node.getUserData();
+
+                // If the element is a logic gate, manage its connections
+                if (element instanceof UIGate) {
+                    UIGate gate = (UIGate) element;
+                    gate.disconnect();
+                    //TODO delete the cable if selected
+                }
+            }
+
+            // Remove the node from the container
+            container.getChildren().remove(node);
+        }
+
+        // Clear the selection
+        clearSelection();
+    }
+
+    // Variables for clipboard management
+    private ArrayList<UIElement> clipboardElements = new ArrayList<>();
+
+    /**
+     * Copies the selected elements to the clipboard.
+     *
+     * @param event the ActionEvent triggering the copy
+     */
+    @FXML
+    private void copySelectedElements(ActionEvent event) {
+        // Clear the clipboard
+        clipboardElements.clear();
+
+        // Add selected elements to the clipboard
+        for (Node node : selectedNodes) {
+            if (node.getUserData() instanceof UIElement) {
+                UIElement element = (UIElement) node.getUserData();
+                clipboardElements.add(element);
+            }
+        }
+
+        // Enable the paste button
+        pasteButton.setDisable(false);
+    }
+
+    /**
+     * Cuts the selected elements (copy then delete).
+     *
+     * @param event the ActionEvent triggering the cut
+     */
+    @FXML
+    private void cutSelectedElements(ActionEvent event) {
+        // First copy
+        copySelectedElements(event);
+        // Then delete
+        deleteSelectedElements(event);
+    }
+
+    /**
+     * Pastes elements from the clipboard at a position relative to the container or
+     * mouse position.
+     *
+     * @param event the ActionEvent triggering the paste
+     */
+    @FXML
+    private void pasteElements(ActionEvent event) {
+        // Default paste coordinates (center of the container)
+        double pasteX = container.getWidth() / 2;
+        double pasteY = container.getHeight() / 2;
+
+        // If the mouse is inside the container, use its position
+        if (container.localToScene(container.getBoundsInLocal()).contains(manager.getScene().getX(),
+                manager.getScene().getY())) {
+            pasteX = manager.getScene().getX() - container.localToScene(container.getBoundsInLocal()).getMinX();
+            pasteY = manager.getScene().getY() - container.localToScene(container.getBoundsInLocal()).getMinY();
+        }
+
+        // Deselect all currently selected elements
+        clearSelection();
+
+        // For each element in the clipboard
+        for (UIElement originalElement : clipboardElements) {
+            // Create a new instance of the element
+            UIElement newElement = UIElement.create(originalElement.getClass().getSimpleName());
+
+            if (newElement != null) {
+                // Position the new element
+                Node newNode = newElement.getNode();
+                newNode.setLayoutX(pasteX);
+                newNode.setLayoutY(pasteY);
+
+                // Add the new element to the container
+                container.getChildren().add(newNode);
+
+                // Register listeners for the pins if it is a gate
+                if (newElement instanceof UIGate) {
+                    pinsListener((UIGate) newElement);
+                }
+
+                // Add to selection
+                selectedNodes.add(newNode);
+                highlightSelectedNode(newNode);
+
+                // Slightly offset position for next element
+                pasteX += 20;
+                pasteY += 20;
+
+
+            }
+        }
+
+        // Update action buttons
+        updateSelectionActions();
+    }
+
+    /**
+     * Sets up selection/deselection of elements by mouse click.
+     * Allows multi-selection with Ctrl key.
+     */
+    private void setupElementSelection() {
+        // Add a listener for all existing and future UIElements
+        container.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            // If clicking on the background (GridPane), ignore here
+            // because it will be handled by pressSelection method
+            if (event.getTarget() == gridPane) {
+                return;
+            }
+
+            // Check if the click is on an element
+            if (event.getTarget() instanceof Node) {
+                Node targetNode = (Node) event.getTarget();
+
+                // Climb up to a parent that has a UIElement in userData
+                while (targetNode != null && targetNode != container) {
+                    if (targetNode.getUserData() instanceof UIElement) {
+                        UIElement element = (UIElement) targetNode.getUserData();
+                        System.out.println("Click on element: " + element.getName());
+
+                        // If Ctrl key is pressed, add or remove from selection
+                        if (event.isControlDown()) {
+                            if (selectedNodes.contains(targetNode)) {
+                                // Deselect
+                                selectedNodes.remove(targetNode);
+                                unhighlightNode(targetNode);
+                            } else {
+                                // Select
+                                selectedNodes.add(targetNode);
+                                highlightSelectedNode(targetNode);
+                            }
+                        } else {
+                            // If Ctrl is not pressed and node is not already selected
+                            if (!selectedNodes.contains(targetNode)) {
+                                // Deselect all others
+                                clearSelection();
+                                // Select clicked node
+                                selectedNodes.add(targetNode);
+                                highlightSelectedNode(targetNode);
+                            }
+                        }
+
+                        // Update action buttons
+                        updateSelectionActions();
+
+
+                        break;
+                    }
+
+                    // Go up to parent
+                    targetNode = targetNode.getParent();
+                }
+            }
+        });
+    }
+
+    /**
+     * Selects all UIElements in the container.
+     *
+     * @param event the ActionEvent triggering the select all
+     */
+    @FXML
+    private void selectAllElements(ActionEvent event) {
+        // First clear selection
+        clearSelection();
+
+        // Iterate over all children in the container
+        for (Node node : container.getChildren()) {
+            // Only consider UIElements
+            if (node.getUserData() instanceof UIElement) {
+                selectedNodes.add(node);
+                highlightSelectedNode(node);
+            }
+        }
+
+        // Update action buttons
+        updateSelectionActions();
     }
 }

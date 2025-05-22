@@ -1,0 +1,51 @@
+{
+ "name": "circuit_5",
+ "Gate": [
+  {
+   "outputBus": [1],
+   "outputTo": [[
+    39,
+    0
+   ]],
+   "inputFrom": [],
+   "schemaInputPort": -1,
+   "powered": true,
+   "inputBus": [],
+   "type": "Power",
+   "uuid": 36
+  },
+  {
+   "outputBus": [1],
+   "outputTo": [],
+   "inputFrom": [[
+    36,
+    0
+   ]],
+   "powered": true,
+   "inputBus": [1],
+   "type": "Not",
+   "uuid": 39
+  },
+  {
+   "flipped": false,
+   "outputBus": [1],
+   "outputTo": [],
+   "inputFrom": [],
+   "schemaInputPort": -1,
+   "powered": true,
+   "inputBus": [],
+   "type": "Lever",
+   "uuid": 38
+  },
+  {
+   "outputBus": [1],
+   "outputTo": [],
+   "inputFrom": [],
+   "schemaInputPort": -1,
+   "powered": true,
+   "inputBus": [],
+   "type": "Ground",
+   "uuid": 37
+  }
+ ]
+}
