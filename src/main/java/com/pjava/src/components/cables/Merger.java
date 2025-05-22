@@ -139,12 +139,12 @@ public class Merger extends Gate {
      */
     @Override
     public boolean setInputBus(int[] inputBus) throws BusSizeException, NullPointerException {
-        /*
+
         // if no input (yet), because of initialization, skip it
         if (getOutputBus().length == 0) {
             return false;
         }
-        */
+
         // check new size is valid, and check if output change at all
         if (sumOfIntArray(inputBus) != getOutputBus()[0]) {
             // since there are changes, disconnect the output cable

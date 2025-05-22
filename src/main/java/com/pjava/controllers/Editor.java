@@ -293,7 +293,7 @@ public class Editor extends VBox {
 
                 File file = fileChooser.showOpenDialog(manager.getStage());
 
-                editedCircuit.addGatesFromFile(file.getPath());
+                editedCircuit.loadGatesFromFile(file.getPath());
             } catch (Exception e) {
                 UIUtils.errorPopup(e.getMessage());
             }
