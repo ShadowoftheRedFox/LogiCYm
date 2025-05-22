@@ -141,7 +141,7 @@ public class Circuit {
         try {
             this.loadGatesFromFile(filePath);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e);
         }
 
         if(name != null){
@@ -630,6 +630,8 @@ public class Circuit {
     // #endregion
 
     // #region addGatesFromJson
+    // TODO : after creating a gate, load the specific informations
+    // TODO : see where to find their specific information in the json
 
     /**
      * add gates to the circuit and connects them
@@ -1301,7 +1303,7 @@ public class Circuit {
         try {
             res = this.allGates.get(fromGate).connect(this.allGates.get(toGate), fromPort, toPort);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e);
         }
 
         return res;
@@ -1505,7 +1507,7 @@ public class Circuit {
                 System.out.println(String.format("'%s' already exist", filePath));
             }
         } catch (NullPointerException | IOException e) {
-            e.printStackTrace();
+            System.err.println(e);
         }
 
         // We write in the designed file
@@ -1517,7 +1519,6 @@ public class Circuit {
             System.out.println("Circuit saved with success in: " + filePath);
         } catch (IOException e) {
             System.err.println("Error " + filePath + " can't be saved : " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
