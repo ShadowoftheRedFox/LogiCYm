@@ -1,5 +1,7 @@
 package com.pjava.src.components;
 
+import static org.junit.jupiter.api.DynamicTest.stream;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -31,7 +33,7 @@ import com.pjava.src.components.output.Output;
 import com.pjava.src.utils.UtilsSave;
 
 
-// TODO : custom argument à ajouter à partir du json une fois le gate créé dans addGatesFromJson
+// TODO : Chercher dans le code les endroits ou la mis à jour de addNewGate et addGate n'ont pas été fait (regarder les todo et fixme)
 
 public class Circuit {
 
@@ -625,8 +627,75 @@ public class Circuit {
 
                 String type = gate_Json.getString("type");
                 String oldId = String.valueOf(gate_Json.getInt("uuid"));
-                // FIXME : needs more info for each gates
-                tempCircuit.addNewGate(type, oldId);
+
+                ArrayList<Integer> listToInt = new ArrayList<Integer>();
+                JSONArray busSize_JsonArray = gate_Json.getJSONArray("inputBus");
+                for(int j = 0; i<busSize_JsonArray.length(); i++){
+                    listToInt.add(busSize_JsonArray.getInt(j));
+                }
+                int[] sizeBusInput = listToInt.stream().mapToInt(Integer::intValue).toArray();
+
+                listToInt.clear();
+                busSize_JsonArray = gate_Json.getJSONArray("outputBus");
+                for(int j = 0; i<busSize_JsonArray.length(); i++){
+                    listToInt.add(busSize_JsonArray.getInt(j));
+                }
+                int[] sizeBusOutput = listToInt.stream().mapToInt(Integer::intValue).toArray();
+
+                String schemaFile = gate_Json.optString("circuitPath");
+
+                // We create a gate with basic informations
+                Gate addedGate = null;
+                addedGate = tempCircuit.addNewGate(
+                    type,
+                    oldId,
+                    sizeBusInput,
+                    sizeBusOutput,
+                    schemaFile,
+                    null);
+
+                // We add custom information to this gate
+                switch (type) {
+                    case "Lever":
+                        if(gate_Json.optBoolean("flipped")){
+                            ((Lever)addedGate).flip();
+                        }
+                        break;
+                    case "Button":
+                        long delayFound = gate_Json.optLong("delay", -1);
+                        if(delayFound != -1 && delayFound != ((Button)addedGate).getDelay()){
+                            ((Button)addedGate).setDelay(delayFound);
+                        }
+                        break;
+                    case "Clock":
+                        long cycleSpeedFound = gate_Json.optLong("cycleSpeed", -1);
+                        if(cycleSpeedFound != -1 && cycleSpeedFound != ((Clock)addedGate).getCycleSpeed()){
+                            ((Clock)addedGate).setCycleSpeed(cycleSpeedFound);
+                        }
+                        break;
+                    case "Numeric":
+                        int baseFound = gate_Json.optInt("base", -1);
+                        String valueFound = gate_Json.optString("value", "");
+                        if(baseFound != -1 && baseFound != ((Numeric)addedGate).getInputBase()){
+                            ((Numeric)addedGate).setInputBase(baseFound);
+                        }
+                        if(!valueFound.isBlank() && !valueFound.equals(((Numeric)addedGate).getValue())){
+                            ((Numeric)addedGate).setInputValue(valueFound);
+                        }
+                        break;
+                    case "Display":
+                        baseFound = gate_Json.optInt("base", -1);
+                        if(baseFound != -1 && baseFound != ((Display)addedGate).getBaseOutput()){
+                            ((Display)addedGate).setBaseOutput(baseFound);
+                        }
+                        break;
+                    case "NodeSplitter":
+                        int busNumberFound = sizeBusOutput.length;
+                        if(busNumberFound > ((NodeSplitter)addedGate).getOutputNumber()){
+                            ((NodeSplitter)addedGate).addOutput(busNumberFound - ((NodeSplitter)addedGate).getOutputNumber());
+                        }
+                        break;
+                }
             }
 
             // 2 : Once all the gate are created, we connect them thanks to their old uuid
@@ -685,8 +754,75 @@ public class Circuit {
 
                 String type = gate_Json.getString("type");
                 String oldId = String.valueOf(gate_Json.getInt("uuid"));
-                // FIXME : needs more info for each gates
-                tempCircuit.addNewGate(type, oldId);
+
+                ArrayList<Integer> listToInt = new ArrayList<Integer>();
+                JSONArray busSize_JsonArray = gate_Json.getJSONArray("inputBus");
+                for(int j = 0; i<busSize_JsonArray.length(); i++){
+                    listToInt.add(busSize_JsonArray.getInt(j));
+                }
+                int[] sizeBusInput = listToInt.stream().mapToInt(Integer::intValue).toArray();
+
+                listToInt.clear();
+                busSize_JsonArray = gate_Json.getJSONArray("outputBus");
+                for(int j = 0; i<busSize_JsonArray.length(); i++){
+                    listToInt.add(busSize_JsonArray.getInt(j));
+                }
+                int[] sizeBusOutput = listToInt.stream().mapToInt(Integer::intValue).toArray();
+
+                String schemaFile = gate_Json.optString("circuitPath");
+
+                // We create a gate with basic informations
+                Gate addedGate = null;
+                addedGate = tempCircuit.addNewGate(
+                    type,
+                    oldId,
+                    sizeBusInput,
+                    sizeBusOutput,
+                    schemaFile,
+                    null);
+
+                // We add custom information to this gate
+                switch (type) {
+                    case "Lever":
+                        if(gate_Json.optBoolean("flipped")){
+                            ((Lever)addedGate).flip();
+                        }
+                        break;
+                    case "Button":
+                        long delayFound = gate_Json.optLong("delay", -1);
+                        if(delayFound != -1 && delayFound != ((Button)addedGate).getDelay()){
+                            ((Button)addedGate).setDelay(delayFound);
+                        }
+                        break;
+                    case "Clock":
+                        long cycleSpeedFound = gate_Json.optLong("cycleSpeed", -1);
+                        if(cycleSpeedFound != -1 && cycleSpeedFound != ((Clock)addedGate).getCycleSpeed()){
+                            ((Clock)addedGate).setCycleSpeed(cycleSpeedFound);
+                        }
+                        break;
+                    case "Numeric":
+                        int baseFound = gate_Json.optInt("base", -1);
+                        String valueFound = gate_Json.optString("value", "");
+                        if(baseFound != -1 && baseFound != ((Numeric)addedGate).getInputBase()){
+                            ((Numeric)addedGate).setInputBase(baseFound);
+                        }
+                        if(!valueFound.isBlank() && !valueFound.equals(((Numeric)addedGate).getValue())){
+                            ((Numeric)addedGate).setInputValue(valueFound);
+                        }
+                        break;
+                    case "Display":
+                        baseFound = gate_Json.optInt("base", -1);
+                        if(baseFound != -1 && baseFound != ((Display)addedGate).getBaseOutput()){
+                            ((Display)addedGate).setBaseOutput(baseFound);
+                        }
+                        break;
+                    case "NodeSplitter":
+                        int busNumberFound = sizeBusOutput.length;
+                        if(busNumberFound > ((NodeSplitter)addedGate).getOutputNumber()){
+                            ((NodeSplitter)addedGate).addOutput(busNumberFound - ((NodeSplitter)addedGate).getOutputNumber());
+                        }
+                        break;
+                }
             }
 
             // 1.bis : We whant to turn all Input(Lever/Numeric)  and Output into schema port
