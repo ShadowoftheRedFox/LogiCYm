@@ -131,9 +131,10 @@ public class Cable extends Element {
 
     /**
      * FIXME javadoc
-     *
-     * @return
-     */
+     * Creates and returns a deep copy of this Cable object.
+     * @return a new Cable object that is a copy of this cable, or null if an
+     *     exception occurs during the cloning process
+    */
     @Override
     public Cable clone() {
         Cable res = null;
@@ -227,11 +228,14 @@ public class Cable extends Element {
 
     /**
      * FIXME javadoc
+     * Sets the input gate for this cable connection.
+     * 
      * HACK should be private, or at least protected
      * BUG can break connections
+     * 
      *
-     * @param gate
-     * @throws Exception
+     * @param gate the gate to set as input source (must not be null)
+     * @throws Exception if the gate parameter is null
      */
     private void setInputGate(Gate gate) throws Exception {
         if (gate == null) {
@@ -242,11 +246,13 @@ public class Cable extends Element {
 
     /**
      * FIXME javadoc
+          * Sets the output gate for this cable connection.
+     * 
      * HACK should be private, or at least protected
      * BUG can break connections
-     *
-     * @param gate
-     * @throws Exception
+     * 
+     * @param gate the gate to set as output destination (must not be null)
+     * @throws Exception if the gate parameter is null
      */
     private  void setOutputGate(Gate gate) throws Exception {
         if (gate == null) {
@@ -257,10 +263,11 @@ public class Cable extends Element {
 
     /**
      * FIXME javadoc
+     * Sets the input port index for this cable connection
      * BUG no upper bound
      *
-     * @param portIndex
-     * @throws IndexOutOfBoundsException
+     * @param portIndex the index of the input port (must be >= 0)
+     * @throws IndexOutOfBoundsException if portIndex is negative
      */
     public void setInputPort(int portIndex) throws IndexOutOfBoundsException {
         if (portIndex < 0) {
@@ -272,10 +279,11 @@ public class Cable extends Element {
 
     /**
      * FIXME javadoc
+     * Sets the output port index for this cable connection.
      * BUG no upper bound
      *
-     * @param portIndex
-     * @throws IndexOutOfBoundsException
+     * @param portIndex the index of the output port (must be >= 0)
+     * @throws IndexOutOfBoundsException if portIndex is negative
      */
 
     public void setOutputPort(int portIndex) throws IndexOutOfBoundsException {
