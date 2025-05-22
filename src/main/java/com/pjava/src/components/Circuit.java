@@ -30,7 +30,6 @@ import com.pjava.src.components.output.Display;
 import com.pjava.src.components.output.Output;
 import com.pjava.src.utils.UtilsSave;
 
-
 // TODO : Chercher dans le code les endroits ou la mis à jour de addNewGate et addGate n'ont pas été fait (regarder les todo et fixme)
 
 public class Circuit {
@@ -88,7 +87,7 @@ public class Circuit {
      * Shorthand for {@link #Circuit(String name)}
      */
     public Circuit() {
-        this(String.format("circuit_%d", nbCircuit+1));
+        this(String.format("circuit_%d", nbCircuit + 1));
     }
 
     /**
@@ -108,7 +107,7 @@ public class Circuit {
      * @param selection
      */
     public Circuit(JSONObject selection) {
-        this(String.format("circuit_%d", nbCircuit+1), selection);
+        this(String.format("circuit_%d", nbCircuit + 1), selection);
     }
 
     /**
@@ -131,7 +130,7 @@ public class Circuit {
      * This will create a new circuit from a file
      * If name is set to 'null' then the circuit will take the saved name
      *
-     * @param name Can be 'null' to take the save name
+     * @param name     Can be 'null' to take the save name
      * @param filePath Complete starting by './data/'
      */
     public Circuit(String name, String filePath) {
@@ -142,7 +141,7 @@ public class Circuit {
             System.err.println(e);
         }
 
-        if(name != null){
+        if (name != null) {
             this.setName(name);
         }
     }
@@ -211,7 +210,6 @@ public class Circuit {
 
     // #endregion
 
-
     // #region setSchemaInputGatePort
 
     /**
@@ -226,19 +224,21 @@ public class Circuit {
      */
     public int setSchemaInputGatePort(String inputGateLabel, int targetPort) throws Exception {
         if (targetPort < 0 || this.inputGates.size() <= targetPort) {
-            throw new Exception(String.format("Port value '%d' is out of boundaries : must be between 0 - %d", targetPort,
-                    this.inputGates.size()));
+            throw new Exception(
+                    String.format("Port value '%d' is out of boundaries : must be between 0 - %d", targetPort,
+                            this.inputGates.size()));
         }
 
         // assigned port of the given input gate
         int assignedPort = this.inputGates.get(inputGateLabel).getSchemaInputPort();
 
-        if(assignedPort != targetPort){
+        if (assignedPort != targetPort) {
             // check if targetPort is allready taken
             for (String label : this.inputGates.keySet()) {
                 if (this.inputGates.get(label).getSchemaInputPort() == targetPort) {
                     // TODO : popup
-                    System.out.println(String.format("The input port '%d' is already used by the input gate '%s'", targetPort, label));
+                    System.out.println(String.format("The input port '%d' is already used by the input gate '%s'",
+                            targetPort, label));
                     return assignedPort;
                 }
             }
@@ -267,19 +267,21 @@ public class Circuit {
      */
     public int setSchemaOutputGatePort(String outputGateLabel, int targetPort) throws Exception {
         if (targetPort < 0 || this.outputGates.size() <= targetPort) {
-            throw new Exception(String.format("Port value '%d' is out of boundaries : must be between 0 - %d", targetPort,
-                    this.outputGates.size()));
+            throw new Exception(
+                    String.format("Port value '%d' is out of boundaries : must be between 0 - %d", targetPort,
+                            this.outputGates.size()));
         }
 
         // assigned port of the given input gate
         int assignedPort = this.outputGates.get(outputGateLabel).getSchemaOutputPort();
 
-        if(assignedPort != targetPort){
+        if (assignedPort != targetPort) {
             // check if targetPort is allready taken
             for (String label : this.outputGates.keySet()) {
                 if (this.outputGates.get(label).getSchemaOutputPort() == targetPort) {
                     // TODO : popup
-                    System.out.println(String.format("The output port '%d' is already used by the output gate '%s'", targetPort, label));
+                    System.out.println(String.format("The output port '%d' is already used by the output gate '%s'",
+                            targetPort, label));
                     return assignedPort;
                 }
             }
@@ -293,8 +295,6 @@ public class Circuit {
     }
 
     // #endregion
-
-
 
     // #region addGate
 
@@ -350,7 +350,8 @@ public class Circuit {
     // #region addNewGate
 
     /**
-     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * shorthand for
+     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * The default size of the input/output bus of the gate will be used.
      * The label will be set to the new gate uuid.
      *
@@ -363,7 +364,8 @@ public class Circuit {
     }
 
     /**
-     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * shorthand for
+     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * Setting custom base parameters
      * The label will be set to the new gate uuid.
      *
@@ -376,13 +378,16 @@ public class Circuit {
     }
 
     /**
-     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * shorthand for
+     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * When loading a schema from a file.
      * The label will be set to the new gate uuid.
      *
      * @param type
      * @param schemaFile
-     * @param unusedInt Set to watever you whant, it is here just to create this shorthand by differenciating from {@link #addNewGate(String type, String label)}
+     * @param unusedInt  Set to watever you whant, it is here just to create this
+     *                   shorthand by differenciating from
+     *                   {@link #addNewGate(String type, String label)}
      * @return
      * @throws Exception
      */
@@ -391,7 +396,8 @@ public class Circuit {
     }
 
     /**
-     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * shorthand for
+     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * When loading a schema from a json selection.
      * The label will be set to the new gate uuid.
      *
@@ -404,9 +410,9 @@ public class Circuit {
         return addNewGate(type, "", schemaJson);
     }
 
-
     /**
-     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * shorthand for
+     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * The default size of the input/output bus of the gate will be used.
      *
      * @param type
@@ -419,7 +425,8 @@ public class Circuit {
     }
 
     /**
-     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * shorthand for
+     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * Setting custom base parameters
      * The default size of the input/output bus of the gate will be used.
      *
@@ -433,7 +440,8 @@ public class Circuit {
     }
 
     /**
-     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * shorthand for
+     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * When loading a schema from a file.
      *
      * @param type
@@ -446,7 +454,8 @@ public class Circuit {
     }
 
     /**
-     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * shorthand for
+     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * When loading a schema from a json selection.
      *
      * @param type
@@ -458,13 +467,14 @@ public class Circuit {
         return addNewGate(type, label, null, null, null, schemaJson);
     }
 
-
     /**
      * create a gate and add it to the circuit using {@code addGate()}
-     * The base informations can be sent and will be picked depending on the gate type.
+     * The base informations can be sent and will be picked depending on the gate
+     * type.
      * If set to 'null', the default version of the gate will be created.
      *
-     * Please note that a schema needs eather a file or a json selection to load from.
+     * Please note that a schema needs eather a file or a json selection to load
+     * from.
      *
      * @param type
      * @param label
@@ -475,24 +485,23 @@ public class Circuit {
      * @return
      * @throws Exception
      */
-    public Gate addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson) throws Exception {
+    public Gate addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile,
+            JSONObject schemaJson) throws Exception {
 
         Gate newGate;
         switch (type) {
             // Input
             case "Power":
-                if(sizeBusOutput != null){
+                if (sizeBusOutput != null) {
                     newGate = new Power(sizeBusOutput[0]);
-                }
-                else{
+                } else {
                     newGate = new Power();
                 }
                 break;
             case "Ground":
-                if(sizeBusOutput != null){
+                if (sizeBusOutput != null) {
                     newGate = new Ground(sizeBusOutput[0]);
-                }
-                else{
+                } else {
                     newGate = new Ground();
                 }
                 break;
@@ -500,10 +509,9 @@ public class Circuit {
                 newGate = new Lever();
                 break;
             case "Numeric":
-                if(sizeBusOutput != null){
+                if (sizeBusOutput != null) {
                     newGate = new Numeric(sizeBusOutput[0]);
-                }
-                else{
+                } else {
                     newGate = new Numeric();
                 }
                 break;
@@ -516,73 +524,64 @@ public class Circuit {
 
             // Output
             case "Display":
-                if(sizeBusInput != null){
+                if (sizeBusInput != null) {
                     newGate = new Display(sizeBusInput[0]);
-                }
-                else{
+                } else {
                     newGate = new Display();
                 }
                 break;
 
             // Gate
             case "Not":
-                if(sizeBusOutput != null){
+                if (sizeBusOutput != null) {
                     newGate = new Not(sizeBusOutput[0]);
-                }
-                else{
+                } else {
                     newGate = new Not();
                 }
                 break;
             case "And":
-                if(sizeBusOutput != null){
+                if (sizeBusOutput != null) {
                     newGate = new And(sizeBusOutput[0]);
-                }
-                else{
+                } else {
                     newGate = new And();
                 }
                 break;
             case "Or":
-                if(sizeBusOutput != null){
+                if (sizeBusOutput != null) {
                     newGate = new Or(sizeBusOutput[0]);
-                }
-                else{
+                } else {
                     newGate = new Or();
                 }
                 break;
             case "Schema":
-                if(schemaFile != null && !schemaFile.isBlank()){
+                if (schemaFile != null && !schemaFile.isBlank()) {
                     newGate = new Schema(schemaFile);
-                }
-                else if(schemaJson != null){
+                } else if (schemaJson != null) {
                     newGate = new Schema(schemaJson);
-                }
-                else{
+                } else {
                     throw new Exception("A schema needs eather a file or a json selection to load from");
                 }
                 break;
 
             // Cable
             case "NodeSplitter":
-                if(sizeBusInput != null){
+                if (sizeBusInput != null) {
                     newGate = new NodeSplitter(sizeBusInput[0]);
-                }
-                else{
+                } else {
                     newGate = new NodeSplitter();
                 }
                 break;
             case "Splitter":
-                if(sizeBusInput != null){
+                if (sizeBusInput != null) {
                     newGate = new Splitter(sizeBusInput[0]);
-                }
-                else{
+                } else {
                     newGate = new Splitter();
                 }
                 break;
             case "Merger":
-                if(sizeBusInput != null){
+                if (sizeBusInput != null) {
                     newGate = new Merger(sizeBusInput);
-                }
-                else{
+                } else {
                     newGate = new Merger();
                 }
                 break;
@@ -618,6 +617,7 @@ public class Circuit {
         try {
             JSONArray gate_JsonArray = circuit_Json.getJSONArray("Gate");
 
+
             // 1 : We create new gates from those we find in the json Object and we set
             // their old uuid as a label
             for (int i = 0; i < gate_JsonArray.length(); i++) {
@@ -628,14 +628,14 @@ public class Circuit {
 
                 ArrayList<Integer> listToInt = new ArrayList<Integer>();
                 JSONArray busSize_JsonArray = gate_Json.getJSONArray("inputBus");
-                for(int j = 0; i<busSize_JsonArray.length(); i++){
+                for (int j = 0; j < busSize_JsonArray.length(); j++) {
                     listToInt.add(busSize_JsonArray.getInt(j));
                 }
                 int[] sizeBusInput = listToInt.stream().mapToInt(Integer::intValue).toArray();
 
                 listToInt.clear();
                 busSize_JsonArray = gate_Json.getJSONArray("outputBus");
-                for(int j = 0; i<busSize_JsonArray.length(); i++){
+                for (int j = 0; j < busSize_JsonArray.length(); j++) {
                     listToInt.add(busSize_JsonArray.getInt(j));
                 }
                 int[] sizeBusOutput = listToInt.stream().mapToInt(Integer::intValue).toArray();
@@ -645,52 +645,53 @@ public class Circuit {
                 // We create a gate with basic informations
                 Gate addedGate = null;
                 addedGate = tempCircuit.addNewGate(
-                    type,
-                    oldId,
-                    sizeBusInput,
-                    sizeBusOutput,
-                    schemaFile,
-                    null);
+                        type,
+                        oldId,
+                        sizeBusInput,
+                        sizeBusOutput,
+                        schemaFile,
+                        null);
 
                 // We add custom information to this gate
                 switch (type) {
                     case "Lever":
-                        if(gate_Json.optBoolean("flipped")){
-                            ((Lever)addedGate).flip();
+                        if (gate_Json.optBoolean("flipped")) {
+                            ((Lever) addedGate).flip();
                         }
                         break;
                     case "Button":
                         long delayFound = gate_Json.optLong("delay", -1);
-                        if(delayFound != -1 && delayFound != ((Button)addedGate).getDelay()){
-                            ((Button)addedGate).setDelay(delayFound);
+                        if (delayFound != -1 && delayFound != ((Button) addedGate).getDelay()) {
+                            ((Button) addedGate).setDelay(delayFound);
                         }
                         break;
                     case "Clock":
                         long cycleSpeedFound = gate_Json.optLong("cycleSpeed", -1);
-                        if(cycleSpeedFound != -1 && cycleSpeedFound != ((Clock)addedGate).getCycleSpeed()){
-                            ((Clock)addedGate).setCycleSpeed(cycleSpeedFound);
+                        if (cycleSpeedFound != -1 && cycleSpeedFound != ((Clock) addedGate).getCycleSpeed()) {
+                            ((Clock) addedGate).setCycleSpeed(cycleSpeedFound);
                         }
                         break;
                     case "Numeric":
                         int baseFound = gate_Json.optInt("base", -1);
                         String valueFound = gate_Json.optString("value", "");
-                        if(baseFound != -1 && baseFound != ((Numeric)addedGate).getInputBase()){
-                            ((Numeric)addedGate).setInputBase(baseFound);
+                        if (baseFound != -1 && baseFound != ((Numeric) addedGate).getInputBase()) {
+                            ((Numeric) addedGate).setInputBase(baseFound);
                         }
-                        if(!valueFound.isBlank() && !valueFound.equals(((Numeric)addedGate).getValue())){
-                            ((Numeric)addedGate).setInputValue(valueFound);
+                        if (!valueFound.isBlank() && !valueFound.equals(((Numeric) addedGate).getValue())) {
+                            ((Numeric) addedGate).setInputValue(valueFound);
                         }
                         break;
                     case "Display":
                         baseFound = gate_Json.optInt("base", -1);
-                        if(baseFound != -1 && baseFound != ((Display)addedGate).getBaseOutput()){
-                            ((Display)addedGate).setBaseOutput(baseFound);
+                        if (baseFound != -1 && baseFound != ((Display) addedGate).getBaseOutput()) {
+                            ((Display) addedGate).setBaseOutput(baseFound);
                         }
                         break;
                     case "NodeSplitter":
                         int busNumberFound = sizeBusOutput.length;
-                        if(busNumberFound > ((NodeSplitter)addedGate).getOutputNumber()){
-                            ((NodeSplitter)addedGate).addOutput(busNumberFound - ((NodeSplitter)addedGate).getOutputNumber());
+                        if (busNumberFound > ((NodeSplitter) addedGate).getOutputNumber()) {
+                            ((NodeSplitter) addedGate)
+                                    .addOutput(busNumberFound - ((NodeSplitter) addedGate).getOutputNumber());
                         }
                         break;
                 }
@@ -755,14 +756,14 @@ public class Circuit {
 
                 ArrayList<Integer> listToInt = new ArrayList<Integer>();
                 JSONArray busSize_JsonArray = gate_Json.getJSONArray("inputBus");
-                for(int j = 0; i<busSize_JsonArray.length(); i++){
+                for (int j = 0; i < busSize_JsonArray.length(); i++) {
                     listToInt.add(busSize_JsonArray.getInt(j));
                 }
                 int[] sizeBusInput = listToInt.stream().mapToInt(Integer::intValue).toArray();
 
                 listToInt.clear();
                 busSize_JsonArray = gate_Json.getJSONArray("outputBus");
-                for(int j = 0; i<busSize_JsonArray.length(); i++){
+                for (int j = 0; i < busSize_JsonArray.length(); i++) {
                     listToInt.add(busSize_JsonArray.getInt(j));
                 }
                 int[] sizeBusOutput = listToInt.stream().mapToInt(Integer::intValue).toArray();
@@ -772,58 +773,59 @@ public class Circuit {
                 // We create a gate with basic informations
                 Gate addedGate = null;
                 addedGate = tempCircuit.addNewGate(
-                    type,
-                    oldId,
-                    sizeBusInput,
-                    sizeBusOutput,
-                    schemaFile,
-                    null);
+                        type,
+                        oldId,
+                        sizeBusInput,
+                        sizeBusOutput,
+                        schemaFile,
+                        null);
 
                 // We add custom information to this gate
                 switch (type) {
                     case "Lever":
-                        if(gate_Json.optBoolean("flipped")){
-                            ((Lever)addedGate).flip();
+                        if (gate_Json.optBoolean("flipped")) {
+                            ((Lever) addedGate).flip();
                         }
                         break;
                     case "Button":
                         long delayFound = gate_Json.optLong("delay", -1);
-                        if(delayFound != -1 && delayFound != ((Button)addedGate).getDelay()){
-                            ((Button)addedGate).setDelay(delayFound);
+                        if (delayFound != -1 && delayFound != ((Button) addedGate).getDelay()) {
+                            ((Button) addedGate).setDelay(delayFound);
                         }
                         break;
                     case "Clock":
                         long cycleSpeedFound = gate_Json.optLong("cycleSpeed", -1);
-                        if(cycleSpeedFound != -1 && cycleSpeedFound != ((Clock)addedGate).getCycleSpeed()){
-                            ((Clock)addedGate).setCycleSpeed(cycleSpeedFound);
+                        if (cycleSpeedFound != -1 && cycleSpeedFound != ((Clock) addedGate).getCycleSpeed()) {
+                            ((Clock) addedGate).setCycleSpeed(cycleSpeedFound);
                         }
                         break;
                     case "Numeric":
                         int baseFound = gate_Json.optInt("base", -1);
                         String valueFound = gate_Json.optString("value", "");
-                        if(baseFound != -1 && baseFound != ((Numeric)addedGate).getInputBase()){
-                            ((Numeric)addedGate).setInputBase(baseFound);
+                        if (baseFound != -1 && baseFound != ((Numeric) addedGate).getInputBase()) {
+                            ((Numeric) addedGate).setInputBase(baseFound);
                         }
-                        if(!valueFound.isBlank() && !valueFound.equals(((Numeric)addedGate).getValue())){
-                            ((Numeric)addedGate).setInputValue(valueFound);
+                        if (!valueFound.isBlank() && !valueFound.equals(((Numeric) addedGate).getValue())) {
+                            ((Numeric) addedGate).setInputValue(valueFound);
                         }
                         break;
                     case "Display":
                         baseFound = gate_Json.optInt("base", -1);
-                        if(baseFound != -1 && baseFound != ((Display)addedGate).getBaseOutput()){
-                            ((Display)addedGate).setBaseOutput(baseFound);
+                        if (baseFound != -1 && baseFound != ((Display) addedGate).getBaseOutput()) {
+                            ((Display) addedGate).setBaseOutput(baseFound);
                         }
                         break;
                     case "NodeSplitter":
                         int busNumberFound = sizeBusOutput.length;
-                        if(busNumberFound > ((NodeSplitter)addedGate).getOutputNumber()){
-                            ((NodeSplitter)addedGate).addOutput(busNumberFound - ((NodeSplitter)addedGate).getOutputNumber());
+                        if (busNumberFound > ((NodeSplitter) addedGate).getOutputNumber()) {
+                            ((NodeSplitter) addedGate)
+                                    .addOutput(busNumberFound - ((NodeSplitter) addedGate).getOutputNumber());
                         }
                         break;
                 }
             }
 
-            // 1.bis : We whant to turn all Input(Lever/Numeric)  and Output into schema port
+            // 1.bis : We whant to turn all Input(Lever/Numeric) and Output into schema port
             // Input
             for (String key : tempCircuit.getInputGates().keySet()) {
                 Input gate = tempCircuit.getInputGates().get(key);
@@ -962,10 +964,10 @@ public class Circuit {
                     if (targetGateOldId.equals("-1")) {
                         if (targetGateOutputIndex != -1) {
                             Gate.connectInnerInputGate(
-                                schema,
-                                targetGateOutputIndex,
-                                tempCircuit.getAllGates().get(baseGateOldId),
-                                baseGateInputIndex);
+                                    schema,
+                                    targetGateOutputIndex,
+                                    tempCircuit.getAllGates().get(baseGateOldId),
+                                    baseGateInputIndex);
                             if (!innerInputGatesWithIndex.containsKey(i)) {
                                 innerInputGatesWithIndex.put(i, new ArrayList<>());
                             }
@@ -985,10 +987,10 @@ public class Circuit {
                     if (targetGateOldId.equals("-1")) {
                         if (targetGateInputIndex != -1) {
                             Gate.connectInnerOutputGate(
-                                schema,
-                                targetGateInputIndex,
-                                tempCircuit.getAllGates().get(baseGateOldId),
-                                baseGateOutputIndex);
+                                    schema,
+                                    targetGateInputIndex,
+                                    tempCircuit.getAllGates().get(baseGateOldId),
+                                    baseGateOutputIndex);
                             if (!innerOuputGatesWithIndex.containsKey(i)) {
                                 innerOuputGatesWithIndex.put(i, new ArrayList<>());
                             }
@@ -1021,10 +1023,10 @@ public class Circuit {
                     // the target gate is the schema
                     if (targetGateOldId.equals("-1")) {
                         Gate.connectInnerOutputGate(
-                            schema,
-                            targetGateInputIndex,
-                            tempCircuit.getAllGates().get(baseGateOldId),
-                            baseGateOutputIndex);
+                                schema,
+                                targetGateInputIndex,
+                                tempCircuit.getAllGates().get(baseGateOldId),
+                                baseGateOutputIndex);
                         continue;
                     }
 
@@ -1047,10 +1049,10 @@ public class Circuit {
                     // the target gate is the schema
                     if (targetGateOldId.equals("-1")) {
                         Gate.connectInnerInputGate(
-                            schema,
-                            targetGateOutputIndex,
-                            tempCircuit.getAllGates().get(baseGateOldId),
-                            baseGateInputIndex);
+                                schema,
+                                targetGateOutputIndex,
+                                tempCircuit.getAllGates().get(baseGateOldId),
+                                baseGateInputIndex);
                     }
                 }
             }
@@ -1094,7 +1096,8 @@ public class Circuit {
 
             JSONObject circuit_Json = new JSONObject(content.toString());
 
-            // As we are loading the circuit from a file, we set the name to the loaded circuit
+            // As we are loading the circuit from a file, we set the name to the loaded
+            // circuit
             this.setName(circuit_Json.getString("name"));
 
             // if we are dealing with a schema
@@ -1109,8 +1112,6 @@ public class Circuit {
     }
 
     // #endregion
-
-
 
     // #region delGate
 
@@ -1151,7 +1152,6 @@ public class Circuit {
 
     // #endregion
 
-
     // #region connectGate
 
     /**
@@ -1185,98 +1185,101 @@ public class Circuit {
 
     // #region selectGatesFromIdList
 
-        /**
-         * Create the formated json of a selection of gates.
-         * All port with a cable going toward a gate that is not in the selection
-         * will be overriden to [-1, -1].
-         *
-         * Additionnal note : the format is [int gateIdex, int gatePort].
-         *
-         * @param labelGates
-         * @return
-         */
-        public JSONObject selectGatesFromIdList(ArrayList<String> labelGates){
-            JSONObject selection_Json = new JSONObject();
+    /**
+     * Create the formated json of a selection of gates.
+     * All port with a cable going toward a gate that is not in the selection
+     * will be overriden to [-1, -1].
+     *
+     * Additionnal note : the format is [int gateIdex, int gatePort].
+     *
+     * @param labelGates
+     * @return
+     */
+    public JSONObject selectGatesFromIdList(ArrayList<String> labelGates) {
+        JSONObject selection_Json = new JSONObject();
 
-            // selection in Gate Array
-            ArrayList<Gate> selectedGates = new ArrayList<>();
-            for(String label : labelGates){
-                selectedGates.add(this.allGates.get(label));
-            }
-
-            // selection in Json Array
-            JSONArray gate_JsonArray = new JSONArray();
-            for (Gate gate : selectedGates) {
-                //System.out.println(gate);
-                gate_JsonArray.put(gate.toJson());
-            }
-
-            // In the Json Array, we override to -1 the input/output cables going out of the selection
-            selectedGates.forEach(gate -> {
-                // detection for input cable :
-                gate.getInputCable().forEach(cable -> {
-                    if (cable != null) {
-                        // if the cable is connected to a gate out of the selection
-                        if (!selectedGates.contains(cable.getInputGate())) {
-                            int gateId = gate.uuid();
-                            int targetId = cable.getInputGate().uuid();
-
-                            // we find the json of the connection
-                            for (int jsonIndex = 0; jsonIndex < gate_JsonArray.length(); jsonIndex++) {
-                                if (gate_JsonArray.getJSONObject(jsonIndex).getInt("uuid") == gateId) {
-                                    JSONArray gateInput_JsonArray = gate_JsonArray.getJSONObject(jsonIndex).getJSONArray("inputFrom");
-
-                                    // we find the port of the connection
-                                    for (int gateInputIndex = 0; gateInputIndex < gateInput_JsonArray.length(); gateInputIndex++) {
-                                        if (gateInput_JsonArray.getJSONArray(gateInputIndex).getInt(0) == targetId) {
-
-                                            // we set the target get to be connected to the schéma port
-                                            gateInput_JsonArray.getJSONArray(gateInputIndex).put(0, -1);
-                                            gateInput_JsonArray.getJSONArray(gateInputIndex).put(1, -1);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-
-                // detection for output cable :
-                gate.getOutputCable().forEach(cable -> {
-                    if (cable != null) {
-                        if (!selectedGates.contains(cable.getOutputGate())) {
-                            int gateId = gate.uuid();
-                            int targetId = cable.getOutputGate().uuid();
-
-                            // we find the json of the connection
-                            for (int jsonIndex = 0; jsonIndex < gate_JsonArray.length(); jsonIndex++) {
-                                if (gate_JsonArray.getJSONObject(jsonIndex).getInt("uuid") == gateId) {
-                                    JSONArray gateOutput_JsonArray = gate_JsonArray.getJSONObject(jsonIndex).getJSONArray("outputTo");
-
-                                    // we find the port of the connection
-                                    for (int gateOutputIndex = 0; gateOutputIndex < gateOutput_JsonArray.length(); gateOutputIndex++) {
-                                        if (gateOutput_JsonArray.getJSONArray(gateOutputIndex).getInt(0) == targetId) {
-
-                                            // we set the target get to be connected to the schéma port
-                                            gateOutput_JsonArray.getJSONArray(gateOutputIndex).put(0, -1);
-                                            gateOutput_JsonArray.getJSONArray(gateOutputIndex).put(1, -1);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            });
-
-            selection_Json.put("Gate", gate_JsonArray);
-
-            return selection_Json;
+        // selection in Gate Array
+        ArrayList<Gate> selectedGates = new ArrayList<>();
+        for (String label : labelGates) {
+            selectedGates.add(this.allGates.get(label));
         }
 
-    //#endregion
+        // selection in Json Array
+        JSONArray gate_JsonArray = new JSONArray();
+        for (Gate gate : selectedGates) {
+            // System.out.println(gate);
+            gate_JsonArray.put(gate.toJson());
+        }
 
+        // In the Json Array, we override to -1 the input/output cables going out of the
+        // selection
+        selectedGates.forEach(gate -> {
+            // detection for input cable :
+            gate.getInputCable().forEach(cable -> {
+                if (cable != null) {
+                    // if the cable is connected to a gate out of the selection
+                    if (!selectedGates.contains(cable.getInputGate())) {
+                        int gateId = gate.uuid();
+                        int targetId = cable.getInputGate().uuid();
 
+                        // we find the json of the connection
+                        for (int jsonIndex = 0; jsonIndex < gate_JsonArray.length(); jsonIndex++) {
+                            if (gate_JsonArray.getJSONObject(jsonIndex).getInt("uuid") == gateId) {
+                                JSONArray gateInput_JsonArray = gate_JsonArray.getJSONObject(jsonIndex)
+                                        .getJSONArray("inputFrom");
+
+                                // we find the port of the connection
+                                for (int gateInputIndex = 0; gateInputIndex < gateInput_JsonArray
+                                        .length(); gateInputIndex++) {
+                                    if (gateInput_JsonArray.getJSONArray(gateInputIndex).getInt(0) == targetId) {
+
+                                        // we set the target get to be connected to the schéma port
+                                        gateInput_JsonArray.getJSONArray(gateInputIndex).put(0, -1);
+                                        gateInput_JsonArray.getJSONArray(gateInputIndex).put(1, -1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // detection for output cable :
+            gate.getOutputCable().forEach(cable -> {
+                if (cable != null) {
+                    if (!selectedGates.contains(cable.getOutputGate())) {
+                        int gateId = gate.uuid();
+                        int targetId = cable.getOutputGate().uuid();
+
+                        // we find the json of the connection
+                        for (int jsonIndex = 0; jsonIndex < gate_JsonArray.length(); jsonIndex++) {
+                            if (gate_JsonArray.getJSONObject(jsonIndex).getInt("uuid") == gateId) {
+                                JSONArray gateOutput_JsonArray = gate_JsonArray.getJSONObject(jsonIndex)
+                                        .getJSONArray("outputTo");
+
+                                // we find the port of the connection
+                                for (int gateOutputIndex = 0; gateOutputIndex < gateOutput_JsonArray
+                                        .length(); gateOutputIndex++) {
+                                    if (gateOutput_JsonArray.getJSONArray(gateOutputIndex).getInt(0) == targetId) {
+
+                                        // we set the target get to be connected to the schéma port
+                                        gateOutput_JsonArray.getJSONArray(gateOutputIndex).put(0, -1);
+                                        gateOutput_JsonArray.getJSONArray(gateOutputIndex).put(1, -1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        selection_Json.put("Gate", gate_JsonArray);
+
+        return selection_Json;
+    }
+
+    // #endregion
 
     // #region toJson
 
@@ -1284,7 +1287,7 @@ public class Circuit {
         // adding gates within the circuit to a JSON array
         JSONArray gate_JsonArray = new JSONArray();
         for (Gate gate : allGates.values()) {
-            //System.out.println(gate);
+            // System.out.println(gate);
             gate_JsonArray.put(gate.toJson());
         }
 
@@ -1348,10 +1351,9 @@ public class Circuit {
                 folderPath = "";
             }
 
-            if (!folderPath.startsWith(UtilsSave.saveFolder.toString().replace(".", ""))) {
+            if (!folderPath.startsWith(UtilsSave.saveFolder.toString())) {
                 folderPath = UtilsSave.saveFolder.toString() + folderPath;
-            }
-            else{
+            } else {
                 folderPath = "." + folderPath;
             }
 
