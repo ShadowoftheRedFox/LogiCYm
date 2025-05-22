@@ -13,8 +13,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 
-
 public class FileReaderSimulation {
+
+    
+/**
+ * Create a 2D array to store the different values ​​of the file
+ * @param path of the file
+ * @return the 2D array
+ */
     public static String[][] createTab(Path path){
         List<String[]> data = new ArrayList<>();
         try {
@@ -40,6 +46,10 @@ public class FileReaderSimulation {
             return new String[0][0];
         }
     }
+    /**
+     * Create a simulation of the file read with lever and the input give
+     * @param the tab create with createTab
+     */
 
     public static void Simulation(String[][] tab){
 
@@ -75,7 +85,9 @@ public class FileReaderSimulation {
             }
         }
     }
-    
+    /**
+     * Displays the lever values
+     */
     public static void main(String[] args) {
         Path path = Paths.get("H:/Documents/GitHub/LogiCYm/src/main/java/com/pjava/src/document/Read/simu.txt");
         String[][] tab = createTab(path);

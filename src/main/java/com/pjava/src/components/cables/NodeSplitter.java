@@ -52,6 +52,7 @@ public class NodeSplitter extends Gate {
                 Collections.nCopies(busNumber, busSize).stream().mapToInt(Integer::intValue).toArray());
     }
 
+
     /**
      * Return a copy of the input cable state.
      * {@inheritDoc}

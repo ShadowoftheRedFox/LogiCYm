@@ -31,6 +31,7 @@ public class And extends Gate {
         super(new int[] { busSize, busSize }, new int[] { busSize });
     }
 
+
     @Override
     public BitSet getState() {
         ArrayList<Cable> inputs = getInputCable();

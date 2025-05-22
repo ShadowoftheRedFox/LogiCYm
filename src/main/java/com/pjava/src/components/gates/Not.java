@@ -3,8 +3,8 @@ package com.pjava.src.components.gates;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-import com.pjava.src.components.Gate;
 import com.pjava.src.components.Cable;
+import com.pjava.src.components.Gate;
 
 /**
  * A not gate. Return the opposite state of its output.
@@ -26,6 +26,7 @@ public class Not extends Gate {
     public Not(int busSize) {
         super(new int[] { busSize }, new int[] { busSize });
     }
+
 
     @Override
     public BitSet getState() {

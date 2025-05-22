@@ -47,7 +47,11 @@ public class UIClock extends UIGate {
     public Clock getLogic() {
         return (Clock) super.getLogic();
     }
-
+    /**
+     * set the logic of a Clock Gate
+     *
+     * @param clock a clock gate
+     */
     private void setLogic(Clock clock) {
         super.setLogic(clock);
     }

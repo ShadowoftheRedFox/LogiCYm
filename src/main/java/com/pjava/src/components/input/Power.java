@@ -34,6 +34,7 @@ public class Power extends Input {
         value.set(0);
     }
 
+
     @Override
     public BitSet getState() {
         // in case the internal values changed

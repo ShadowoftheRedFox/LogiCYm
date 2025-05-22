@@ -3,8 +3,8 @@ package com.pjava.src.components.gates;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-import com.pjava.src.components.Gate;
 import com.pjava.src.components.Cable;
+import com.pjava.src.components.Gate;
 
 /**
  * The Or gate.
@@ -29,6 +29,7 @@ public class Or extends Gate {
     public Or(int busSize) {
         super(new int[] { busSize, busSize }, new int[] { busSize });
     }
+
 
     @Override
     public BitSet getState() {

@@ -26,6 +26,8 @@ import com.pjava.src.document.SimulationFileLoader;
 import com.pjava.src.utils.UIUtils;
 import com.pjava.src.utils.UIUtils.ValidationAnwser;
 import com.pjava.src.utils.UtilsSave;
+import javafx.scene.text.Text;
+
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -40,10 +42,6 @@ import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
@@ -58,6 +56,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class Editor extends VBox {
     @FXML
@@ -177,7 +178,14 @@ public class Editor extends VBox {
     private Pin lastInputPinPressed = null;
     private Pin lastOutputPinPressed = null;
 
+    /**
+     * list of element in the page
+     */
     private Circuit editedCircuit = new Circuit("Unamed circuit");
+
+    /**
+     * verification if they don'save
+     */
     private boolean unsavedChanges = false;
 
     /**
@@ -268,7 +276,8 @@ public class Editor extends VBox {
                 File intialDirectory = new File("./data");
                 fileChooser.setTitle("Select file to save as");
                 fileChooser.setInitialDirectory(intialDirectory);
-                FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON Files (*.json)", "*.json");
+                FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON Files (*.json)",
+                        "*.json");
                 fileChooser.getExtensionFilters().addAll(jsonFilter);
 
                 File saveFile = fileChooser.showOpenDialog(manager.getStage());
@@ -285,12 +294,13 @@ public class Editor extends VBox {
                 File intialDirectory = new File("./data");
                 fileChooser.setTitle("Select file to open");
                 fileChooser.setInitialDirectory(intialDirectory);
-                FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON Files (*.json)", "*.json");
+                FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON Files (*.json)",
+                        "*.json");
                 fileChooser.getExtensionFilters().addAll(jsonFilter);
 
                 File file = fileChooser.showOpenDialog(manager.getStage());
 
-                editedCircuit.addGatesFromFile(file.getPath());
+                editedCircuit.loadGatesFromFile(file.getPath());
             } catch (Exception e) {
                 UIUtils.errorPopup(e.getMessage());
             }
@@ -461,8 +471,8 @@ public class Editor extends VBox {
             cableController.getNode().toBack();
 
             // FIXME selection doesn't work
+            selectElement(cableController);
             cableController.getLine().setOnMousePressed(event -> {
-                selectElement(cableController);
                 replaceInfos(cableController.getInfos().getNode());
             });
         }
@@ -480,16 +490,25 @@ public class Editor extends VBox {
     }
 
     // #region Functions
+
+
     private void setUnsavedChanges(boolean unsavedChanges) {
         this.unsavedChanges = unsavedChanges;
         manager.getStage()
                 .setTitle("LogiCYm: " + (unsavedChanges ? "Unsaved changes - " : "") + editedCircuit.getName());
         saveButton.setDisable(!unsavedChanges);
     }
-
+    /**
+     * Change the speed simulation
+     * @param value the value of hz
+     */
     private void setSimulationSpeed(int value) {
         // TODO edit simulation speed somewhere
     }
+
+    /**
+     * Create the grid in page
+     */
 
     public void resizeGrid() {
         final double paneWidth = viewScroll.getWidth();
@@ -522,6 +541,11 @@ public class Editor extends VBox {
         }
     }
 
+    /**
+     * change color around the gate when element is selected and canceled the previous selection
+     * @param event clic on element
+     */
+
     private void pressSelection(MouseEvent event) {
         // make sure selection always start on the grid
         if (!gridPane.equals(event.getTarget()) &&
@@ -550,6 +574,10 @@ public class Editor extends VBox {
         selectionRectangle.toFront();
     }
 
+/**
+ * change the position and the size when element is selected and slide
+ * @param event
+ */
     private void dragSelection(MouseEvent event) {
         // drag detected but not a selection
         if (selectionRectangle == null) {
@@ -572,6 +600,10 @@ public class Editor extends VBox {
             selectionRectangle.setHeight(-height);
         }
     }
+    /**
+     * end the selection of the element when is unselected
+     * @param event
+     */
 
 
     // #endregion
@@ -584,7 +616,10 @@ public class Editor extends VBox {
             infosContainer.getChildren().add(content);
         }
     }
-
+    /**
+     * grabs the element selected
+     * @param element the element selected
+     */
     private void selectElement(UIElement element) {
         clearSelection();
         if (element != null) {
@@ -592,7 +627,10 @@ public class Editor extends VBox {
         }
         deleteButton.setDisable(element == null);
     }
-
+    /**
+     * grabs a group of element selected
+     * @param array collection of element selected
+     */
     private void selectElement(Collection<UIElement> array) {
         clearSelection();
         if (array != null) {
@@ -607,7 +645,9 @@ public class Editor extends VBox {
         enableSimulationButton.setDisable(activated);
         disableSimulationButton.setDisable(!activated);
     }
-
+    /**
+     * when editor is close make propose if they want to save the circuit
+     */
     private void closeEditor() {
         if (unsavedChanges) {
             Consumer<ValidationAnwser> callback = (res) -> {
@@ -632,6 +672,9 @@ public class Editor extends VBox {
         }
     }
 
+    /**
+     * open the file of the computer and select a file for simulate input
+     */
     private void loadSimulationFile() {
         // Get the primary stage from the scene
         Stage stage = (Stage) this.getScene().getWindow();
@@ -663,6 +706,7 @@ public class Editor extends VBox {
     // #endregion
 
     // #region Gate spawn
+
     @FXML
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
@@ -672,8 +716,8 @@ public class Editor extends VBox {
 
         pinsListener(andController);
         andController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(andController.getInfos().getNode());
             selectElement(andController);
+            replaceInfos(andController.getInfos().getNode());
         });
     }
 
@@ -686,8 +730,8 @@ public class Editor extends VBox {
 
         pinsListener(orController);
         orController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(orController.getInfos().getNode());
             selectElement(orController);
+            replaceInfos(orController.getInfos().getNode());
         });
     }
 
@@ -700,8 +744,8 @@ public class Editor extends VBox {
 
         pinsListener(notController);
         notController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(notController.getInfos().getNode());
             selectElement(notController);
+            replaceInfos(notController.getInfos().getNode());
         });
     }
 
@@ -714,8 +758,8 @@ public class Editor extends VBox {
 
         pinsListener(buttonController);
         buttonController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(buttonController.getInfos().getNode());
             selectElement(buttonController);
+            replaceInfos(buttonController.getInfos().getNode());
         });
     }
 
@@ -728,8 +772,8 @@ public class Editor extends VBox {
 
         pinsListener(clockController);
         clockController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(clockController.getInfos().getNode());
             selectElement(clockController);
+            replaceInfos(clockController.getInfos().getNode());
         });
     }
 
@@ -742,8 +786,8 @@ public class Editor extends VBox {
 
         pinsListener(leverController);
         leverController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(leverController.getInfos().getNode());
             selectElement(leverController);
+            replaceInfos(leverController.getInfos().getNode());
         });
     }
 
@@ -756,8 +800,8 @@ public class Editor extends VBox {
 
         pinsListener(powerController);
         powerController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(powerController.getInfos().getNode());
             selectElement(powerController);
+            replaceInfos(powerController.getInfos().getNode());
         });
     }
 
@@ -770,8 +814,8 @@ public class Editor extends VBox {
 
         pinsListener(groundController);
         groundController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(groundController.getInfos().getNode());
             selectElement(groundController);
+            replaceInfos(groundController.getInfos().getNode());
         });
     }
 
@@ -784,8 +828,8 @@ public class Editor extends VBox {
 
         pinsListener(displayController);
         displayController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(displayController.getInfos().getNode());
             selectElement(displayController);
+            replaceInfos(displayController.getInfos().getNode());
         });
     }
 

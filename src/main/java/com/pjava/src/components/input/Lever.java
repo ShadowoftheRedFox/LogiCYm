@@ -2,6 +2,8 @@ package com.pjava.src.components.input;
 
 import java.util.BitSet;
 
+import org.json.JSONObject;
+
 /**
  * A lever input. Emit or not a signal {@link #flip()} is called.
  */
@@ -24,6 +26,7 @@ public class Lever extends Input {
         state.set(0, flipped);
     }
 
+
     /**
      * Flip the lever.
      */
@@ -38,4 +41,11 @@ public class Lever extends Input {
         return (BitSet) state.clone();
     }
     // #endregion
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = super.toJson();
+        json.put("flipped", this.getState(0));
+        return json;
+    }
 }

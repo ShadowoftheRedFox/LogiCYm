@@ -146,7 +146,7 @@ public class CircuitTest {
         System.out.println("\ntest 5 : loading circuit files");
         Circuit circuit4 = new Circuit();
         try {
-            circuit4.addGatesFromFile("save4/circuit_1.json");
+            circuit4.loadGatesFromFile("save4/circuit_1.json");
         } catch (Exception e) {
             System.err.println(e);
         }
@@ -161,7 +161,7 @@ public class CircuitTest {
 
         // from test 3 : [circuit2_bis] data/bbonqjour.json
         try {
-            circuit4.addGatesFromFile("bbonqjour");
+            circuit4.loadGatesFromFile("bbonqjour");
         } catch (Exception e) {
             System.err.println(e);
         }
@@ -176,7 +176,7 @@ public class CircuitTest {
 
         // from test 4 : [circuit3] data/test/sirkui_3
         try {
-            circuit4.addGatesFromFile("test/sirkui_3");
+            circuit4.loadGatesFromFile("test/sirkui_3");
         } catch (Exception e) {
             System.err.println(e);
         }
