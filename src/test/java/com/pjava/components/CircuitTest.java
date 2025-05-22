@@ -104,16 +104,29 @@ public class CircuitTest {
     @Test
     void test4() {
         System.out.println("\ntest 4 : copy to himself");
-        Circuit circuit3 = new Circuit();
+        Circuit circuit3 = new Circuit("Circuit_test4");
 
         try {
+            // all gates
             circuit3.addNewGate("Power", "p1");
             circuit3.addNewGate("Ground", "g1");
-            circuit3.addNewGate("Lever", "l1");
-            circuit3.addNewGate("Not", "n1");
+            circuit3.addNewGate("Not", "not1");
+            circuit3.addNewGate("And", "and1");
+            circuit3.addNewGate("Or", "or1");
+            circuit3.addNewGate("Lever", "lev1");
+            circuit3.addNewGate("Button", "but1");
+            circuit3.addNewGate("Numeric", "num1");
+            circuit3.addNewGate("Clock", "clo1");
+            circuit3.addNewGate("Display", "dis1");
+            circuit3.addNewGate("NodeSplitter", "cableSplit1");
+            circuit3.addNewGate("Splitter", "busSplit1");
+            circuit3.addNewGate("Merger", "busMerg1");
 
-            circuit3.connectGate("p1", "n1", 0, 0);
+            // connecting some
+            circuit3.connectGate("p1", "not1", 0, 0);
 
+            // save
+            circuit3.save();
             circuit3.save("test", "sirkui_3");
 
             System.out.println("Selection :");

@@ -12,6 +12,9 @@ import org.json.JSONObject;
 import com.pjava.src.components.Cable;
 import com.pjava.src.components.Circuit;
 import com.pjava.src.components.Gate;
+import com.pjava.src.components.cables.NodeSplitter;
+import com.pjava.src.components.input.Button;
+import com.pjava.src.components.input.Clock;
 import com.pjava.src.components.input.Input;
 import com.pjava.src.components.input.Lever;
 import com.pjava.src.components.input.Numeric;
@@ -22,6 +25,7 @@ import com.pjava.src.utils.UtilsSave;
 
 // TODO : override Gate.updateState() for it to directly '.updateState()' the inner gate connected to a port
 // the output are forwarded too
+// TODO : ask hugo for help
 
 // ToDo cables position
 // ToDo position, label, rotation of gates
@@ -257,8 +261,59 @@ public class Schema extends Gate {
 
                 String type = gate_Json.getString("type");
                 String oldId = String.valueOf(gate_Json.getInt("uuid"));
-                // FIXME : needs more info for each gates
-                tempCircuit.addNewGate(type, oldId);
+
+                ArrayList<Integer> listToInt = new ArrayList<Integer>();
+                JSONArray busSize_JsonArray = gate_Json.getJSONArray("inputBus");
+                for(int j = 0; i<busSize_JsonArray.length(); i++){
+                    listToInt.add(busSize_JsonArray.getInt(j));
+                }
+                int[] sizeBusInput = listToInt.stream().mapToInt(Integer::intValue).toArray();
+
+                listToInt.clear();
+                busSize_JsonArray = gate_Json.getJSONArray("outputBus");
+                for(int j = 0; i<busSize_JsonArray.length(); i++){
+                    listToInt.add(busSize_JsonArray.getInt(j));
+                }
+                int[] sizeBusOutput = listToInt.stream().mapToInt(Integer::intValue).toArray();
+
+                String schemaFile = gate_Json.optString("circuitPath");
+
+                // We create a gate with basic informations
+                Gate addedGate = null;
+                addedGate = tempCircuit.addNewGate(
+                    type,
+                    oldId,
+                    sizeBusInput,
+                    sizeBusOutput,
+                    schemaFile,
+                    null);
+
+                // We add custom information to this gate
+                switch (type) {
+                    case "Lever":
+                        if(gate_Json.optBoolean("flipped")){
+                            ((Lever)addedGate).flip();
+                        }
+                        break;
+                    case "Button":
+                        long delayFound = gate_Json.optLong("delay", -1);
+                        if(delayFound != -1 && delayFound != ((Button)addedGate).getDelay()){
+                            ((Button)addedGate).setDelay(delayFound);
+                        }
+                        break;
+                    case "Clock":
+                        long cycleSpeedFound = gate_Json.optLong("cycleSpeed", -1);
+                        if(cycleSpeedFound != -1 && cycleSpeedFound != ((Clock)addedGate).getCycleSpeed()){
+                            ((Clock)addedGate).setCycleSpeed(cycleSpeedFound);
+                        }
+                        break;
+                    case "NodeSplitter":
+                        int busNumberFound = sizeBusOutput.length;
+                        if(busNumberFound > ((NodeSplitter)addedGate).getOutputNumber()){
+                            ((NodeSplitter)addedGate).addOutput(busNumberFound - ((NodeSplitter)addedGate).getOutputNumber());
+                        }
+                        break;
+                }
             }
 
             // 1.2 : the new input gates
@@ -266,12 +321,19 @@ public class Schema extends Gate {
                 try {
                     // setup new Input gate
                     if (innerInputCable.getBusSize() > 1) {
-                        // FIXME : set the gate bus size when creating the Numeric gate below
-                        // innerInputCable.getBusSize()
-                        newInputGates.add(innerInputCable.getInputPort(), ((Numeric) tempCircuit.addNewGate("Numeric")));
+                        newInputGates.add(
+                            innerInputCable.getInputPort(),
+                            ((Numeric) tempCircuit.addNewGate(
+                                "Numeric",
+                                null,
+                                new int []{innerInputCable.getBusSize()}
+                                )
+                            )
+                        );
                     } else {
                         newInputGates.add(innerInputCable.getInputPort(), ((Lever) tempCircuit.addNewGate("Lever")));
                     }
+                    // set the schema port of the new gate
                     newInputGates.get(innerInputCable.getInputPort()).setSchemaInputPort(innerInputCable.getInputPort());
                 } catch (Exception e) {
                     System.err.println(e);
@@ -283,14 +345,25 @@ public class Schema extends Gate {
                 try {
                     // setup new output gate
                     if (innerOutputCable.getBusSize() > 1) {
-                        // FIXME : set the gate bus size when creating the Display gate below
-                        // innerOutputCable.getBusSize()
-                        newOutputGates.add(innerOutputCable.getOutputPort(), ((Display) tempCircuit.addNewGate("Display")));
+                        newOutputGates.add(
+                            innerOutputCable.getOutputPort(),
+                            ((Display) tempCircuit.addNewGate(
+                                "Display",
+                                new int[]{innerOutputCable.getBusSize()},
+                                null)
+                            )
+                        );
                     } else {
-                        // TODO : Maybe if we add a size 1 output (like a LED) but that is of now use
-                        // right now
+                        // TODO : Maybe if we add a size 1 output (like a LED) but this 'if' is of now use for the moment
                         // newGate = ((Led)newCircuit.addNewGate("Led"));
-                        newOutputGates.add(innerOutputCable.getOutputPort(), ((Display) tempCircuit.addNewGate("Display")));
+                        newOutputGates.add(
+                            innerOutputCable.getOutputPort(),
+                            ((Display) tempCircuit.addNewGate(
+                                "Display",
+                                new int[]{innerOutputCable.getBusSize()},
+                                null)
+                            )
+                        );
                     }
                     newOutputGates.get(innerOutputCable.getInputPort()).setSchemaOutputPort(innerOutputCable.getOutputPort());
                 } catch (Exception e) {
@@ -356,8 +429,6 @@ public class Schema extends Gate {
     // #endregion
 
     // #region toJson
-
-    // TODO : toJson()
 
     @Override
     public JSONObject toJson() {
