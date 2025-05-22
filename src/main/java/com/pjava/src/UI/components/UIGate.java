@@ -6,7 +6,6 @@ import java.util.List;
 import com.pjava.src.components.Cable;
 import com.pjava.src.components.Gate;
 
-import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
@@ -205,11 +204,6 @@ public abstract class UIGate extends UIElement {
      */
     protected void setHeight(int height) {
         this.height = height;
-    }
-
-    @Override
-    public void setPosition(Point2D position) {
-        super.setPosition(position);
     }
     // #endregion
 }

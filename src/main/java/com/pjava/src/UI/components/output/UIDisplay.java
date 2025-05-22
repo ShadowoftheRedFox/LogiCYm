@@ -52,6 +52,11 @@ public class UIDisplay extends UIGate {
         return (Display) super.getLogic();
     }
 
+      /**
+     * set the logic of a Display Gate
+     *
+     * @param display a display gate
+     */
     private void setLogic(Display display) {
         super.setLogic(display);
     }

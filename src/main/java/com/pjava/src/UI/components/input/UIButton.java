@@ -49,6 +49,13 @@ public class UIButton extends UIGate {
         return (Button) super.getLogic();
     }
 
+    
+    /**
+     * set the logic of a Button Gate
+     *
+     * @param button a  button gate
+     */
+
     private void setLogic(Button button) {
         super.setLogic(button);
     }
