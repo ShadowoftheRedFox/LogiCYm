@@ -32,5 +32,5 @@ target/
 SceneBuilder/
 
 # app save files
-save/
-data/
+/save
+/data
