@@ -495,7 +495,6 @@ public abstract class Gate extends Element {
     // #endregion
 
     // #region connectInnerOutputGate
-    // TODO : verif that schema's attributes are accessible
 
     /**
      * FIXME javadoc
