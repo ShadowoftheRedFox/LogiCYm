@@ -132,25 +132,4 @@ public class Clock extends Input {
     }
     // #endregion
 
-    /**
-     * Create an exact copy of this clock instance in a new one. Connected
-     * referenced cables are not cloned.
-     *
-     * @return The newly cloned clock.
-     */
-    @Override
-    public Clock clone() {
-        try {
-            Clock clone = new Clock(cycleSpeed);
-            clone.enabled = enabled;
-            clone.lastCycle = lastCycle;
-            clone.setInputCable(getInputCable());
-            clone.setOutputCable(getOutputCable());
-            clone.state = (BitSet) state.clone();
-            clone.setPowered(getPowered());
-            return clone;
-        } catch (Exception e) {
-            throw new Error(e);
-        }
-    }
 }

@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.pjava.src.components.Cable;
-import com.pjava.src.components.cables.CableSplitter;
+import com.pjava.src.components.cables.NodeSplitter;
 import com.pjava.src.components.gates.Not;
 import com.pjava.src.components.gates.Or;
 import com.pjava.src.components.input.Clock;
@@ -25,7 +25,7 @@ public class CycliTest {
         Not not1 = new Not();
         Not not2 = new Not();
 
-        CableSplitter outSplitter = new CableSplitter();
+        NodeSplitter outSplitter = new NodeSplitter();
         Not notOut = new Not();
 
         R.connect(or1);

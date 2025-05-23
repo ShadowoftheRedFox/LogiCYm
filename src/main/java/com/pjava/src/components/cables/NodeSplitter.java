@@ -10,7 +10,7 @@ import com.pjava.src.errors.BusSizeException;
  * Split a single input into multiple input of the same bus size. The
  * NodeMerger is not made since Or gate serve the same exact purpose.
  */
-public class CableSplitter extends Gate {
+public class NodeSplitter extends Gate {
     /**
      * Create a new splitter gate with buses of size 1 and with 2 outputs.
      *
@@ -18,7 +18,7 @@ public class CableSplitter extends Gate {
      *                   {@link #setOutputBus(int[])}.
      * @see Gate
      */
-    public CableSplitter() throws Exception {
+    public NodeSplitter() throws Exception {
         this(2, 1);
     }
 
@@ -31,7 +31,7 @@ public class CableSplitter extends Gate {
      *                   {@link #setOutputBus(int[])}.
      * @see Gate
      */
-    public CableSplitter(int busSize) throws Exception {
+    public NodeSplitter(int busSize) throws Exception {
         this(2, busSize);
     }
 
@@ -47,11 +47,10 @@ public class CableSplitter extends Gate {
      * @throws IllegalArgumentException Throw when bus number is below 0.
      * @see Gate
      */
-    public CableSplitter(int outputBusNumber, int busSize) throws Exception {
+    public NodeSplitter(int outputBusNumber, int busSize) throws Exception {
         super(new int[] { busSize },
                 Collections.nCopies(outputBusNumber, busSize).stream().mapToInt(Integer::intValue).toArray());
     }
-
 
     /**
      * Return a copy of the input cable state.
@@ -100,25 +99,5 @@ public class CableSplitter extends Gate {
     public void changeBusSize(int busSize) throws BusSizeException {
         setInputBus(Collections.nCopies(getInputNumber(), busSize).stream().mapToInt(Integer::intValue).toArray());
         setOutputBus(Collections.nCopies(getOutputNumber(), busSize).stream().mapToInt(Integer::intValue).toArray());
-    }
-
-    /**
-     * Create an exact copy of this display instance in a new one. Connected
-     * referenced cables are not cloned.
-     *
-     * @return The newly cloned display.
-     */
-    @Override
-    public CableSplitter clone() {
-        try {
-            CableSplitter clone = new CableSplitter(getOutputNumber(), getInputBus()[0]);
-            clone.setInputCable(getInputCable());
-            clone.setOutputCable(getOutputCable());
-            clone.state = (BitSet) state.clone();
-            clone.setPowered(getPowered());
-            return clone;
-        } catch (Exception e) {
-            throw new Error(e);
-        }
     }
 }

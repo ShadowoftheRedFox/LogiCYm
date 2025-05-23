@@ -30,7 +30,6 @@ public class Or extends Gate {
         super(new int[] { busSize, busSize }, new int[] { busSize });
     }
 
-
     @Override
     public BitSet getState() {
         ArrayList<Cable> inputs = getInputCable();
@@ -45,23 +44,4 @@ public class Or extends Gate {
         return result;
     }
 
-    /**
-     * Create an exact copy of this or instance in a new one. Connected
-     * referenced cables are not cloned.
-     *
-     * @return The newly cloned or.
-     */
-    @Override
-    public Or clone() {
-        try {
-            Or clone = new Or(getInputBus()[0]);
-            clone.setInputCable(getInputCable());
-            clone.setOutputCable(getOutputCable());
-            clone.state = (BitSet) state.clone();
-            clone.setPowered(getPowered());
-            return clone;
-        } catch (Exception e) {
-            throw new Error(e);
-        }
-    }
 }

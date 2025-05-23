@@ -31,7 +31,6 @@ public class And extends Gate {
         super(new int[] { busSize, busSize }, new int[] { busSize });
     }
 
-
     @Override
     public BitSet getState() {
         ArrayList<Cable> inputs = getInputCable();
@@ -44,25 +43,5 @@ public class And extends Gate {
         result.and(inputs.get(1).getState());
 
         return result;
-    }
-
-    /**
-     * Create an exact copy of this and instance in a new one. Connected
-     * referenced cables are not cloned.
-     *
-     * @return The newly cloned and.
-     */
-    @Override
-    public And clone() {
-        try {
-            And clone = new And(getInputBus()[0]);
-            clone.setInputCable(getInputCable());
-            clone.setOutputCable(getOutputCable());
-            clone.state = (BitSet) state.clone();
-            clone.setPowered(getPowered());
-            return clone;
-        } catch (Exception e) {
-            throw new Error(e);
-        }
     }
 }

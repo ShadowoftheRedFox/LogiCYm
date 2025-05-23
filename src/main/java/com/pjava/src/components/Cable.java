@@ -163,32 +163,6 @@ public class Cable extends Element {
         }
     }
 
-    /**
-     * FIXME javadoc
-     * Creates and returns a deep copy of this Cable object.
-     *
-     * @return a new Cable object that is a copy of this cable, or null if an
-     *         exception occurs during the cloning process
-     */
-    @Override
-    public Cable clone() {
-        Cable res = null;
-        try {
-            res = new Cable(this.getBusSize());
-
-            res.setInputGate(this.inputGate);
-            res.setOutputGate(this.outputGate);
-
-            res.setInputPort(this.inputPort);
-            res.setOutputPort(this.outputPort);
-
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-
-        return res;
-    }
-
     // #region Getters
     /**
      * Getter for {@link #busSize}.

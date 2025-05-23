@@ -1,17 +1,11 @@
 package com.pjava.src.utils;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
-import java.util.Objects;
 
 import com.pjava.src.components.Cable;
 import com.pjava.src.components.Element;
 import com.pjava.src.components.Gate;
-import com.pjava.src.errors.BusSizeException;
-
-import javafx.event.Event;
-import javafx.event.EventHandler;
 
 /**
  * This class is used to detect cycle between gates when we do a connection.
@@ -272,56 +266,6 @@ public class Cyclic {
             // if it changes more than 100 times (cuz why not), system is unstable
 
             // isolate the cycle from the outputs of the cycle
-            ArrayList<Element> listClone = new ArrayList<Element>();
-            for (Element element : cycleList) {
-                Element clone = element.clone();
-                listClone.add(clone);
-                if (clone instanceof Gate) {
-                    for (int i = 0; i < ((Gate) clone).getOutputCable().size(); i++) {
-                        Cable cable = ((Gate) clone).getOutputCable().get(i);
-                        if (cable != null && !outputCableList.contains(cable)) {
-                            try {
-                                ((Gate) clone).setOutputCable(cable, i);
-                            } catch (NullPointerException | IndexOutOfBoundsException | BusSizeException e) {
-                                throw new Error(e);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // choose a valid gate
-            Gate targetCheckGate = null;
-            for (Element element : listClone) {
-                if (element instanceof Gate) {
-                    targetCheckGate = (Gate) element;
-                    break;
-                }
-            }
-            if (targetCheckGate == null) {
-                throw new Error("couldn't find a valid gate in the cycle");
-            }
-            System.out.println("\n" + targetCheckGate);
-            targetCheckGate.stateUpdateEvent.add(event -> {
-                count++;
-            });
-
-            // now get the current state to make comparaison
-            BitSet targetCheckGateOldState = targetCheckGate.getState();
-
-            // wait 10ms
-            targetCheckGate.updateState();
-            for (int i = 0; i < 10; i++) {
-                for (Element element : listClone) {
-                    element.updateState();
-                }
-                if (targetCheckGateOldState.toString() != targetCheckGate.getState().toString()) {
-                    count++;
-                    targetCheckGateOldState = targetCheckGate.getState();
-                }
-            }
-            ((Gate) targetCheckGate).disconnect();
-            System.out.println("Count of change state: " + count);
         } else {
             unstable = null;
         }

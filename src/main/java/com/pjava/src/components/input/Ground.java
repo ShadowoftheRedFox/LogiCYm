@@ -34,30 +34,10 @@ public class Ground extends Input {
         value.clear();
     }
 
-
     @Override
     public BitSet getState() {
         // in case the internal values changed
         value.clear();
         return value;
-    }
-
-    /**
-     * Create an exact copy of this ground instance in a new one. Connected
-     * referenced cables are not cloned.
-     *
-     * @return The newly cloned ground.
-     */
-    @Override
-    public Ground clone() {
-        try {
-            Ground clone = new Ground(getInputBus()[0]);
-            clone.setInputCable(getInputCable());
-            clone.setOutputCable(getOutputCable());
-            clone.setPowered(getPowered());
-            return clone;
-        } catch (Exception e) {
-            throw new Error(e);
-        }
     }
 }
