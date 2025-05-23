@@ -89,14 +89,14 @@ public class CircuitTest {
             circuit2.addNewGate("Button");
             circuit2.addNewGate("Clock");
 
-            circuit2.save("save4");
+            circuit2.save("./data/save4.json");
 
             Circuit circuit = new Circuit("Bonjour");
 
             circuit.save();
             // Should do the same thing :
 
-            circuit.save("./data/");
+            circuit.save("./data/blabla.json");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,7 +129,7 @@ public class CircuitTest {
 
             // save
             circuit3.save();
-            circuit3.save("./test/sirkui_3.json");
+            circuit3.save("./data/test/sirkui_3.json");
 
             System.out.println("Selection :");
             int j = 0;
@@ -214,12 +214,12 @@ public class CircuitTest {
         System.out.println("\ntest 5 : loading circuit files");
         Circuit circuit4 = new Circuit();
         try {
-            circuit4.loadGatesFromFile("save4/circuit_1.json");
+            circuit4.loadGatesFromFile("./data/save4/circuit_1.json");
         } catch (Exception e) {
             System.err.println(e);
         }
 
-        System.out.println("\nLoading 'save4/circuit_1.json'..");
+        System.out.println("\nLoading './data/save4/circuit_1.json'..");
         System.out.println("numéro : clé : Gate");
         int j = 0;
         for (String i : circuit4.getAllGates().keySet()) {
