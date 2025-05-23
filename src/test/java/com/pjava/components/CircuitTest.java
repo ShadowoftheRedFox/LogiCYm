@@ -1,6 +1,9 @@
 package com.pjava.components;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIf;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.json.JSONObject;
@@ -9,6 +12,10 @@ import com.pjava.src.components.Gate;
 import com.pjava.src.components.Circuit;
 import com.pjava.src.components.gates.*;
 import com.pjava.src.components.input.*;
+
+
+// TODO : différent circuit pour verifier leur bonne creation et
+//  si on obtient les bon résultat en sortie
 
 public class CircuitTest {
 

@@ -32,7 +32,7 @@ import com.pjava.src.components.output.Output;
 import com.pjava.src.utils.UtilsSave;
 
 
-// TODO : connect back and front
+// TODO : connect back and front, correct implementation of all the back tools
 // TODO : UI : Input gates who can't be accessible outside shouldn't have a schema port (not assignable by the user)
 
 // TODO : test with a complex circuit
