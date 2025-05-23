@@ -146,7 +146,7 @@ public class CircuitTest {
             int j = 0;
             for (String i : circuit.getAllGates().keySet()) {
                 System.out.println(
-                        String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.getAllGates().get(i).toJson()));
+                        String.format("%d : key = %s : GateJSON = %s", j, i, circuit.getAllGates().get(i).toJson()));
                 j++;
             }
 
