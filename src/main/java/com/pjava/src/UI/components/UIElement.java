@@ -9,10 +9,10 @@ import com.pjava.src.components.Element;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.Node;
 
 public abstract class UIElement {
     /**
@@ -59,16 +59,16 @@ public abstract class UIElement {
         try {
             // load the gate's fxml
             FXMLLoader loader = new FXMLLoader(UIElement.class.getResource("/fxml/components/" + fxml + ".fxml"));
-            loader.load();
+            Node node = loader.load();
             // and get the controller instance
             UIElement controller = loader.getController();
+            node.setUserData(controller);
 
             // create a gate infos instance
             FXMLLoader infosLoader = new FXMLLoader(UIElement.class.getResource("/fxml/ComponentInfos.fxml"));
-            Node infosNode = infosLoader.load();
+            infosLoader.load();
             // and add it to the gate controller
             controller.infos = infosLoader.getController();
-            controller.infos.setNode(infosNode);
             controller.infos.setOrigin(controller);
 
             // return the controller
@@ -114,10 +114,12 @@ public abstract class UIElement {
         }
 
         // move
-        self.setLayoutX(posX - (posX % UIElement.baseSize));
-        self.setLayoutY(posY - (posY % UIElement.baseSize));
+        final double X = posX - (posX % UIElement.baseSize);
+        final double Y = posY - (posY % UIElement.baseSize);
+        self.setLayoutX(X);
+        self.setLayoutY(Y);
 
-        setPosition(new Point2D(posX / 50, posY / 50));
+        setPosition(new Point2D(X / UIElement.baseSize, Y / UIElement.baseSize));
     }
 
     public abstract void updateVisuals();
@@ -178,7 +180,7 @@ public abstract class UIElement {
     }
 
     /**
-     * give the Controller of the Gate
+     * give the Controller of the informations for this gate
      *
      * @return Controller of the gate (info)
      */
@@ -194,7 +196,11 @@ public abstract class UIElement {
      * @param name enter the name
      */
     public void setName(String name) {
-        this.name = name;
+        // must pass through infos to prevent cyclic calls
+        // and to prevent creating meaningless methods
+        if (infos.setLabel(name, true)) {
+            this.name = name;
+        }
     }
 
     /**
@@ -216,7 +222,11 @@ public abstract class UIElement {
      * @param position the new position of the element
      */
     public void setPosition(Point2D position) {
-        this.position = position;
+        // must pass through infos to prevent cyclic calls
+        // and to prevent creating meaningless methods
+        if (infos.setPosition(position, true)) {
+            this.position = position;
+        }
     }
 
     /**
@@ -225,7 +235,11 @@ public abstract class UIElement {
      * @param rotation the new angle of the element
      */
     public void setRotation(Rotation rotation) {
-        this.rotation = rotation;
+        // must pass through infos to prevent cyclic calls
+        // and to prevent creating meaningless methods
+        if (infos.setRotation(rotation, true)) {
+            this.rotation = rotation;
+        }
     }
 
     /**
@@ -234,7 +248,11 @@ public abstract class UIElement {
      * @param color the new color of the element
      */
     public void setColor(Color color) {
-        this.color = color;
+        // must pass through infos to prevent cyclic calls
+        // and to prevent creating meaningless methods
+        if (infos.setColor(color, true)) {
+            this.color = color;
+        }
     }
     // #endregion
 

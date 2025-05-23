@@ -108,17 +108,19 @@ public abstract class Input extends Gate {
 
     /**
      * FIXME javadoc
-     *
-     * @param port
-     */
+    * Sets the schema input port index for this connection.
+    *
+    * @param port the index of the schema's input port (must be >= 0)
+    */
     public void setSchemaInputPort(int port) {
         schemaInputPort = port;
     }
 
     /**
      * FIXME javadoc
+     * Gets the schema input port index for this connection.
      *
-     * @return
+     * @return the index of the schema's input port, or the default value if not set
      */
     public int getSchemaInputPort() {
         return schemaInputPort;

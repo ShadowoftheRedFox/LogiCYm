@@ -388,15 +388,22 @@ public abstract class Gate extends Element {
 
     /**
      * FIXME javadoc
-     *
-     * @param gate
-     * @param gateInputIndex
-     * @param schemaInnerInputIndex
-     * @return
-     * @throws Exception
-     * @throws NullPointerException
-     * @throws IndexOutOfBoundsException
-     * @throws BusSizeException
+     * Connects an inner input of a schema to a specific input port of a gate.
+     * This method establishes a cable connection between the schema's inner input port
+     * and the specified gate's input port.
+     * 
+     * @param schema the schema containing the inner input to connect
+     * @param schemaInnerInputIndex the index of the schema's inner input port to connect,
+     *                             or -1 to automatically find/create an available port
+     * @param gate the target gate to connect to
+     * @param gateInputIndex the index of the gate's input port to connect to
+
+     * @return the Cable object representing the established connection, or null if
+     *         connection failed due to incompatible bus sizes
+     * @throws Exception if connection is possible but bus is already full
+     * @throws NullPointerException if the gate parameter is null
+     * @throws IndexOutOfBoundsException if gateInputIndex is outside valid range
+     * @throws BusSizeException if there are bus size compatibility issues
      */
     public static Cable connectInnerInputGate(Schema schema, int schemaInnerInputIndex, Gate gate, int gateInputIndex)
             throws Exception, NullPointerException, IndexOutOfBoundsException, BusSizeException {
@@ -495,21 +502,28 @@ public abstract class Gate extends Element {
     // #endregion
 
     // #region connectInnerOutputGate
-    // TODO : verif that schema's attributes are accessible
 
     /**
      * FIXME javadoc
-     *
-     * @param gate
-     * @param gateOutputIndex
-     * @param schemaInnerOutputIndex
-     * @return
-     * @throws Exception
-     * @throws NullPointerException
-     * @throws IndexOutOfBoundsException
-     * @throws BusSizeException
-     */
-    public static Cable connectInnerOutputGate(Schema shema, int schemaInnerOutputIndex, Gate gate, int gateOutputIndex)
+     * Connects an inner output of a schema to a specific output port of a gate.
+     * This method establishes a cable connection between the gate's output port
+     * and the schema's inner output port, allowing the gate's output to be 
+     * accessible through the schema's interface.
+     * 
+     * @param schema the schema containing the inner output to connect
+     * @param gate the source gate to connect from
+     * @param gateOutputIndex the index of the gate's output port to connect from
+     * @param schemaInnerOutputIndex the index of the schema's inner output port to connect,
+     *                              or -1 to automatically find/create an available port
+     * 
+     * @return the Cable object representing the established connection, or null if
+     *         connection failed due to incompatible bus sizes
+     * @throws Exception if connection is possible but bus is already full
+     * @throws NullPointerException if the gate parameter is null
+     * @throws IndexOutOfBoundsException if gateOutputIndex is outside valid range
+     * @throws BusSizeException if there are bus size compatibility issues
+    */
+    public static Cable connectInnerOutputGate(Schema schema, int schemaInnerOutputIndex, Gate gate, int gateOutputIndex)
             throws Exception, NullPointerException, IndexOutOfBoundsException, BusSizeException {
         // verifications
         if (gate == null) {
@@ -524,35 +538,35 @@ public abstract class Gate extends Element {
         // set the output bus size at the right port
         if (schemaInnerOutputIndex == -1) {
             // if the port index is not specified we try to find an unused index
-            int indexNotUsed = shema.getInnerOutputCable().indexOf(null);
+            int indexNotUsed = schema.getInnerOutputCable().indexOf(null);
             if (indexNotUsed != -1) {
                 schemaInnerOutputIndex = indexNotUsed;
             } else {
                 // if we dont find an unused index, we will put it at the end of the ArrayList
-                schemaInnerOutputIndex = shema.getInnerOutputCable().size();
+                schemaInnerOutputIndex = schema.getInnerOutputCable().size();
             }
         }
         // The port is now precised, but we need 'schema.outputBus' to have enough place
         // to put the value at the right index
-        while (shema.outputBus.length <= schemaInnerOutputIndex) {
+        while (schema.outputBus.length <= schemaInnerOutputIndex) {
             // FIXME : might cause a problem if done wrong (too few or too many index
             // created)
             // we put unused bus size and cable index (hopefully they will be used, they
             // need to be)
-            shema.addOutputBus(1);
-            shema.getInnerOutputCable().add(null);
-            shema.outputCable.add(null);
+            schema.addOutputBus(1);
+            schema.getInnerOutputCable().add(null);
+            schema.outputCable.add(null);
 
-            assert (shema.outputBus.length == shema.getInnerOutputCable().size()
-                    && shema.outputBus.length == shema.outputCable.size());
+            assert (schema.outputBus.length == schema.getInnerOutputCable().size()
+                    && schema.outputBus.length == schema.outputCable.size());
         }
 
         // we set the bus size at the right index 'schemaInnerOutputIndex'
-        shema.outputBus[schemaInnerOutputIndex] = gate.getOutputBus()[gateOutputIndex];
+        schema.outputBus[schemaInnerOutputIndex] = gate.getOutputBus()[gateOutputIndex];
 
         // We now create a Cable between the schema and the inner gate
         // check if both gate are already linked
-        Cable thisInnerOutputCable = shema.getInnerOutputCable().get(schemaInnerOutputIndex);
+        Cable thisInnerOutputCable = schema.getInnerOutputCable().get(schemaInnerOutputIndex);
         Cable gateOutputCable = gate.getOutputCable().get(gateOutputIndex);
         if (thisInnerOutputCable != null && gateOutputCable != null) {
             if (thisInnerOutputCable.equals(gateOutputCable)) {
@@ -565,13 +579,13 @@ public abstract class Gate extends Element {
             }
         } else // check if both cable are empty
         if (thisInnerOutputCable == null && gateOutputCable == null) {
-            Cable result = new Cable(shema.outputBus[schemaInnerOutputIndex]);
+            Cable result = new Cable(schema.outputBus[schemaInnerOutputIndex]);
             result.inputGate = gate;
-            result.outputGate = shema;
+            result.outputGate = schema;
             result.setInputPort(gateOutputIndex);
             result.setOutputPort(schemaInnerOutputIndex);
 
-            shema.getInnerOutputCable().set(schemaInnerOutputIndex, result);
+            schema.getInnerOutputCable().set(schemaInnerOutputIndex, result);
             gate.getOutputCable().set(gateOutputIndex, result);
 
             result.updatePower();
@@ -592,8 +606,8 @@ public abstract class Gate extends Element {
             if (gateOutputCable.getOutputGate() != null) {
                 throw new Exception("connection possible but bus allready full");
             }
-            gateOutputCable.outputGate = shema;
-            shema.getInnerOutputCable().set(schemaInnerOutputIndex, gateOutputCable);
+            gateOutputCable.outputGate = schema;
+            schema.getInnerOutputCable().set(schemaInnerOutputIndex, gateOutputCable);
 
             gateOutputCable.updatePower();
             gateOutputCable.updateState();

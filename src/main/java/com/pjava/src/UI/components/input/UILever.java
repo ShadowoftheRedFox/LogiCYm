@@ -24,7 +24,6 @@ public class UILever extends UIGate {
     private ImageView body2;
     @FXML
     private AnchorPane self;
-
     @FXML
     private void initialize() {
         System.out.println("Initialisation!");
@@ -46,6 +45,12 @@ public class UILever extends UIGate {
     public Lever getLogic() {
         return (Lever) super.getLogic();
     }
+
+    /**
+     * set the logic of a Lever Gate
+     *
+     * @param lever a lever gate
+     */
 
     private void setLogic(Lever lever) {
         super.setLogic(lever);

@@ -47,7 +47,6 @@ public class UICable extends UIElement {
 
     @FXML
     private void initialize() {
-        cableLine.setVisible(false);
         // all cables anchor pane element are snapped to (0,0) to match other elements
         // position without having to make obscure calculations
         self.setLayoutX(0);
@@ -60,6 +59,18 @@ public class UICable extends UIElement {
         cableLine.setOnMousePressed(event -> pressed(event));
         cableLine.setOnMouseReleased(event -> released(event));
         cableLine.setOnMouseDragged(event -> dragged(event));
+
+        // since on the cable only the line is selected, move the line a bit on spawn
+        cableLine.setStartX(0);
+        cableLine.setStartY(0);
+        cableLine.setEndX(UIElement.baseSize);
+        cableLine.setEndY(UIElement.baseSize);
+        self.setPrefWidth(UIElement.baseSize);
+        self.setPrefHeight(UIElement.baseSize);
+
+        // TODO if dragged, disconnect
+        // TODO when pressed then dragged, if starting pos is near the start/end of the
+        // cable, change the cable start/end pos to the mous
 
         updateCableColor();
     }
@@ -140,7 +151,6 @@ public class UICable extends UIElement {
         output.setColor(Color.GREEN);
 
         // connect, so cable should be visible
-        cableLine.setVisible(true);
 
         // call update on both gates
         inputGate.updateVisuals();
@@ -221,9 +231,6 @@ public class UICable extends UIElement {
         outputPin = null;
         inputGate = null;
         outputGate = null;
-
-        // hide the cable
-        cableLine.setVisible(false);
     }
 
     /**

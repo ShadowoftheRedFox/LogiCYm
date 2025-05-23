@@ -1,3 +1,4 @@
+
 package com.pjava.src.UI.components.input;
 
 import com.pjava.src.UI.components.Pin;
@@ -43,6 +44,12 @@ public class UIGround extends UIGate {
     public Ground getLogic() {
         return (Ground) super.getLogic();
     }
+
+    /**
+     * set the logic of a Ground Gate
+     *
+     * @param ground a ground gate
+     */
 
     private void setLogic(Ground ground) {
         super.setLogic(ground);

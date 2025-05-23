@@ -6,7 +6,6 @@ import java.util.List;
 import com.pjava.src.components.Cable;
 import com.pjava.src.components.Gate;
 
-import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
@@ -131,23 +130,7 @@ public abstract class UIGate extends UIElement {
         return inputPins;
     }
 
-    /**
-     * returns the list of pins output
-     *
-     * @return ( list of output pins)
-     */
-    public List<Pin> getOutputPins() {
-        return outputPins;
-    }
 
-    /**
-     * to get the UICable connected
-     *
-     * @return a UICable
-     */
-    public List<UICable> getConnectedCables() {
-        return connectedCables;
-    }
 
     /**
      * used to get all the cable connecte to the gate sended
@@ -206,10 +189,32 @@ public abstract class UIGate extends UIElement {
     protected void setHeight(int height) {
         this.height = height;
     }
-
-    @Override
-    public void setPosition(Point2D position) {
-        super.setPosition(position);
-    }
     // #endregion
+
+    /**
+     * returns the list of pins output
+     *
+     * @return ( list of output pins)
+     */
+    public List<Pin> getOutputPins() {
+        return outputPins;
+    }
+
+    /**
+     * in the name
+     *
+     * @param cable an UICable
+     */
+    public void removeConnectedCable(UICable cable) {
+        connectedCables.remove(cable);
+    }
+
+    /**
+     * to get the UICable connected
+     *
+     * @return a UICable
+     */
+    public List<UICable> getConnectedCables() {
+        return connectedCables;
+    }
 }
