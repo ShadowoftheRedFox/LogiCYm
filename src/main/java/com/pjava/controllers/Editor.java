@@ -1,6 +1,7 @@
 package com.pjava.controllers;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import com.pjava.src.UI.components.output.UIDisplay;
 import com.pjava.src.components.Circuit;
 import com.pjava.src.components.Gate;
 import com.pjava.src.components.Synchronizer;
+import com.pjava.src.document.FileReaderSimulation;
 import com.pjava.src.document.SimulationFileLoader;
 import com.pjava.src.utils.UIUtils;
 import com.pjava.src.utils.UIUtils.ValidationAnwser;
@@ -701,20 +703,23 @@ public class Editor extends VBox {
         Path filePath = SimulationFileLoader.loadSimulationFile(stage);
 
         if (filePath != null) {
-            // Display loading message
             System.out.println("Loading simulation data from: " + filePath);
-
-            // Run the simulation
-            boolean success = SimulationFileLoader.runSimulation(filePath);
-
-            if (success) {
-                System.out.println("Simulation loaded and running successfully!");
-                // Enable the disable simulation button
-                disableSimulationButton.setDisable(false);
-                // Disable the enable simulation button
-                enableSimulationButton.setDisable(true);
-            } else {
-                System.err.println("Failed to run simulation.");
+            Circuit circuit = new Circuit();
+            
+            try {
+                Synchronizer.setInputSimulator(SimulationFileLoader.startSimulation(filePath, circuit));
+                
+                if (Synchronizer.getInputSimulator() != null) {
+                    System.out.println("Simulation loaded successfully!");
+                    
+                    disableSimulationButton.setDisable(false);
+                    enableSimulationButton.setDisable(true);
+                } else {
+                    System.err.println("Failed to load simulation.");
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading simulation: " + e.getMessage());
+                e.printStackTrace();
             }
         } else {
             System.out.println("Simulation file selection canceled.");

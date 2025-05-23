@@ -1,7 +1,9 @@
 package com.pjava.src.components;
 
+import java.io.FileReader;
 import java.util.HashSet;
 
+import com.pjava.src.document.FileReaderSimulation;
 import com.pjava.src.utils.Utils;
 import com.pjava.src.utils.Utils.TimeoutCatch;
 
@@ -30,7 +32,10 @@ public abstract class Synchronizer {
      * simulation, {@link #updateSimulation()} will do nothing.
      */
     private static boolean simulationRunning = false;
-
+    /**
+     * Set the lever input to predeterminate state from a file step by step
+     */
+    private static FileReaderSimulation inputSimulator = null;
     /**
      * The next group of element to update. Each {@link Element#updateState()} will
      * add their own instance into this group. Then the group will update a cycle
@@ -87,6 +92,15 @@ public abstract class Synchronizer {
                 simulationRunning = false;
             }
             return;
+        }
+        //TODO verif if it's good (Hugo pls) signed Axel
+        if(inputSimulator != null && inputSimulator.simulationActivated){
+            try{
+                 inputSimulator.simulationOrganizer();
+            }
+            catch( Exception e){
+                System.err.println(e);
+            }
         }
 
         // calculte the time to the next update
@@ -178,6 +192,11 @@ public abstract class Synchronizer {
     public static int getSimulationSpeed() {
         return simulationSpeed;
     }
+
+    public static FileReaderSimulation getInputSimulator() {
+        return inputSimulator;
+    }
+
     // #endregion
 
     // #region Setters
@@ -194,6 +213,10 @@ public abstract class Synchronizer {
         Synchronizer.simulationSpeed = simulationSpeed;
         // if always propagating, then the simulation is "running"
         simulationRunning = shouldPropagate();
+    }
+
+    public static void setInputSimulator(FileReaderSimulation newSimulator){
+        Synchronizer.inputSimulator = newSimulator;
     }
     // #endregion
 }
