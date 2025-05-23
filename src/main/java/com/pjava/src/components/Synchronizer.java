@@ -74,9 +74,11 @@ public abstract class Synchronizer {
      */
     private static void updateSimulation(boolean internal) {
         // return if a signal is already launched (the whole system is not yet stable)
-        // and it's not an internal call
-        if (nextUpdateGroupFalse.size() != 0 && nextUpdateGroupTrue.size() != 0
-                && (simulationRunning || !shouldPropagate()) && !internal) {
+        // and it's not an internal call (meaning we check for the next cycle)
+        // and shoudlPropagate is false (meaning it should instantly run, even from
+        // external)
+        if (nextUpdateGroupFalse.size() != 0 && nextUpdateGroupTrue.size() != 0 &&
+                simulationRunning && (!internal || !shouldPropagate())) {
             return;
         }
         // stop the simulation if both group are empty
