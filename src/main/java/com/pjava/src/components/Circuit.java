@@ -86,6 +86,11 @@ public class Circuit {
     private HashMap<String, Button> buttonGates = new HashMap<>();
 
     /**
+     * List of all the lever gates of a circuit
+     */
+    private HashMap<String, Lever> leverGates = new HashMap<>();
+
+    /**
      * List of all the output gates of a circuit
      */
     private HashMap<String, Output> outputGates = new HashMap<>();
@@ -204,13 +209,21 @@ public class Circuit {
     }
 
     /**
-     * get the button
+     * get the buttons
      *
      * @return the button
      */
-
     public HashMap<String, Button> getButtonGates() {
         return this.buttonGates;
+    }
+
+    /**
+     * get the Levers
+     *
+     * @return the Levers
+     */
+    public HashMap<String, Lever> getLeverGates() {
+        return this.leverGates;
     }
 
     /**
@@ -412,6 +425,8 @@ public class Circuit {
                 this.getClockGates().put(label, ((Clock) gate));
             } else if (gate instanceof Button) {
                 this.getButtonGates().put(label, ((Button) gate));
+            } else if (gate instanceof Lever) {
+                this.getLeverGates().put(label, ((Lever) gate));
             }
         } else if (gate instanceof Schema) {
             this.schemaGates.put(label, ((Schema) gate));
@@ -1419,6 +1434,8 @@ public class Circuit {
                     this.getClockGates().remove(label);
                 } else if (gate instanceof Button) {
                     this.getButtonGates().remove(label);
+                } else if (gate instanceof Lever) {
+                    this.getLeverGates().remove(label);
                 }
             } else if (gate instanceof Schema) {
                 this.getSchemaGates().remove(label);
