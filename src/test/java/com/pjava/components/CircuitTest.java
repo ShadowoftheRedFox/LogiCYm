@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import com.pjava.src.components.Gate;
 import com.pjava.src.components.Circuit;
 import com.pjava.src.components.gates.*;
+import com.pjava.src.components.input.*;
 
 public class CircuitTest {
 
@@ -102,19 +103,85 @@ public class CircuitTest {
     }
 
     @Test
-    void test4() {
-        System.out.println("\ntest 4 : copy to himself");
-        Circuit circuit3 = new Circuit();
+    void test4default() {
+        System.out.println("\ntest 4 default : copy to himself default circuit");
+        Circuit circuit3 = new Circuit("Circuit_test4");
 
         try {
+            // all gates
             circuit3.addNewGate("Power", "p1");
             circuit3.addNewGate("Ground", "g1");
-            circuit3.addNewGate("Lever", "l1");
-            circuit3.addNewGate("Not", "n1");
+            circuit3.addNewGate("Not", "not1");
+            circuit3.addNewGate("And", "and1");
+            circuit3.addNewGate("Or", "or1");
+            circuit3.addNewGate("Lever", "lev1");
+            circuit3.addNewGate("Button", "but1");
+            circuit3.addNewGate("Numeric", "num1");
+            circuit3.addNewGate("Clock", "clo1");
+            circuit3.addNewGate("Display", "dis1");
+            circuit3.addNewGate("NodeSplitter", "cableSplit1");
+            circuit3.addNewGate("Splitter", "busSplit1");
+            circuit3.addNewGate("Merger", "busMerg1");
 
-            circuit3.connectGate("p1", "n1", 0, 0);
+            // connecting some
+            circuit3.connectGate("p1", "not1", 0, 0);
 
+            // save
+            circuit3.save();
             circuit3.save("test", "sirkui_3");
+
+            System.out.println("Selection :");
+            int j = 0;
+            for (String i : circuit3.getAllGates().keySet()) {
+                System.out.println(
+                        String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.getAllGates().get(i).toJson()));
+                j++;
+            }
+
+            circuit3.addGatesFromJson(circuit3.toJson());
+
+            System.out.println("\nResult :");
+            j = 0;
+            for (String i : circuit3.getAllGates().keySet()) {
+                System.out.println(
+                        String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.getAllGates().get(i).toJson()));
+                j++;
+            }
+
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+
+    }
+
+
+    @Test
+    void test4complet() {
+        System.out.println("\ntest 4 complete : copy to himself complete circuit without schema");
+        Circuit circuit3 = new Circuit("Circuit_test4complet");
+
+        try {
+            // all gates
+            circuit3.addNewGate("Power", "p1", 4);
+            circuit3.addNewGate("Ground", "g1", 2);
+            circuit3.addNewGate("Not", "not1", 4);
+            circuit3.addNewGate("And", "and1", 4);
+            circuit3.addNewGate("Or", "or1", 3);
+            circuit3.addNewGate("Lever", "lev1");
+            circuit3.addNewGate("Button", "but1");
+            ((Numeric)circuit3.addNewGate("Numeric", "num1", 4)).setInputBase(6);
+            circuit3.addNewGate("Clock", "clo1");
+            circuit3.addNewGate("Display", "dis1");
+            circuit3.addNewGate("NodeSplitter", "cableSplit1");
+            circuit3.addNewGate("Splitter", "busSplit1");
+            circuit3.addNewGate("Merger", "busMerg1");
+
+            // connecting some
+            circuit3.connectGate("p1", "not1", 0, 0);
+
+            // save
+            circuit3.save();
+            //circuit3.save("test", "sirkui_3");
 
             System.out.println("Selection :");
             int j = 0;

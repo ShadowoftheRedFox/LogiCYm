@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -31,7 +32,10 @@ import com.pjava.src.components.output.Output;
 import com.pjava.src.utils.UtilsSave;
 
 
-// TODO : Chercher dans le code les endroits ou la mis à jour de addNewGate et addGate n'ont pas été fait (regarder les todo et fixme)
+// TODO : connect back and front
+// TODO : UI : Input gates who can't be accessible outside shouldn't have a schema port (not assignable by the user)
+
+// TODO : test with a complex circuit
 
 public class Circuit {
 
@@ -123,7 +127,7 @@ public class Circuit {
         try {
             this.addGatesFromJson(selection);
         } catch (Exception e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
     }
 
@@ -249,6 +253,9 @@ public class Circuit {
      * @throws Exception if targetPort is outside the valid range (negative or >= inputGates.size())
         */
     public int setSchemaInputGatePort(String inputGateLabel, int targetPort) throws Exception {
+        if (targetPort == -1){
+            return -1;
+        }
         if (targetPort < 0 || this.inputGates.size() <= targetPort) {
             throw new Exception(String.format("Port value '%d' is out of boundaries : must be between 0 - %d", targetPort,
                     this.inputGates.size()));
@@ -261,7 +268,7 @@ public class Circuit {
             // check if targetPort is allready taken
             for (String label : this.inputGates.keySet()) {
                 if (this.inputGates.get(label).getSchemaInputPort() == targetPort) {
-                    // TODO : popup
+                    // TODO : popup message ?
                     System.out.println(String.format("The input port '%d' is already used by the input gate '%s'", targetPort, label));
                     return assignedPort;
                 }
@@ -290,6 +297,9 @@ public class Circuit {
      * @throws Exception if targetPort is outside the valid range (negative or >= outputGates.size())
      */
     public int setSchemaOutputGatePort(String outputGateLabel, int targetPort) throws Exception {
+        if (targetPort == -1){
+            return -1;
+        }
         if (targetPort < 0 || this.outputGates.size() <= targetPort) {
             throw new Exception(String.format("Port value '%d' is out of boundaries : must be between 0 - %d", targetPort,
                     this.outputGates.size()));
@@ -302,7 +312,7 @@ public class Circuit {
             // check if targetPort is allready taken
             for (String label : this.outputGates.keySet()) {
                 if (this.outputGates.get(label).getSchemaOutputPort() == targetPort) {
-                    // TODO : popup
+                    // TODO : popup message ?
                     System.out.println(String.format("The output port '%d' is already used by the output gate '%s'", targetPort, label));
                     return assignedPort;
                 }
@@ -377,7 +387,7 @@ public class Circuit {
      * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * The default size of the input/output bus of the gate will be used.
      * The label will be set to the new gate uuid.
-     * 
+     *
      * Creates and adds a new gate with default configuration
      *
      * @param type type of the gate to create
@@ -388,11 +398,28 @@ public class Circuit {
         return addNewGate(type, "");
     }
 
+
     /**
      * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * Setting custom base parameters
      * The label will be set to the new gate uuid.
-     * 
+     *
+     * Creates and adds a new gate with custom bus sizes.
+     *
+     * @param type the type of gate to create
+     * @param busSize size of input and output bus
+     * @return the newly created and added gate
+     * @throws Exception if the gate type doesn't exist or creation fails
+     */
+    public Gate addNewGate(String type, int busSize) throws Exception {
+        return addNewGate(type, "", new int[]{busSize}, new int[]{busSize}, null, null);
+    }
+
+    /**
+     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * Setting custom base parameters
+     * The label will be set to the new gate uuid.
+     *
      * Creates and adds a new gate with custom bus sizes.
      *
      * @param type the type of gate to create
@@ -402,23 +429,23 @@ public class Circuit {
      * @throws Exception if the gate type doesn't exist or creation fails
      */
     public Gate addNewGate(String type, int[] sizeBusInput, int[] sizeBusOutput) throws Exception {
-        return addNewGate(type, "");
+        return addNewGate(type, "", sizeBusInput, sizeBusOutput);
     }
 
     /**
      * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * When loading a schema from a file.
      * The label will be set to the new gate uuid.
-     * 
+     *
      * Creates and adds a new schema gate loaded from a file.
      *
-     * @param type the type of gate to create 
+     * @param type the type of gate to create
      * @param schemaFile the path to the schema definition file
-     * @param unused_int_to_create_this_shorthand unused parameter for method signature differentiation
+     * @param unused_bool_to_create_this_shorthand unused parameter for method signature differentiation
      * @return the newly created and added schema gate
      * @throws Exception if the file cannot be loaded or gate creation fails
      */
-    public Gate addNewGate(String type, String schemaFile, int unused_int_to_create_this_shorthand) throws Exception {
+    public Gate addNewGate(String type, String schemaFile, boolean unused_bool_to_create_this_shorthand) throws Exception {
         return addNewGate(type, "", schemaFile);
     }
 
@@ -426,10 +453,10 @@ public class Circuit {
      * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * When loading a schema from a json selection.
      * The label will be set to the new gate uuid.
-     * 
+     *
      * Creates and adds a new schema gate from a JSON configuration.
      *
-     * @param type the type of gate to create 
+     * @param type the type of gate to create
      * @param schemaJson the JSON object containing the schema definition
      * @return the newly created and added schema gate
      * @throws Exception if the JSON is invalid or gate creation fails
@@ -442,10 +469,10 @@ public class Circuit {
     /**
      * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * The default size of the input/output bus of the gate will be used.
-     * 
+     *
      * Creates and adds a new gate with a custom label.
      *
-     * @param type the type of gate to create 
+     * @param type the type of gate to create
      * @param label the custom label for the gate (if empty, UUID will be used)
      * @return the newly created and added gate
      * @throws Exception if the gate type doesn't exist, label is already taken, or creation fails
@@ -456,9 +483,25 @@ public class Circuit {
 
     /**
      * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * Setting custom base parameters.
+     *
+     * Creates and adds a new gate with custom label and bus sizes
+     *
+     * @param type the type of gate to create
+     * @param label the custom label for the gate (if empty, UUID will be used)
+     * @param busSize size of input and output bus
+     * @return the newly created and added gate
+     * @throws Exception if the gate type doesn't exist, label is already taken, or creation fails
+     */
+    public Gate addNewGate(String type, String label, int busSize) throws Exception {
+        return addNewGate(type, label, new int[]{busSize}, new int[]{busSize}, null, null);
+    }
+
+    /**
+     * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * Setting custom base parameters
      * The default size of the input/output bus of the gate will be used.
-     * 
+     *
      * Creates and adds a new gate with custom label and bus sizes
      *
      * @param type the type of gate to create
@@ -469,13 +512,13 @@ public class Circuit {
      * @throws Exception if the gate type doesn't exist, label is already taken, or creation fails
      */
     public Gate addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput) throws Exception {
-        return addNewGate(type, label, null, null, null, null);
+        return addNewGate(type, label, sizeBusInput, sizeBusOutput, null, null);
     }
 
     /**
      * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * When loading a schema from a file.
-     * 
+     *
      *  Creates and adds a new schema gate from a file with a custom label.
      *
      * @param type the type of gate to create
@@ -491,10 +534,10 @@ public class Circuit {
     /**
      * shorthand for {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
      * When loading a schema from a json selection.
-     * 
+     *
      * Creates and adds a new schema gate from JSON with a custom label.
      *
-     * @param type the type of gate to create 
+     * @param type the type of gate to create
      * @param label the custom label for the gate (if empty, UUID will be used)
      * @param schemaJson the JSON object containing the schema definition
      * @return the newly created and added schema gate
@@ -511,7 +554,7 @@ public class Circuit {
      * If set to 'null', the default version of the gate will be created.
      *
      * Please note that a schema needs eather a file or a json selection to load from.
-     * 
+     *
      * @param type the type of gate to create
      * @param label the label for the gate (can be null)
      * @param sizeBusInput input bus sizes (can be null for default)
@@ -523,11 +566,30 @@ public class Circuit {
      */
     public Gate addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson) throws Exception {
 
+        // TODO : debug
+        // debug
+        ArrayList<Integer> printSizeBusInput = new ArrayList<>();
+        if(sizeBusInput != null){
+            for(int val : sizeBusInput){
+                printSizeBusInput.add(val);
+            }
+        }
+        ArrayList<Integer> printSizeBusOutput = new ArrayList<>();
+        if(sizeBusOutput != null){
+            for(int val : sizeBusOutput){
+                printSizeBusOutput.add(val);
+            }
+        }
+
+        System.err.println(String.format("type : '%s' label : '%s' sizeInput : %s sizeOutput : %s schemaFile '%s' schemaJson %s",
+            type, label, printSizeBusInput, printSizeBusOutput, schemaFile, schemaJson));
+        // --- end debug
+
         Gate newGate;
         switch (type) {
             // Input
             case "Power":
-                if(sizeBusOutput != null){
+                if(sizeBusOutput != null && sizeBusOutput.length > 0){
                     newGate = new Power(sizeBusOutput[0]);
                 }
                 else{
@@ -535,7 +597,7 @@ public class Circuit {
                 }
                 break;
             case "Ground":
-                if(sizeBusOutput != null){
+                if(sizeBusOutput != null && sizeBusOutput.length > 0){
                     newGate = new Ground(sizeBusOutput[0]);
                 }
                 else{
@@ -546,7 +608,7 @@ public class Circuit {
                 newGate = new Lever();
                 break;
             case "Numeric":
-                if(sizeBusOutput != null){
+                if(sizeBusOutput != null && sizeBusOutput.length > 0){
                     newGate = new Numeric(sizeBusOutput[0]);
                 }
                 else{
@@ -562,7 +624,7 @@ public class Circuit {
 
             // Output
             case "Display":
-                if(sizeBusInput != null){
+                if(sizeBusInput != null && sizeBusInput.length > 0){
                     newGate = new Display(sizeBusInput[0]);
                 }
                 else{
@@ -572,7 +634,7 @@ public class Circuit {
 
             // Gate
             case "Not":
-                if(sizeBusOutput != null){
+                if(sizeBusOutput != null && sizeBusOutput.length > 0){
                     newGate = new Not(sizeBusOutput[0]);
                 }
                 else{
@@ -580,7 +642,7 @@ public class Circuit {
                 }
                 break;
             case "And":
-                if(sizeBusOutput != null){
+                if(sizeBusOutput != null && sizeBusOutput.length > 0){
                     newGate = new And(sizeBusOutput[0]);
                 }
                 else{
@@ -588,7 +650,7 @@ public class Circuit {
                 }
                 break;
             case "Or":
-                if(sizeBusOutput != null){
+                if(sizeBusOutput != null && sizeBusOutput.length > 0){
                     newGate = new Or(sizeBusOutput[0]);
                 }
                 else{
@@ -609,7 +671,7 @@ public class Circuit {
 
             // Cable
             case "NodeSplitter":
-                if(sizeBusInput != null){
+                if(sizeBusInput != null && sizeBusInput.length > 0){
                     newGate = new NodeSplitter(sizeBusInput[0]);
                 }
                 else{
@@ -617,7 +679,7 @@ public class Circuit {
                 }
                 break;
             case "Splitter":
-                if(sizeBusInput != null){
+                if(sizeBusInput != null && sizeBusInput.length > 0){
                     newGate = new Splitter(sizeBusInput[0]);
                 }
                 else{
@@ -625,7 +687,7 @@ public class Circuit {
                 }
                 break;
             case "Merger":
-                if(sizeBusInput != null){
+                if(sizeBusInput != null  && sizeBusInput.length > 0){
                     newGate = new Merger(sizeBusInput);
                 }
                 else{
@@ -739,6 +801,40 @@ public class Circuit {
                             ((NodeSplitter)addedGate).addOutput(busNumberFound - ((NodeSplitter)addedGate).getOutputNumber());
                         }
                         break;
+                }
+
+            }
+            // We set the input/output assigned port to a schema
+            // Input
+            for (String key : tempCircuit.getInputGates().keySet()) {
+                Input gate = tempCircuit.getInputGates().get(key);
+                if (!(gate instanceof Lever || gate instanceof Numeric)) {
+                    continue;
+                }
+
+                int inputOldId = Integer.valueOf(key);
+
+                // set the input schema port
+                for (int input_jsonIndex = 0; input_jsonIndex < gate_JsonArray.length(); input_jsonIndex++) {
+                    if (gate_JsonArray.getJSONObject(input_jsonIndex).getInt("uuid") == inputOldId) {
+                        tempCircuit.setSchemaInputGatePort(
+                            key,
+                            gate_JsonArray.getJSONObject(input_jsonIndex).getInt("schemaInputPort"));
+                    }
+                }
+            }
+
+            // Output
+            for (String key : tempCircuit.getOutputGates().keySet()) {
+                int outputOldId = Integer.valueOf(key);
+
+                // set the output schema port
+                for (int output_jsonIndex = 0; output_jsonIndex < gate_JsonArray.length(); output_jsonIndex++) {
+                    if (gate_JsonArray.getJSONObject(output_jsonIndex).getInt("uuid") == outputOldId) {
+                        tempCircuit.setSchemaOutputGatePort(
+                            key,
+                            gate_JsonArray.getJSONObject(output_jsonIndex).getInt("schemaOutputPort"));
+                    }
                 }
             }
 
@@ -869,9 +965,45 @@ public class Circuit {
                 }
             }
 
+            // We set the input/output assigned port to a schema
+            // Input
+            for (String key : tempCircuit.getInputGates().keySet()) {
+                Input gate = tempCircuit.getInputGates().get(key);
+                if (!(gate instanceof Lever || gate instanceof Numeric)) {
+                    continue;
+                }
+
+                int inputOldId = Integer.valueOf(key);
+
+                // set the input schema port
+                for (int input_jsonIndex = 0; input_jsonIndex < gate_JsonArray.length(); input_jsonIndex++) {
+                    if (gate_JsonArray.getJSONObject(input_jsonIndex).getInt("uuid") == inputOldId) {
+                        tempCircuit.setSchemaInputGatePort(
+                            key,
+                            gate_JsonArray.getJSONObject(input_jsonIndex).getInt("schemaInputPort"));
+                    }
+                }
+            }
+
+            // Output
+            for (String key : tempCircuit.getOutputGates().keySet()) {
+
+                int outputOldId = Integer.valueOf(key);
+
+                // set the output schema port
+                for (int output_jsonIndex = 0; output_jsonIndex < gate_JsonArray.length(); output_jsonIndex++) {
+                    if (gate_JsonArray.getJSONObject(output_jsonIndex).getInt("uuid") == outputOldId) {
+                        tempCircuit.setSchemaOutputGatePort(
+                            key,
+                            gate_JsonArray.getJSONObject(output_jsonIndex).getInt("schemaOutputPort"));
+                    }
+                }
+            }
+
             // 1.bis : We whant to turn all Input(Lever/Numeric)  and Output into schema port
             // Input
             for (String key : tempCircuit.getInputGates().keySet()) {
+                // We only want to make schema port from thoses input gates
                 Input gate = tempCircuit.getInputGates().get(key);
                 if (!(gate instanceof Lever || gate instanceof Numeric)) {
                     continue;
@@ -931,8 +1063,14 @@ public class Circuit {
 
             // output
             for (String key : tempCircuit.getOutputGates().keySet()) {
-                // FIXME warning unused?
+
+                // We only want to make schema port from thoses output gates
+                /*
                 Output gate = tempCircuit.getOutputGates().get(key);
+                if (!(gate instanceof Display)) {
+                    continue;
+                }
+                */
 
                 int outputOldId = Integer.valueOf(key);
 
@@ -1107,6 +1245,7 @@ public class Circuit {
             }
         } catch (JSONException e) {
             System.err.println("Error circuit can't be launch " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -1134,6 +1273,30 @@ public class Circuit {
      * @throws Exception if the file cannot be read or contains invalid data
      */
     public final void loadGatesFromFile(String filePath, Schema schema) throws Exception {
+        // We format filePath
+        if ((filePath != null) && (!filePath.isBlank())) {
+            filePath = filePath.replace(".", "");
+
+            if (!filePath.startsWith("/")) {
+                filePath = "/" + filePath;
+            }
+        } else {
+            throw new Exception("Empty filePath");
+        }
+
+        if (!filePath.startsWith(UtilsSave.saveFolder.toString().replace(".", ""))) {
+            filePath = UtilsSave.saveFolder.toString() + filePath;
+        }
+        else{
+            filePath = "." + filePath;
+        }
+
+        if (filePath.endsWith("json")) {
+            filePath = filePath.substring(0, filePath.length() - 4);
+        }
+
+        filePath = filePath + ".json";
+
         filePath = filePath.replace("/", File.separator);
 
         // We then read and create a json object from the file
@@ -1165,7 +1328,7 @@ public class Circuit {
 
 
     // #region delGate
-     
+
 
     /**
      * Removes a gate from the circuit and disconnects all its connections.
@@ -1218,7 +1381,7 @@ public class Circuit {
 
     /**
      * Connects two gates by creating a cable between specified ports
-     * 
+     *
      * @param fromGate The gate whose output port you want to connect
      * @param toGate   The gate whose input port you want to connect
      * @param fromPort The index of the output port
@@ -1449,7 +1612,7 @@ public class Circuit {
                 System.out.println(String.format("'%s' already exist", filePath));
             }
         } catch (NullPointerException | IOException e) {
-            e.printStackTrace();
+            System.err.println(e);
         }
 
         // We write in the designed file
@@ -1466,3 +1629,6 @@ public class Circuit {
 
     // #endregion
 }
+
+
+
