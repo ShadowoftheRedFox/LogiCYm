@@ -264,7 +264,7 @@ public class Editor extends VBox {
 
                 File saveFile = fileChooser.showOpenDialog(manager.getStage());
 
-                editedCircuit.save(saveFile.getParent(), saveFile.getName());
+                editedCircuit.save(saveFile.getParent() + saveFile.getName());
             } catch (Exception e) {
                 UIUtils.errorPopup(e.getMessage());
             }
