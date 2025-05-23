@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import com.pjava.src.components.gates.Not;
 import com.pjava.src.components.gates.Or;
-import com.pjava.src.components.input.Clock;
+import com.pjava.src.components.input.Lever;
 import com.pjava.src.utils.Cyclic;
 import com.pjava.src.utils.Utils;
 
@@ -18,9 +18,9 @@ public class MainTest {
 
     @Test
     void SRFlipFlop() throws Exception {
-        // Clock start at 0
-        Clock R = new Clock();
-        Clock S = new Clock();
+        // lever start at 0
+        Lever R = new Lever();
+        Lever S = new Lever();
 
         Or or1 = new Or();
         Or or2 = new Or();
@@ -88,10 +88,10 @@ public class MainTest {
             }
 
             if (Utils.isEven(I)) {
-                R.instantCycle();
+                R.flip();
             }
             if (Utils.isOdd(I)) {
-                S.instantCycle();
+                S.flip();
             }
         }
     }

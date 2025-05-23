@@ -55,31 +55,41 @@ public class Clock extends Input {
      * Make a cycle instantaneously.
      */
     public void instantCycle() {
+        BitSet state = getState();
         state.flip(0);
+        setState(state);
 
         lastCycle = System.currentTimeMillis();
-        updateState();
-        Synchronizer.updateSimulation();
-    }
-
-    /**
-     * Cycle accordingly to the given {@link #cycleSpeed} and {@link #enabled}.
-     */
-    public void timeCycle() {
+        // if clock disabled but this method has been called, update
+        // else it's a synchronizer call, to add itself for the next call to happen
         if (!enabled) {
-            return;
-        } else if (System.currentTimeMillis() - lastCycle >= cycleSpeed) {
-            instantCycle();
+            Synchronizer.updateSimulation();
+        } else {
+            Synchronizer.addToCallStack(this);
         }
     }
 
     /**
-     * Return the current state.
-     * {@inheritDoc}
+     * Cycle accordingly to the given {@link #cycleSpeed} and {@link #enabled}.
+     *
+     * @return True if a cycle has been made, false otherwise
      */
+    public boolean timeCycle() {
+        if (!enabled) {
+            return false;
+        } else if (System.currentTimeMillis() - lastCycle >= cycleSpeed) {
+            instantCycle();
+            return true;
+        }
+        return false;
+    }
+
     @Override
-    public BitSet getState() {
-        return state;
+    public void updateState() {
+        if (!enabled) {
+            return;
+        }
+        timeCycle();
     }
 
     @Override
@@ -124,11 +134,16 @@ public class Clock extends Input {
 
     /**
      * Setter for {@link #enabled}.
+     * If enabled is set to true, it add itself to the synchronizer.
      *
      * @param enabled Whether to enable or disable the clock.
+     * @see Synchronizer
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+        if (enabled) {
+            Synchronizer.addToCallStack(this);
+        }
     }
     // #endregion
 }

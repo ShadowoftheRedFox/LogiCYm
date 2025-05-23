@@ -22,6 +22,7 @@ import com.pjava.src.UI.components.input.UILever;
 import com.pjava.src.UI.components.input.UIPower;
 import com.pjava.src.UI.components.output.UIDisplay;
 import com.pjava.src.components.Circuit;
+import com.pjava.src.components.Synchronizer;
 import com.pjava.src.document.SimulationFileLoader;
 import com.pjava.src.utils.UIUtils;
 import com.pjava.src.utils.UIUtils.ValidationAnwser;
@@ -483,7 +484,7 @@ public class Editor extends VBox {
      * @param value the value of hz
      */
     private void setSimulationSpeed(int value) {
-        // TODO edit simulation speed somewhere
+        Synchronizer.setSimulationSpeed(value);
     }
 
     /**
@@ -880,6 +881,12 @@ public class Editor extends VBox {
     private void toggleSimulation(boolean activated) {
         enableSimulationButton.setDisable(activated);
         disableSimulationButton.setDisable(!activated);
+        editedCircuit.getClockGates().forEach((name, clock) -> {
+            clock.setEnabled(activated);
+        });
+        if (activated) {
+            Synchronizer.updateSimulation();
+        }
     }
 
     /**

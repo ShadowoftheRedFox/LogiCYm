@@ -36,11 +36,9 @@ import com.pjava.src.utils.UtilsSave;
 
 // TODO : test with a complex circuit
 
-
 // TODO : load from an absolute path
 // TODO : save from an absolute path
 // TODO : keep flag for shema circuit path
-
 
 /**
  * FIXME Esteban JAVADOC
@@ -457,7 +455,6 @@ public class Circuit {
         return addNewGate(type, "");
     }
 
-
     /**
      * shorthand for
      * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
@@ -546,45 +543,6 @@ public class Circuit {
      */
     public Gate addNewGate(String type, String label) throws Exception {
         return addNewGate(type, label, null, null, null, null);
-    }
-
-    /**
-     * shorthand for
-     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
-     * Setting custom base parameters.
-     *
-     * Creates and adds a new gate with custom label and bus sizes
-     *
-     * @param type    the type of gate to create
-     * @param label   the custom label for the gate (if empty, UUID will be used)
-     * @param busSize size of input and output bus
-     * @return the newly created and added gate
-     * @throws Exception if the gate type doesn't exist, label is already taken, or
-     *                   creation fails
-     */
-    public Gate addNewGate(String type, String label, int busSize) throws Exception {
-        return addNewGate(type, label, new int[] { busSize }, new int[] { busSize }, null, null);
-    }
-
-    /**
-     * shorthand for
-     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
-     * Setting custom base parameters
-     * The default size of the input/output bus of the gate will be used.
-     *
-     * Creates and adds a new gate with custom label and bus sizes
-     *
-     * @param type          the type of gate to create
-     * @param label         the custom label for the gate (if empty, UUID will be
-     *                      used)
-     * @param sizeBusInput  array specifying the size of each input bus
-     * @param sizeBusOutput array specifying the size of each output bus
-     * @return the newly created and added gate
-     * @throws Exception if the gate type doesn't exist, label is already taken, or
-     *                   creation fails
-     */
-    public Gate addNewGate(String type, String label, int busSize) throws Exception {
-        return addNewGate(type, label, new int[]{busSize}, new int[]{busSize}, null, null);
     }
 
     /**

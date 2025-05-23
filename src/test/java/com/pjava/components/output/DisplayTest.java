@@ -31,7 +31,7 @@ public class DisplayTest {
         }
 
         public void setState(BitSet bit) {
-            state = bit;
+            super.setState(bit);
         }
 
         public void setOutputGate(Gate gate) {

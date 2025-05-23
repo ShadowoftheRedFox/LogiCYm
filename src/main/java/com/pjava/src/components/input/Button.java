@@ -56,7 +56,9 @@ public class Button extends Input {
         }
 
         lastCycle = System.currentTimeMillis();
+        BitSet state = getState();
         state.set(0, true);
+        setState(state);
         updateState();
         Synchronizer.updateSimulation();
     }
@@ -68,18 +70,15 @@ public class Button extends Input {
      */
     public void release() {
         if (System.currentTimeMillis() - lastCycle >= delay) {
+            BitSet state = getState();
             state.set(0, false);
+            setState(state);
             updateState();
             Synchronizer.updateSimulation();
         }
     }
 
     // #region Getters
-    @Override
-    public BitSet getState() {
-        return (BitSet) state.clone();
-    }
-
     /**
      * Getter for {@link #delay}.
      *
