@@ -3,6 +3,7 @@ package com.pjava.src.components;
 import java.util.BitSet;
 
 import com.pjava.src.components.cables.Splitter;
+import com.pjava.src.components.gates.Schema;
 import com.pjava.src.errors.BusSizeException;
 import com.pjava.src.utils.Utils;
 
@@ -89,7 +90,7 @@ public class Cable extends Element {
             if (gateState != null) {
                 state.or(gateState);
             }
-        } else {
+        } else  {
             BitSet gateState = inputGate.getState();
             if (gateState != null) {
                 state.or(gateState);
@@ -104,10 +105,51 @@ public class Cable extends Element {
             return;
         }
 
-        // then call all output
         setOldState();
-        if (propagate && outputGate != null) {
-            outputGate.updateState();
+
+        // no output gate ? no problem !
+        if(outputGate == null){
+            return;
+        }
+
+        // If the output gate is a Schema, we use it like a bridge to update the inner or outer gate at the right port.
+        if(outputGate instanceof Schema){
+            // correspondingCable will allow a seemless updade of state between the circuit gates and the schema's inner circuit gates
+            Cable correspondingCable = null;
+
+            // we try to find out if this cable is an input cable or an inner output cable :
+            if(((Schema)outputGate).getInputCable().get(outputPort).equals(this)){
+                correspondingCable = ((Schema)outputGate).getInnerInputCable().get(outputPort);
+            } else if(((Schema)outputGate).getInnerOutputCable().get(outputPort).equals(this)){
+                correspondingCable = ((Schema)outputGate).getOutputCable().get(outputPort);
+            }
+            else{
+                throw new Error(String.format("Cable not found in schema gate '%s', input or inner output port '%d'", ((Schema)outputGate).getName(), outputPort));
+            }
+
+            if(correspondingCable != null){
+                if(correspondingCable.getBusSize() != this.busSize){
+                    throw new Error("Shema's corresponding cable bus size should be the same as this cable");
+                }
+
+                // we directly pass our state to the corresponding cable
+                correspondingCable.state = this.state;
+
+                // We will then update the output gate of the corresponding cable
+                if(propagate){
+                    // TODO : add to the list of 'the next elements to update'
+                    // TODO : ask front to update (consumer)
+                    correspondingCable.outputGate.updateState();
+                }
+            }
+        }
+        else{
+            // we update the output gate of this cable
+            if (propagate && outputGate != null) {
+                    // TODO : add to the list of 'the next elements to update'
+                    // TODO : ask front to update (consumer)
+                    outputGate.updateState();
+            }
         }
     }
 
@@ -229,10 +271,10 @@ public class Cable extends Element {
     /**
      * FIXME javadoc
      * Sets the input gate for this cable connection.
-     * 
+     *
      * HACK should be private, or at least protected
      * BUG can break connections
-     * 
+     *
      *
      * @param gate the gate to set as input source (must not be null)
      * @throws Exception if the gate parameter is null
@@ -247,10 +289,10 @@ public class Cable extends Element {
     /**
      * FIXME javadoc
           * Sets the output gate for this cable connection.
-     * 
+     *
      * HACK should be private, or at least protected
      * BUG can break connections
-     * 
+     *
      * @param gate the gate to set as output destination (must not be null)
      * @throws Exception if the gate parameter is null
      */

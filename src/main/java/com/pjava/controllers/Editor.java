@@ -46,6 +46,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
@@ -75,107 +76,89 @@ public class Editor extends VBox {
     // #region Menu items
     @FXML
     private MenuItem copyButton;
-
     @FXML
     private MenuItem cutButton;
-
     @FXML
     private MenuItem deleteButton;
-
     @FXML
     private MenuItem disableSimulationButton;
-
     @FXML
     private MenuItem enableSimulationButton;
-
     @FXML
     private Text loadFromInputHelp;
-
     @FXML
     private MenuItem loadInputsButton;
-
     @FXML
     private MenuItem newFileButton;
-
     @FXML
     private MenuItem openFileButton;
-
     @FXML
     private Menu openRecentButton;
-
     @FXML
     private MenuItem pasteButton;
-
     @FXML
     private MenuItem preferencesButton;
-
     @FXML
     private MenuItem quitButton;
-
     @FXML
     private MenuItem redoButton;
-
     @FXML
     private MenuItem saveAsButton;
-
     @FXML
     private MenuItem saveButton;
-
     @FXML
     private MenuItem selectAllButton;
-
     @FXML
     private MenuItem undoButton;
-
     @FXML
     private MenuItem unselectAllButton;
-
     @FXML
     private RadioMenuItem simulationSpeed1;
-
     @FXML
     private RadioMenuItem simulationSpeed10;
-
     @FXML
     private RadioMenuItem simulationSpeed20;
-
     @FXML
     private RadioMenuItem simulationSpeed5;
-
     @FXML
     private RadioMenuItem simulationSpeed60;
-
     @FXML
     private RadioMenuItem simulationSpeed1k;
-
     @FXML
     private RadioMenuItem simulationSpeedUnlimited;
     // #endregion
 
-    @FXML
-    private Button cableBtn;
     /**
-     * scenemanager
+     * scenemanager if we ever want to change scene
      */
     private SceneManager manager;
 
     /**
-     * Rectangle
+     * Rectangle that show the current selectionned area
      */
     private Rectangle selectionRectangle = null;
+    /**
+     * The point where the selection started.
+     */
     private Point2D selectionStart = null;
 
     /**
      * list of nodes selected
      */
     private ArrayList<Node> selectedNodes = new ArrayList<Node>();
-    private ArrayList<UICable> cableLines = new ArrayList<UICable>();
 
     /**
-     * the cabling mode is when you can link gates
+     * Copied elements are stored here.
      */
-    private boolean cablingMode = false;
+    private ArrayList<UIElement> clipboardElements = new ArrayList<>();
+
+    /**
+     * The last intput pin pressed. See {@link #createCableBetweenPins(Pin, Pin)}
+     */
     private Pin lastInputPinPressed = null;
+    /**
+     * The last output pin pressed. See {@link #createCableBetweenPins(Pin, Pin)}
+     */
     private Pin lastOutputPinPressed = null;
 
     /**
@@ -466,7 +449,6 @@ public class Editor extends VBox {
             UICable cableController = UICable.create();
             // connect cable
             cableController.connect(source, target, sourceGate, targetGate);
-            cableLines.add(cableController);
             container.getChildren().add(cableController.getNode());
             cableController.getNode().toBack();
 
@@ -491,15 +473,16 @@ public class Editor extends VBox {
 
     // #region Functions
 
-
     private void setUnsavedChanges(boolean unsavedChanges) {
         this.unsavedChanges = unsavedChanges;
         manager.getStage()
                 .setTitle("LogiCYm: " + (unsavedChanges ? "Unsaved changes - " : "") + editedCircuit.getName());
         saveButton.setDisable(!unsavedChanges);
     }
+
     /**
      * Change the speed simulation
+     *
      * @param value the value of hz
      */
     private void setSimulationSpeed(int value) {
@@ -509,7 +492,6 @@ public class Editor extends VBox {
     /**
      * Create the grid in page
      */
-
     public void resizeGrid() {
         final double paneWidth = viewScroll.getWidth();
         final double paneHeight = viewScroll.getHeight();
@@ -541,71 +523,6 @@ public class Editor extends VBox {
         }
     }
 
-    /**
-     * change color around the gate when element is selected and canceled the previous selection
-     * @param event clic on element
-     */
-
-    private void pressSelection(MouseEvent event) {
-        // make sure selection always start on the grid
-        if (!gridPane.equals(event.getTarget()) &&
-                !(event.getTarget() instanceof Pane)) {
-            return;
-        }
-
-        if (selectionRectangle != null) {
-            endSelection(event);
-        }
-
-        clearSelection();
-
-        selectionRectangle = new Rectangle();
-        selectionStart = new Point2D(event.getX(), event.getY());
-
-        selectionRectangle.setLayoutX(event.getX());
-        selectionRectangle.setLayoutY(event.getY());
-
-        selectionRectangle.setFill(Color.BLUE);
-        selectionRectangle.setStroke(Color.BLUEVIOLET);
-        selectionRectangle.strokeWidthProperty().set(3);
-        selectionRectangle.setOpacity(0.3);
-
-        container.getChildren().add(selectionRectangle);
-        selectionRectangle.toFront();
-    }
-
-/**
- * change the position and the size when element is selected and slide
- * @param event
- */
-    private void dragSelection(MouseEvent event) {
-        // drag detected but not a selection
-        if (selectionRectangle == null) {
-            return;
-        }
-        double width = event.getX() - selectionStart.getX();
-        double height = event.getY() - selectionStart.getY();
-
-        if (width > 0) {
-            selectionRectangle.setWidth(width);
-        } else if (width < 0) {
-            selectionRectangle.setLayoutX(event.getX());
-            selectionRectangle.setWidth(-width);
-        }
-
-        if (height > 0) {
-            selectionRectangle.setHeight(height);
-        } else if (height < 0) {
-            selectionRectangle.setLayoutY(event.getY());
-            selectionRectangle.setHeight(-height);
-        }
-    }
-    /**
-     * end the selection of the element when is unselected
-     * @param event
-     */
-
-
     // #endregion
 
     private void replaceInfos(Node content) {
@@ -616,35 +533,7 @@ public class Editor extends VBox {
             infosContainer.getChildren().add(content);
         }
     }
-    /**
-     * grabs the element selected
-     * @param element the element selected
-     */
-    private void selectElement(UIElement element) {
-        clearSelection();
-        if (element != null) {
-            selectedNodes.add(element.getNode());
-        }
-        deleteButton.setDisable(element == null);
-    }
-    /**
-     * grabs a group of element selected
-     * @param array collection of element selected
-     */
-    private void selectElement(Collection<UIElement> array) {
-        clearSelection();
-        if (array != null) {
-            for(UIElement element : array){
-                selectedNodes.add(element.getNode());
-            }
-        }
-        deleteButton.setDisable(selectedNodes.size() == 0);
-    }
 
-    private void toggleSimulation(boolean activated) {
-        enableSimulationButton.setDisable(activated);
-        disableSimulationButton.setDisable(!activated);
-    }
     /**
      * when editor is close make propose if they want to save the circuit
      */
@@ -703,10 +592,36 @@ public class Editor extends VBox {
         }
     }
 
+    /**
+     * register the pins for later connection
+     *
+     * @param gate the gate related to the pins
+     */
+    private void pinsListener(UIGate gate) {
+        for (Pin pin : gate.getInputPins()) {
+            pin.setOnPressed(event -> {
+                if (lastInputPinPressed != null) {
+                    lastInputPinPressed.setColor(Color.BLUE);
+                }
+                lastInputPinPressed = pin;
+                pin.setColor(Color.YELLOW);
+                createCableBetweenPins(lastOutputPinPressed, lastInputPinPressed);
+            });
+        }
+        for (Pin pin : gate.getOutputPins()) {
+            pin.setOnPressed(event -> {
+                if (lastOutputPinPressed != null) {
+                    lastOutputPinPressed.setColor(Color.RED);
+                }
+                lastOutputPinPressed = pin;
+                pin.setColor(Color.YELLOW);
+                createCableBetweenPins(lastOutputPinPressed, lastInputPinPressed);
+            });
+        }
+    }
     // #endregion
 
     // #region Gate spawn
-
     @FXML
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
@@ -833,43 +748,17 @@ public class Editor extends VBox {
         });
     }
 
-    /**
-     * register the pins for later connection
-     *
-     * @param gate the gate related to the pins
-     */
-    private void pinsListener(UIGate gate) {
-        for (Pin pin : gate.getInputPins()) {
-            pin.setOnPressed(event -> {
-                if (lastInputPinPressed != null) {
-                    lastInputPinPressed.setColor(Color.BLUE);
-                }
-                lastInputPinPressed = pin;
-                pin.setColor(Color.YELLOW);
-                createCableBetweenPins(lastOutputPinPressed, lastInputPinPressed);
-            });
-        }
-        for (Pin pin : gate.getOutputPins()) {
-            pin.setOnPressed(event -> {
-                if (lastOutputPinPressed != null) {
-                    lastOutputPinPressed.setColor(Color.RED);
-                }
-                lastOutputPinPressed = pin;
-                pin.setColor(Color.YELLOW);
-                createCableBetweenPins(lastOutputPinPressed, lastInputPinPressed);
-            });
-        }
-    }
-
     @FXML
     public void clickCable(ActionEvent event) {
         System.out.println("Click Cable!");
-        // Activer/désactiver le mode câblage
-        cablingMode = !cablingMode;
+        UICable cableController = (UICable) UIElement.create("UICable");
+        Node and = cableController.getNode();
+        container.getChildren().add(and);
 
-        // Mettre à jour l'apparence du bouton
-        Button btn = (Button) event.getSource();
-        btn.setStyle(cablingMode ? "-fx-background-color: lightblue;" : "");
+        cableController.getLine().setOnMousePressed(mouseEvent -> {
+            selectElement(cableController);
+            replaceInfos(cableController.getInfos().getNode());
+        });
     }
 
     @FXML
@@ -880,6 +769,124 @@ public class Editor extends VBox {
     @FXML
     public void clickSplitter(ActionEvent event) {
         System.out.println("Click Splitter!");
+    }
+    // #endregion
+
+    // #region Selection
+    /**
+     * change color around the gate when element is selected and canceled the
+     * previous selection
+     *
+     * @param event clic on element
+     */
+
+    private void pressSelection(MouseEvent event) {
+        // make sure selection always start on the grid
+        if (!gridPane.equals(event.getTarget()) &&
+                !(event.getTarget() instanceof Pane)) {
+            return;
+        }
+
+        if (selectionRectangle != null) {
+            endSelection(event);
+        }
+
+        clearSelection();
+
+        selectionRectangle = new Rectangle();
+        selectionStart = new Point2D(event.getX(), event.getY());
+
+        selectionRectangle.setLayoutX(event.getX());
+        selectionRectangle.setLayoutY(event.getY());
+
+        selectionRectangle.setFill(Color.BLUE);
+        selectionRectangle.setStroke(Color.BLUEVIOLET);
+        selectionRectangle.strokeWidthProperty().set(3);
+        selectionRectangle.setOpacity(0.3);
+
+        container.getChildren().add(selectionRectangle);
+        selectionRectangle.toFront();
+    }
+
+    /**
+     * change the position and the size when element is selected and slide
+     *
+     * @param event
+     */
+    private void dragSelection(MouseEvent event) {
+        // drag detected but not a selection
+        if (selectionRectangle == null) {
+            return;
+        }
+        double width = event.getX() - selectionStart.getX();
+        double height = event.getY() - selectionStart.getY();
+
+        if (width > 0) {
+            selectionRectangle.setWidth(width);
+        } else if (width < 0) {
+            selectionRectangle.setLayoutX(event.getX());
+            selectionRectangle.setWidth(-width);
+        }
+
+        if (height > 0) {
+            selectionRectangle.setHeight(height);
+        } else if (height < 0) {
+            selectionRectangle.setLayoutY(event.getY());
+            selectionRectangle.setHeight(-height);
+        }
+    }
+
+    /**
+     * end the selection of the element when is unselected
+     *
+     * @param event
+     */
+
+    /**
+     * grabs the element selected
+     *
+     * @param element the element selected
+     */
+    private void selectElement(UIElement element) {
+        clearSelection();
+        if (element != null) {
+            if (element instanceof UIGate) {
+                selectedNodes.add(element.getNode());
+                highlightSelectedNode(element.getNode());
+            } else if (element instanceof UICable) {
+                highlightSelectedNode(((UICable) element).getLine());
+                selectedNodes.add(((UICable) element).getLine());
+            }
+        }
+        updateSelectionActions();
+    }
+
+    /**
+     * grabs a group of element selected
+     *
+     * @param array collection of element selected
+     */
+    private void selectElement(Collection<UIElement> array) {
+        clearSelection();
+        if (array != null) {
+            for (UIElement element : array) {
+                if (element != null) {
+                    if (element instanceof UIGate) {
+                        selectedNodes.add(element.getNode());
+                        highlightSelectedNode(element.getNode());
+                    } else if (element instanceof UICable) {
+                        highlightSelectedNode(((UICable) element).getLine());
+                        selectedNodes.add(((UICable) element).getLine());
+                    }
+                }
+            }
+        }
+        updateSelectionActions();
+    }
+
+    private void toggleSimulation(boolean activated) {
+        enableSimulationButton.setDisable(activated);
+        disableSimulationButton.setDisable(!activated);
     }
 
     /**
@@ -932,8 +939,13 @@ public class Editor extends VBox {
                 // Add the element to the selection if it is inside the rectangle
                 if (isInSelection) {
                     System.out.println("Selected element: " + element.getName());
-                    selectedNodes.add(node);
-                    highlightSelectedNode(node);
+                    if (element instanceof UIGate) {
+                        selectedNodes.add(element.getNode());
+                        highlightSelectedNode(element.getNode());
+                    } else if (element instanceof UICable) {
+                        highlightSelectedNode(((UICable) element).getLine());
+                        selectedNodes.add(((UICable) element).getLine());
+                    }
                 }
             }
         }
@@ -953,7 +965,7 @@ public class Editor extends VBox {
      */
     private void highlightSelectedNode(Node node) {
         // Add a visual effect to indicate the node is selected
-        node.setEffect(new javafx.scene.effect.DropShadow(5, Color.BLUE));
+        node.setEffect(new DropShadow(5, Color.BLUE));
     }
 
     /**
@@ -1013,7 +1025,9 @@ public class Editor extends VBox {
                 if (element instanceof UIGate) {
                     UIGate gate = (UIGate) element;
                     gate.disconnect();
-                    //TODO delete the cable if selected
+                } else if (element instanceof UICable) {
+                    UICable cable = (UICable) element;
+                    cable.disconnect();
                 }
             }
 
@@ -1024,9 +1038,6 @@ public class Editor extends VBox {
         // Clear the selection
         clearSelection();
     }
-
-    // Variables for clipboard management
-    private ArrayList<UIElement> clipboardElements = new ArrayList<>();
 
     /**
      * Copies the selected elements to the clipboard.
@@ -1047,7 +1058,7 @@ public class Editor extends VBox {
         }
 
         // Enable the paste button
-        pasteButton.setDisable(false);
+        pasteButton.setDisable(selectedNodes.size() == 0);
     }
 
     /**
@@ -1071,6 +1082,10 @@ public class Editor extends VBox {
      */
     @FXML
     private void pasteElements(ActionEvent event) {
+        // nothing copied, so early return
+        if (clipboardElements.size() == 0) {
+            return;
+        }
         // Default paste coordinates (center of the container)
         double pasteX = container.getWidth() / 2;
         double pasteY = container.getHeight() / 2;
@@ -1093,8 +1108,7 @@ public class Editor extends VBox {
             if (newElement != null) {
                 // Position the new element
                 Node newNode = newElement.getNode();
-                newNode.setLayoutX(pasteX);
-                newNode.setLayoutY(pasteY);
+                newElement.setPosition(new Point2D(pasteX, pasteY));
 
                 // Add the new element to the container
                 container.getChildren().add(newNode);
@@ -1102,17 +1116,25 @@ public class Editor extends VBox {
                 // Register listeners for the pins if it is a gate
                 if (newElement instanceof UIGate) {
                     pinsListener((UIGate) newElement);
+                    newElement.getNode().setOnMousePressed(mouseEvent -> {
+                        selectElement(newElement);
+                        replaceInfos(newElement.getInfos().getNode());
+                    });
+                    highlightSelectedNode(newNode);
+                } else if (newElement instanceof UICable) {
+                    ((UICable) newElement).getLine().setOnMousePressed(mouseEvent -> {
+                        selectElement(newElement);
+                        replaceInfos(newElement.getInfos().getNode());
+                    });
+                    highlightSelectedNode(((UICable) newElement).getLine());
                 }
 
                 // Add to selection
                 selectedNodes.add(newNode);
-                highlightSelectedNode(newNode);
 
                 // Slightly offset position for next element
-                pasteX += 20;
-                pasteY += 20;
-
-
+                pasteX += UIElement.baseSize;
+                pasteY += UIElement.baseSize;
             }
         }
 
@@ -1168,7 +1190,6 @@ public class Editor extends VBox {
                         // Update action buttons
                         updateSelectionActions();
 
-
                         break;
                     }
 
@@ -1194,11 +1215,16 @@ public class Editor extends VBox {
             // Only consider UIElements
             if (node.getUserData() instanceof UIElement) {
                 selectedNodes.add(node);
-                highlightSelectedNode(node);
+                if (node.getUserData() instanceof UICable) {
+                    highlightSelectedNode(((UICable) node.getUserData()).getLine());
+                } else {
+                    highlightSelectedNode(node);
+                }
             }
         }
 
         // Update action buttons
         updateSelectionActions();
     }
+    // #endregion
 }

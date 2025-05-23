@@ -77,6 +77,7 @@ public abstract class Gate extends Element {
         if (propagate) {
             getOutputCable().forEach(cable -> {
                 if (cable != null) {
+                    // TODO : should we add the cable to the list of 'the next elements to update' or update it directly ?
                     cable.updateState();
                 }
             });
@@ -225,6 +226,8 @@ public abstract class Gate extends Element {
 
                         result.updatePower();
                         arg0.updatePower();
+
+                        // TODO : add to the list of 'the next elements to update' ?
                         result.updateState();
                         arg0.updateState();
                         return result;
@@ -256,6 +259,8 @@ public abstract class Gate extends Element {
 
                         thisOutputCable.updatePower();
                         arg0.updatePower();
+
+                        // TODO : add to the list of 'the next elements to update' ?
                         thisOutputCable.updateState();
                         arg0.updateState();
                         return thisOutputCable;
@@ -269,6 +274,8 @@ public abstract class Gate extends Element {
 
                         arg0InputCable.updatePower();
                         arg0.updatePower();
+
+                        // TODO : add to the list of 'the next elements to update' ?
                         arg0InputCable.updateState();
                         arg0.updateState();
                         return arg0InputCable;
@@ -356,6 +363,7 @@ public abstract class Gate extends Element {
             arg0.inputCable.set(arg0InputIndex, result);
 
             result.updatePower();
+            // TODO : add to the list of 'the next elements to update' ?
             result.updateState();
             return result;
         } else // if either is null
@@ -367,6 +375,7 @@ public abstract class Gate extends Element {
             arg0.inputCable.set(arg0InputIndex, thisOutputCable);
 
             arg0.updatePower();
+            // TODO : add to the list of 'the next elements to update' ?
             arg0.updateState();
             return thisOutputCable;
         } else if (thisOutputCable == null && arg0InputCable != null) {
@@ -377,6 +386,7 @@ public abstract class Gate extends Element {
             this.outputCable.set(thisOutputIndex, arg0InputCable);
 
             arg0InputCable.updatePower();
+            // TODO : add to the list of 'the next elements to update'
             arg0InputCable.updateState();
             return arg0InputCable;
         }
@@ -391,7 +401,7 @@ public abstract class Gate extends Element {
      * Connects an inner input of a schema to a specific input port of a gate.
      * This method establishes a cable connection between the schema's inner input port
      * and the specified gate's input port.
-     * 
+     *
      * @param schema the schema containing the inner input to connect
      * @param schemaInnerInputIndex the index of the schema's inner input port to connect,
      *                             or -1 to automatically find/create an available port
@@ -471,6 +481,7 @@ public abstract class Gate extends Element {
             gate.getInputCable().set(gateInputIndex, result);
 
             result.updatePower();
+            // TODO : add to the list of 'the next elements to update' ?
             result.updateState();
             return result;
         } else // if either is null
@@ -482,6 +493,7 @@ public abstract class Gate extends Element {
             gate.getInputCable().set(gateInputIndex, thisInnerInputCable);
 
             gate.updatePower();
+            // TODO : add to the list of 'the next elements to update' ?
             gate.updateState();
             return thisInnerInputCable;
         } else if (thisInnerInputCable == null && gateInputCable != null) {
@@ -492,6 +504,7 @@ public abstract class Gate extends Element {
             schema.getInnerInputCable().set(schemaInnerInputIndex, gateInputCable);
 
             gateInputCable.updatePower();
+            // TODO : add to the list of 'the next elements to update' ?
             gateInputCable.updateState();
             return gateInputCable;
         }
@@ -507,15 +520,15 @@ public abstract class Gate extends Element {
      * FIXME javadoc
      * Connects an inner output of a schema to a specific output port of a gate.
      * This method establishes a cable connection between the gate's output port
-     * and the schema's inner output port, allowing the gate's output to be 
+     * and the schema's inner output port, allowing the gate's output to be
      * accessible through the schema's interface.
-     * 
+     *
      * @param schema the schema containing the inner output to connect
      * @param gate the source gate to connect from
      * @param gateOutputIndex the index of the gate's output port to connect from
      * @param schemaInnerOutputIndex the index of the schema's inner output port to connect,
      *                              or -1 to automatically find/create an available port
-     * 
+     *
      * @return the Cable object representing the established connection, or null if
      *         connection failed due to incompatible bus sizes
      * @throws Exception if connection is possible but bus is already full
@@ -589,6 +602,7 @@ public abstract class Gate extends Element {
             gate.getOutputCable().set(gateOutputIndex, result);
 
             result.updatePower();
+            // TODO : add to the list of 'the next elements to update' ?
             result.updateState();
             return result;
         } else // if either is null
@@ -600,6 +614,7 @@ public abstract class Gate extends Element {
             gate.getOutputCable().set(gateOutputIndex, thisInnerOutputCable);
 
             gate.updatePower();
+            // TODO : add to the list of 'the next elements to update' ?
             gate.updateState();
             return thisInnerOutputCable;
         } else if (thisInnerOutputCable == null && gateOutputCable != null) {
@@ -610,6 +625,7 @@ public abstract class Gate extends Element {
             schema.getInnerOutputCable().set(schemaInnerOutputIndex, gateOutputCable);
 
             gateOutputCable.updatePower();
+            // TODO : add to the list of 'the next elements to update' ?
             gateOutputCable.updateState();
             return gateOutputCable;
         }
@@ -641,6 +657,7 @@ public abstract class Gate extends Element {
                 if (cable.equals(getInputCable().get(i))) {
                     inputCable.set(i, null);
                     updatePower();
+                    // TODO : add to the list of 'the next elements to update' ?
                     updateState();
                 }
             }
@@ -651,6 +668,7 @@ public abstract class Gate extends Element {
             // disconnect this gate from the cable
             cable.inputGate = null;
             cable.updatePower();
+            // TODO : add to the list of 'the next elements to update' ?
             cable.updateState();
 
             // disconnect the cable from this gate
