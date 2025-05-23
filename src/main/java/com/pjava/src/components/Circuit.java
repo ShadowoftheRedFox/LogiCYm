@@ -45,6 +45,9 @@ import javafx.scene.paint.Color;
 // TODO : save from an absolute path
 // TODO : keep flag for shema circuit path
 
+// TODO : add "findWithName(String gateName)" to permanently keep a name to reffer to
+
+
 /**
  * FIXME Esteban JAVADOC
  * A class that centralizes all the stations created to be able to save them and
@@ -478,6 +481,7 @@ public class Circuit {
     public Gate addNewGate(String type) throws Exception {
         return addNewGate(type, "");
     }
+
 
     /**
      * shorthand for
@@ -1628,6 +1632,18 @@ public class Circuit {
     public void save() throws Exception {
         // Creating filePath :
         String filePath = String.format("%s/%s.json", UtilsSave.saveFolder.toString(), this.name);
+
+        this.save(filePath, null);
+    }
+
+    /**
+     * Shorthand for {@link #save(String folderPath)}
+     * Saves the circuit to the given path
+     *
+     * @param filePath the given path
+     * @throws Exception if the save operation fails
+     */
+    public void save(String filePath) throws Exception {
 
         this.save(filePath, null);
     }

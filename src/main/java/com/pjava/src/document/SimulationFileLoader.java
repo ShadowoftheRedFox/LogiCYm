@@ -4,12 +4,18 @@ import com.pjava.src.document.FileReaderSimulation;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import com.pjava.src.components.Circuit;
+import com.pjava.src.components.Gate;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * Utility class to handle input file loading for simulation
@@ -69,26 +75,40 @@ public class SimulationFileLoader {
     /**
      * Loads and runs a simulation from the specified file path
      * @param filePath Path to the simulation file
-     * @return true if simulation ran successfully
+     * @param circuit The circuit to associate with the simulation
+     * @return FileReaderSimulation instance if successful, null otherwise
      */
-    public static boolean runSimulation(Path filePath) {
+    public static FileReaderSimulation startSimulation(Path filePath,Circuit circuit) throws Exception {
         try {
             // Create data table from file
             String[][] data = FileReaderSimulation.createTab(filePath);
             
             if (data.length == 0 || data[0].length == 0) {
-                System.err.println("Error: Empty or invalid data in simulation file");
-                return false;
+                System.err.println("Error: Missing input data");
+                return null;
+                
             }
-            
-            // Run simulation with the data
-            FileReaderSimulation.Simulation(data);
-            return true;
+            FileReaderSimulation newSimulation = new FileReaderSimulation();
+            newSimulation.maxStep = data[0].length-1;
+            newSimulation.circuit=circuit;
+            newSimulation.simulationActivated=true;
+
+            for(int i = 0; i< data.length ; i++){
+              String leverName = data[i][0];
+              ArrayList<Boolean> leverStates = new ArrayList<>();
+
+                for(int step = 1; step< data[i].length ; step++){
+                    boolean state = !"0".equals(data[i][step]);
+                    leverStates.add(state);
+                }
+                newSimulation.leverSimulator.put(leverName, leverStates);
+            }
+            return newSimulation;
             
         } catch (Exception e) {
             System.err.println("Error running simulation: " + e.getMessage());
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 }
