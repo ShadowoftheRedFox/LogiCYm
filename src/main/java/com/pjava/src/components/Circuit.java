@@ -36,6 +36,12 @@ import com.pjava.src.utils.UtilsSave;
 
 // TODO : test with a complex circuit
 
+
+// TODO : load from an absolute path
+// TODO : save from an absolute path
+// TODO : keep flag for shema circuit path
+
+
 /**
  * FIXME Esteban JAVADOC
  * A class that centralizes all the stations created to be able to save them and
@@ -1322,28 +1328,6 @@ public class Circuit {
      * @throws Exception if the file cannot be read or contains invalid data
      */
     public final void loadGatesFromFile(String filePath, Schema schema) throws Exception {
-        // We format filePath
-        if ((filePath != null) && (!filePath.isBlank())) {
-            filePath = filePath.replace(".", "");
-
-            if (!filePath.startsWith("/")) {
-                filePath = "/" + filePath;
-            }
-        } else {
-            throw new Exception("Empty filePath");
-        }
-
-        if (!filePath.startsWith(UtilsSave.saveFolder.toString().replace(".", ""))) {
-            filePath = UtilsSave.saveFolder.toString() + filePath;
-        } else {
-            filePath = "." + filePath;
-        }
-
-        if (filePath.endsWith("json")) {
-            filePath = filePath.substring(0, filePath.length() - 4);
-        }
-
-        filePath = filePath + ".json";
 
         filePath = filePath.replace("/", File.separator);
 
@@ -1588,69 +1572,21 @@ public class Circuit {
      * @throws Exception if the save operation fails
      */
     public void save() throws Exception {
-        this.save("");
+        // Creating filePath :
+        String filePath = String.format("%s%s.json", UtilsSave.saveFolder.toString(), this.name);
+
+        this.save(filePath);
     }
 
     /**
-     * Shorthand for {@link #save(String folderPath, String fileName)}
-     * Saves the circuit to the specified folder with the circuit's name as
-     * filename.
-     *
-     * @param folderPath the folder path where to save the circuit
-     * @throws Exception if the save operation fails
-     */
-    public void save(String folderPath) throws Exception {
-        this.save(folderPath, this.name);
-    }
-
-    /**
-     * Save the Json schema of the circuit at the given localisation from './data/'
+     * Save the Json schema of the circuit at the given localisation
      * The file name will be the name of the circuit
      *
-     * see below folderPath exemple
-     * "" -> "./data/"
-     * file -> "./data/file/"
-     * /file -> "./data/file/"
-     * data/file -> "./data/file/"
-     * /data/file -> "./data/file/"
-     * ./data/file -> "./data/file/"
-     *
-     * @param folderPath the folder path where to save the circuit
-     * @param fileName   the name of the file (without .json extension)
+     * @param filePath absolute or relative path to a json circuit
      * @throws Exception if the save operation fails
      */
-    public void save(String folderPath, String fileName) throws Exception {
-        // Formating folderPath
-        if (!new File(folderPath).exists()) {
-            if ((folderPath != null) && (!folderPath.isBlank())) {
-                folderPath = folderPath.replace(".", "");
-
-                if (!folderPath.startsWith("/")) {
-                    folderPath = "/" + folderPath;
-                }
-            } else {
-                folderPath = "";
-            }
-
-            if (!folderPath.startsWith(UtilsSave.saveFolder.toString().replace(".", ""))) {
-                folderPath = UtilsSave.saveFolder.toString() + folderPath;
-            } else {
-                folderPath = "." + folderPath;
-            }
-
-        }
-
-        if (!folderPath.endsWith("/")) {
-            folderPath = folderPath + "/";
-        }
-
-        // Formating fileName
-        if (fileName.endsWith(".json")) {
-            fileName = fileName.substring(0, fileName.length() - 5);
-        }
-
-        // Creating filePath :
-        String filePath = String.format("%s%s.json", folderPath, fileName).replace("/", File.separator);
+    public void save(String filePath) throws Exception {
+        filePath = filePath.replace("/", File.separator);
 
         // We create the designed file
         try {
