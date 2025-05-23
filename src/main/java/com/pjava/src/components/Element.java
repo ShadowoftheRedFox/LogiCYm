@@ -1,5 +1,6 @@
 package com.pjava.src.components;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Objects;
 
@@ -18,6 +19,32 @@ import com.pjava.src.utils.Utils;
  * @see Gate
  */
 public abstract class Element {
+
+    /**
+     * Interface used that is used to handle event relative to {@link Element}.
+     */
+    public interface ElementEvent {
+        /**
+         * Event to handle the updateState of the given element.
+         *
+         * @param element The element that has been updated.
+         */
+        default public void updateState(Element element) {
+        }
+
+        /**
+         * Event to handle the updatePower of the given element.
+         *
+         * @param element The element that has been ipdated.
+         */
+        default public void updatePower(Element element) {
+        }
+    }
+
+    /**
+     * Array of listener to this gate events.
+     */
+    protected ArrayList<ElementEvent> updateEvent = new ArrayList<ElementEvent>();
 
     /**
      * Create a new element.
@@ -62,6 +89,9 @@ public abstract class Element {
      */
     protected void setPowered(boolean powered) {
         this.powered = powered;
+        updateEvent.forEach(listener -> {
+            listener.updatePower(this);
+        });
     }
 
     /**
@@ -73,16 +103,43 @@ public abstract class Element {
     /**
      * Internal state of the element.
      */
-    protected BitSet state = new BitSet(1);
+    private BitSet state = new BitSet(1);
 
     /**
-     * Return a clone of the current state
+     * Getter of {@link #state}.
+     * This function is called when inputCable changes. It should updates the
+     * return the state accordingly to the inputs. It should also return null if
+     * any of the inputs are null.
      *
-     * @return The current state.
+     * @return The clone of the current state.
      */
     public BitSet getState() {
         return (BitSet) state.clone();
     };
+
+    /**
+     * Setter for {@link #state}.
+     *
+     * @param state The new state.
+     */
+    protected void setState(BitSet state) {
+        if (state == null) {
+            return;
+        }
+        this.state = state;
+        updateEvent.forEach(listener -> {
+            listener.updateState(this);
+        });
+    }
+
+    /**
+     * Getter for {@link #updateEvent}.
+     *
+     * @return The array of event listening to this element.
+     */
+    public ArrayList<ElementEvent> getUpdateEvents() {
+        return updateEvent;
+    }
 
     /**
      * Shorthand for {@code #getState().get(x)}.
@@ -104,21 +161,15 @@ public abstract class Element {
     };
 
     /**
-     * This function is called when inputs state change.
-     * Equivalent of {@code updateState(true)} ({@link #updateState(boolean)}).
-     */
-    public void updateState() {
-        updateState(true);
-    };
-
-    /**
      * This function is called when inputs state changes.
      * It should updates the return the state accordingly to the inputs.
      * It should also return null if any of the inputs are null.
-     *
-     * @param propagate Whether or not to propagate the changes to the outputs.
+     * <p>
+     * </p>
+     * Each call should check if it needs to propagate the signal. If yes, it must
+     * add itself to the {@link Synchronizer#addToCallStack(Element)}.
      */
-    abstract void updateState(boolean propagate);
+    abstract void updateState();
 
     @Override
     public boolean equals(Object obj) {

@@ -56,28 +56,19 @@ public class Cable extends Element {
     }
 
     /**
-     * This function is called when inputs state change.
-     * Equivalent of {@code updateState(true)} ({@link #updateState(boolean)}).
-     */
-    @Override
-    public void updateState() {
-        updateState(true);
-    }
-
-    /**
      * This function is called when inputs state changes.
      *
      * @param propagate Whether or not to propagate the changes to the outputs.
      */
     @Override
-    public void updateState(boolean propagate) {
+    public void updateState() {
         // early returns
         if (outputGate == null || getPowered() == false) {
             return;
         }
 
         // if multiple input, add (the "or" bitwise) the result
-        state.clear();
+        BitSet state = new BitSet();
         // special case if gate in a splitter
         if (inputGate instanceof Splitter) {
             BitSet gateState;
@@ -90,67 +81,61 @@ public class Cable extends Element {
             if (gateState != null) {
                 state.or(gateState);
             }
-        } else  {
+        } else {
             BitSet gateState = inputGate.getState();
             if (gateState != null) {
                 state.or(gateState);
             }
         }
 
-        // // another early return
-        if (oldState.equals(this.getState())) {
-            // set to the old state
-            state.clear();
-            state.or(oldState);
+        // another early return
+        if (oldState.equals(state)) {
             return;
         }
 
+        setState(state);
         setOldState();
 
-        // no output gate ? no problem !
-        if(outputGate == null){
-            return;
-        }
+        // DEBUG if anything break, it's here 200%
 
-        // If the output gate is a Schema, we use it like a bridge to update the inner or outer gate at the right port.
-        if(outputGate instanceof Schema){
-            // correspondingCable will allow a seemless updade of state between the circuit gates and the schema's inner circuit gates
+        // If the output gate is a Schema, we use it like a bridge to update the inner
+        // or outer gate at the right port.
+        if (outputGate instanceof Schema) {
+            // correspondingCable will allow a seemless updade of state between the circuit
+            // gates and the schema's inner circuit gates
             Cable correspondingCable = null;
+            Schema schema = (Schema) outputGate;
 
             // we try to find out if this cable is an input cable or an inner output cable :
-            if(((Schema)outputGate).getInputCable().get(outputPort).equals(this)){
-                correspondingCable = ((Schema)outputGate).getInnerInputCable().get(outputPort);
-            } else if(((Schema)outputGate).getInnerOutputCable().get(outputPort).equals(this)){
-                correspondingCable = ((Schema)outputGate).getOutputCable().get(outputPort);
-            }
-            else{
-                throw new Error(String.format("Cable not found in schema gate '%s', input or inner output port '%d'", ((Schema)outputGate).getName(), outputPort));
+            if (this.equals(schema.getInputCable().get(outputPort))) {
+                correspondingCable = schema.getInnerInputCable().get(outputPort);
+            } else if (this.equals(schema.getInnerOutputCable().get(outputPort))) {
+                correspondingCable = schema.getOutputCable().get(outputPort);
             }
 
-            if(correspondingCable != null){
-                if(correspondingCable.getBusSize() != this.busSize){
-                    throw new Error("Shema's corresponding cable bus size should be the same as this cable");
-                }
-
-                // we directly pass our state to the corresponding cable
-                correspondingCable.state = this.state;
-
-                // We will then update the output gate of the corresponding cable
-                if(propagate){
-                    // TODO : add to the list of 'the next elements to update'
-                    // TODO : ask front to update (consumer)
-                    correspondingCable.outputGate.updateState();
-                }
+            if (correspondingCable == null) {
+                throw new Error(String.format("Cable not found in schema gate '%s', input or inner output port '%d'",
+                        schema.getName(), outputPort));
             }
-        }
-        else{
+
+            if (correspondingCable.getBusSize() != this.busSize) {
+                throw new Error("Shema's corresponding cable bus size should be the same as this cable");
+            }
+
+            // we directly pass our state to the corresponding cable
+            correspondingCable.setState(getState());
+
+            // We will then update the output gate of the corresponding cable
+            if (correspondingCable.oldState.equals(correspondingCable.getState())) {
+                return;
+            }
+            correspondingCable.setOldState();
+
+            Synchronizer.addToCallStack(correspondingCable.outputGate);
+        } else {
             // we update the output gate of this cable
-            if (propagate && outputGate != null) {
-                    // TODO : add to the list of 'the next elements to update'
-                    // TODO : ask front to update (consumer)
-                    outputGate.updateState();
-            }
         }
+        Synchronizer.addToCallStack(outputGate);
     }
 
     /**
@@ -169,31 +154,6 @@ public class Cable extends Element {
                 outputGate.updatePower();
             }
         }
-    }
-
-    /**
-     * FIXME javadoc
-     * Creates and returns a deep copy of this Cable object.
-     * @return a new Cable object that is a copy of this cable, or null if an
-     *     exception occurs during the cloning process
-    */
-    @Override
-    public Cable clone() {
-        Cable res = null;
-        try {
-            res = new Cable(this.getBusSize());
-
-            res.setInputGate(this.inputGate);
-            res.setOutputGate(this.outputGate);
-
-            res.setInputPort(this.inputPort);
-            res.setOutputPort(this.outputPort);
-
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-
-        return res;
     }
 
     // #region Getters
@@ -266,41 +226,6 @@ public class Cable extends Element {
         }
 
         this.busSize = busSize;
-    }
-
-    /**
-     * FIXME javadoc
-     * Sets the input gate for this cable connection.
-     *
-     * HACK should be private, or at least protected
-     * BUG can break connections
-     *
-     *
-     * @param gate the gate to set as input source (must not be null)
-     * @throws Exception if the gate parameter is null
-     */
-    private void setInputGate(Gate gate) throws Exception {
-        if (gate == null) {
-            throw new Exception("null input gate");
-        }
-        this.inputGate = gate;
-    }
-
-    /**
-     * FIXME javadoc
-          * Sets the output gate for this cable connection.
-     *
-     * HACK should be private, or at least protected
-     * BUG can break connections
-     *
-     * @param gate the gate to set as output destination (must not be null)
-     * @throws Exception if the gate parameter is null
-     */
-    private  void setOutputGate(Gate gate) throws Exception {
-        if (gate == null) {
-            throw new Exception("null output gate");
-        }
-        this.outputGate = gate;
     }
 
     /**

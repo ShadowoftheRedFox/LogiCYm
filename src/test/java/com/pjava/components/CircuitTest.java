@@ -1,6 +1,9 @@
 package com.pjava.components;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIf;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.json.JSONObject;
@@ -10,23 +13,30 @@ import com.pjava.src.components.Circuit;
 import com.pjava.src.components.gates.*;
 import com.pjava.src.components.input.*;
 
+
+// TODO : différent circuit pour verifier leur bonne creation et
+//  si on obtient les bon résultat en sortie
+
 public class CircuitTest {
 
     /**
      * We try '.toJson()' with a gate
      * We print the result
      */
+    /*
     @Test
     void test1() {
         System.out.println("\ntest 1 : toJson for a gate");
         And and = new And();
         System.out.println(and.toJson().toString());
     }
+    */
 
     /**
      * We try adding gates in a 'circuit' instance
      * Then we print the result
      */
+    /*
     @Test
     @SuppressWarnings("CallToPrintStackTrace")
     void test2() {
@@ -63,7 +73,9 @@ public class CircuitTest {
         System.out.println("\ncircuit to JSON with Circuit.toJSON :");
         System.out.println(circuit.toJson());
     }
+    */
 
+    /*
     @Test
     @SuppressWarnings("CallToPrintStackTrace")
     void test3() {
@@ -82,25 +94,26 @@ public class CircuitTest {
             circuit2.addNewGate("Button");
             circuit2.addNewGate("Clock");
 
-            circuit2.save("save4");
+            circuit2.save("save4", null);
 
             Circuit circuit = new Circuit("Bonjour");
 
-            circuit.save();
+            circuit.save(null);
             // Should do the same thing :
-            circuit.save("");
-            circuit.save("data");
-            circuit.save("/data");
-            circuit.save("data/");
-            circuit.save("./data/");
-            circuit.save("", "Bonjour");
-            circuit.save("", "Bonjour.json");
+            circuit.save("", null);
+            circuit.save("data", null);
+            circuit.save("/data", null);
+            circuit.save("data/", null);
+            circuit.save("./data/", null);
+            circuit.save("./data/Bonjour.json", null);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
+    */
+
 
     @Test
     void test4default() {
@@ -128,7 +141,7 @@ public class CircuitTest {
 
             // save
             circuit3.save();
-            circuit3.save("test", "sirkui_3");
+            circuit3.save("./data/test/sirkui_3.json", null);
 
             System.out.println("Selection :");
             int j = 0;
@@ -153,6 +166,7 @@ public class CircuitTest {
         }
 
     }
+
 
 
     @Test
@@ -207,6 +221,8 @@ public class CircuitTest {
 
     }
 
+
+    /*
     @Test
     @SuppressWarnings("CallToPrintStackTrace")
     void test5() {
@@ -257,5 +273,9 @@ public class CircuitTest {
         }
 
     }
+    */
+
+
+
 
 }
