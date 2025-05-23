@@ -1,5 +1,6 @@
 package com.pjava.src.UI.components;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -7,6 +8,7 @@ import com.pjava.src.errors.BusSizeException;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -47,6 +49,21 @@ public class Pin extends VBox {
     public UIElement originController = null;
 
     private ArrayList<EventHandler<? super MouseEvent>> pressedListener = new ArrayList<EventHandler<? super MouseEvent>>();
+
+    public Pin(){
+    }
+
+    public Pin(boolean isInput){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/components/Pin.fxml"));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+            setAsInput(isInput);
+        } catch (IOException e) {
+            throw new Error(e);
+        }
+    }
 
     @FXML
     private void initialize() {
@@ -212,8 +229,4 @@ public class Pin extends VBox {
         return color;
     }
 
-    // Dans la classe Pin, ajoutez cette méthode:
-    public static Pin create() {
-        return (Pin) UIElement.create("Pin");
-    }
 }

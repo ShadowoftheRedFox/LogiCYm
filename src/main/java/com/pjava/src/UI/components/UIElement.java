@@ -47,7 +47,7 @@ public abstract class UIElement {
     /**
      * info of the Controller
      */
-    private InfosController infos = null;
+    protected InfosController infos = null;
 
     /**
      * create a Gate with all the infos, gate will be stocked in the pc

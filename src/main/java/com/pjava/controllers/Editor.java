@@ -401,6 +401,8 @@ public class Editor extends VBox {
 
             button.setOnAction(event -> {
                 System.out.println("Schema " + button.getText());
+                UISchema schemaController = UISchema.create(file);
+                addGate(schemaController);
                 // TODO ui schema and add to container
             });
         }
@@ -706,13 +708,13 @@ public class Editor extends VBox {
         if (filePath != null) {
             System.out.println("Loading simulation data from: " + filePath);
             Circuit circuit = new Circuit();
-            
+
             try {
                 Synchronizer.setInputSimulator(SimulationFileLoader.startSimulation(filePath, circuit));
-                
+
                 if (Synchronizer.getInputSimulator() != null) {
                     System.out.println("Simulation loaded successfully!");
-                    
+
                     disableSimulationButton.setDisable(false);
                     enableSimulationButton.setDisable(true);
                 } else {

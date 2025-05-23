@@ -6,7 +6,12 @@ import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.gates.Schema;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
@@ -30,46 +35,44 @@ public class UISchema extends UIGate {
     private Pane outputPinsContainer;
 
     /**
-     * Default constructor - creates a basic schema
-     */
-    public UISchema() {
-        super();
-    }
-
-    /**
      * Constructor with schema file path
+     *
      * @param schemaFilePath path to the schema file
      */
-    public UISchema(String schemaFilePath) throws Exception {
-        super();
-        setLogic(new Schema(schemaFilePath));
-    }
+    public static UISchema create(Path schemaPath) {
+        try {
+            // load the gate's fxml
+            FXMLLoader loader = new FXMLLoader(UIElement.class.getResource("/fxml/components/UISchema.fxml"));
+            Node node = loader.load();
+            // and get the controller instance
+            UISchema controller = loader.getController();
+            node.setUserData(controller);
+            // TODO javadoc + check info pour compatibilité avec schéma
+            // create a gate infos instance
+            FXMLLoader infosLoader = new FXMLLoader(UIElement.class.getResource("/fxml/ComponentInfos.fxml"));
+            infosLoader.load();
+            // and add it to the gate controller
+            controller.infos = infosLoader.getController();
+            controller.infos.setOrigin(controller);
 
-    /**
-     * Creates the Schema Gate in FXML
-     *
-     * @return FXML Schema Gate
-     */
-    public static UISchema create() {
-        return (UISchema) UIElement.create("UISchema");
+            // return the controller
+            try {
+                controller.setLogic(new Schema(schemaPath.toString()));
+                System.out.println(controller.getLogic().getInnerCircuit().getAllGates());
+            } catch (Exception e) {
+                throw new Error(e);
+            }
+            return controller;
+        } catch (IOException e) {
+            throw new Error(e);
+        }
     }
 
     @FXML
     private void initialize() {
         System.out.println("Schema Initialisation!");
-
-        // Set default logic if not already set
-        if (getLogic() == null) {
-            try {
-                setLogic(new Schema(null)); // Create default schema
-            } catch (Exception e) {
-                System.err.println("Error creating default schema: " + e.getMessage());
-            }
-        }
-
         // Initialize pins based on the schema's input/output requirements
         initializePinsFromLogic();
-
         // Set mouse event handlers for dragging
         mainRectangle.setOnMousePressed(event -> pressed(event));
         mainRectangle.setOnMouseReleased(event -> released(event));
@@ -81,7 +84,8 @@ public class UISchema extends UIGate {
      */
     private void initializePinsFromLogic() {
         Schema schema = getLogic();
-        if (schema == null) return;
+        if (schema == null)
+            return;
 
         // Clear existing pins
         getInputPins().clear();
@@ -92,7 +96,7 @@ public class UISchema extends UIGate {
         // Create input pins
         int inputCount = schema.getInputNumber();
         for (int i = 0; i < inputCount; i++) {
-            Pin inputPin = Pin.create();
+            Pin inputPin = new Pin(false);
             inputPin.setAsInput(true);
             inputPin.originController = this;
 
@@ -108,7 +112,7 @@ public class UISchema extends UIGate {
         // Create output pins
         int outputCount = schema.getOutputNumber();
         for (int i = 0; i < outputCount; i++) {
-            Pin outputPin = Pin.create();
+            Pin outputPin = new Pin(false);
             outputPin.setAsInput(false);
             outputPin.originController = this;
 
@@ -132,7 +136,8 @@ public class UISchema extends UIGate {
 
     /**
      * Adjust the size of the schema component based on the number of pins
-     * @param inputCount number of input pins
+     *
+     * @param inputCount  number of input pins
      * @param outputCount number of output pins
      */
     private void adjustSizeForPins(int inputCount, int outputCount) {
@@ -151,6 +156,7 @@ public class UISchema extends UIGate {
 
     /**
      * Set the schema name displayed on the component
+     *
      * @param name the name to display
      */
     public void setSchemaName(String name) {
@@ -167,6 +173,7 @@ public class UISchema extends UIGate {
 
     /**
      * Get the schema name
+     *
      * @return the current schema name
      */
     public String getSchemaName() {
@@ -189,6 +196,7 @@ public class UISchema extends UIGate {
 
     /**
      * Get a specific input pin (using Gate's getter pattern)
+     *
      * @param index which input pin (0 to N-1)
      * @return the selected input pin
      */
@@ -202,6 +210,7 @@ public class UISchema extends UIGate {
 
     /**
      * Get a specific output pin (using Gate's getter pattern)
+     *
      * @param index which output pin (0 to N-1)
      * @return the selected output pin
      */
