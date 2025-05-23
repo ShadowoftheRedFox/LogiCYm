@@ -251,7 +251,6 @@ public class Editor extends VBox {
                 UIUtils.errorPopup(e.getMessage());
             }
         });
-
         saveAsButton.setOnAction(event -> {
             try {
                 FileChooser fileChooser = new FileChooser();
@@ -264,7 +263,8 @@ public class Editor extends VBox {
 
                 File saveFile = fileChooser.showOpenDialog(manager.getStage());
 
-                editedCircuit.save(saveFile.getParent(), saveFile.getName());
+                // TODO Attention ça marche pas
+               // editedCircuit.save(saveFile.getParent(), saveFile.getName());
             } catch (Exception e) {
                 UIUtils.errorPopup(e.getMessage());
             }
