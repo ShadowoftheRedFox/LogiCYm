@@ -95,14 +95,8 @@ public class CircuitTest {
 
             circuit.save();
             // Should do the same thing :
-            circuit.save("");
-            circuit.save("data");
-            circuit.save("/data");
-            circuit.save("data/");
-            circuit.save("./data/");
-            circuit.save("", "Bonjour");
-            circuit.save("", "Bonjour.json");
 
+            circuit.save("./data/");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -135,7 +129,7 @@ public class CircuitTest {
 
             // save
             circuit3.save();
-            circuit3.save("test", "sirkui_3");
+            circuit3.save("./test/sirkui_3.json");
 
             System.out.println("Selection :");
             int j = 0;
@@ -235,7 +229,7 @@ public class CircuitTest {
 
         // from test 3 : [circuit2_bis] data/bbonqjour.json
         try {
-            circuit4.loadGatesFromFile("bbonqjour");
+            circuit4.loadGatesFromFile("./data/bbonqjour.json");
         } catch (Exception e) {
             System.err.println(e);
         }

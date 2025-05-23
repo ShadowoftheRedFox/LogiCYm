@@ -1,0 +1,91 @@
+{
+ "name": "circuit_4",
+ "Gate": [
+  {
+   "outputBus": [1],
+   "outputTo": [],
+   "inputFrom": [],
+   "powered": false,
+   "inputBus": [
+    1,
+    1
+   ],
+   "type": "And",
+   "uuid": 55
+  },
+  {
+   "outputBus": [1],
+   "outputTo": [],
+   "inputFrom": [],
+   "powered": false,
+   "inputBus": [
+    1,
+    1
+   ],
+   "type": "Or",
+   "uuid": 56
+  },
+  {
+   "outputBus": [1],
+   "outputTo": [],
+   "inputFrom": [],
+   "powered": false,
+   "inputBus": [1],
+   "type": "Not",
+   "uuid": 57
+  },
+  {
+   "outputBus": [1],
+   "outputTo": [],
+   "inputFrom": [],
+   "schemaInputPort": -1,
+   "powered": true,
+   "inputBus": [],
+   "type": "Power",
+   "uuid": 58
+  },
+  {
+   "outputBus": [1],
+   "outputTo": [],
+   "inputFrom": [],
+   "schemaInputPort": -1,
+   "powered": true,
+   "inputBus": [],
+   "type": "Ground",
+   "uuid": 59
+  },
+  {
+   "flipped": false,
+   "outputBus": [1],
+   "outputTo": [],
+   "inputFrom": [],
+   "schemaInputPort": -1,
+   "powered": true,
+   "inputBus": [],
+   "type": "Lever",
+   "uuid": 60
+  },
+  {
+   "outputBus": [1],
+   "outputTo": [],
+   "inputFrom": [],
+   "schemaInputPort": -1,
+   "delay": 100,
+   "powered": true,
+   "inputBus": [],
+   "type": "Button",
+   "uuid": 61
+  },
+  {
+   "outputBus": [1],
+   "outputTo": [],
+   "inputFrom": [],
+   "schemaInputPort": -1,
+   "powered": true,
+   "cycleSpeed": 100,
+   "inputBus": [],
+   "type": "Clock",
+   "uuid": 62
+  }
+ ]
+}
