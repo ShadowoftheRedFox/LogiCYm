@@ -86,6 +86,11 @@ public class Circuit {
     private HashMap<String, Button> buttonGates = new HashMap<>();
 
     /**
+     * List of all the lever gates of a circuit
+     */
+    private HashMap<String, Lever> leverGates = new HashMap<>();
+
+    /**
      * List of all the output gates of a circuit
      */
     private HashMap<String, Output> outputGates = new HashMap<>();
@@ -204,13 +209,21 @@ public class Circuit {
     }
 
     /**
-     * get the button
+     * get the buttons
      *
      * @return the button
      */
-
     public HashMap<String, Button> getButtonGates() {
         return this.buttonGates;
+    }
+
+    /**
+     * get the Levers
+     *
+     * @return the Levers
+     */
+    public HashMap<String, Lever> getLeverGates() {
+        return this.leverGates;
     }
 
     /**
@@ -412,6 +425,8 @@ public class Circuit {
                 this.getClockGates().put(label, ((Clock) gate));
             } else if (gate instanceof Button) {
                 this.getButtonGates().put(label, ((Button) gate));
+            } else if (gate instanceof Lever) {
+                this.getLeverGates().put(label, ((Lever) gate));
             }
         } else if (gate instanceof Schema) {
             this.schemaGates.put(label, ((Schema) gate));
@@ -441,6 +456,7 @@ public class Circuit {
     public Gate addNewGate(String type) throws Exception {
         return addNewGate(type, "");
     }
+
 
     /**
      * shorthand for
@@ -530,6 +546,45 @@ public class Circuit {
      */
     public Gate addNewGate(String type, String label) throws Exception {
         return addNewGate(type, label, null, null, null, null);
+    }
+
+    /**
+     * shorthand for
+     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * Setting custom base parameters.
+     *
+     * Creates and adds a new gate with custom label and bus sizes
+     *
+     * @param type    the type of gate to create
+     * @param label   the custom label for the gate (if empty, UUID will be used)
+     * @param busSize size of input and output bus
+     * @return the newly created and added gate
+     * @throws Exception if the gate type doesn't exist, label is already taken, or
+     *                   creation fails
+     */
+    public Gate addNewGate(String type, String label, int busSize) throws Exception {
+        return addNewGate(type, label, new int[] { busSize }, new int[] { busSize }, null, null);
+    }
+
+    /**
+     * shorthand for
+     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
+     * Setting custom base parameters
+     * The default size of the input/output bus of the gate will be used.
+     *
+     * Creates and adds a new gate with custom label and bus sizes
+     *
+     * @param type          the type of gate to create
+     * @param label         the custom label for the gate (if empty, UUID will be
+     *                      used)
+     * @param sizeBusInput  array specifying the size of each input bus
+     * @param sizeBusOutput array specifying the size of each output bus
+     * @return the newly created and added gate
+     * @throws Exception if the gate type doesn't exist, label is already taken, or
+     *                   creation fails
+     */
+    public Gate addNewGate(String type, String label, int busSize) throws Exception {
+        return addNewGate(type, label, new int[]{busSize}, new int[]{busSize}, null, null);
     }
 
     /**
@@ -1379,6 +1434,8 @@ public class Circuit {
                     this.getClockGates().remove(label);
                 } else if (gate instanceof Button) {
                     this.getButtonGates().remove(label);
+                } else if (gate instanceof Lever) {
+                    this.getLeverGates().remove(label);
                 }
             } else if (gate instanceof Schema) {
                 this.getSchemaGates().remove(label);

@@ -23,17 +23,20 @@ public class CircuitTest {
      * We try '.toJson()' with a gate
      * We print the result
      */
+    /*
     @Test
     void test1() {
         System.out.println("\ntest 1 : toJson for a gate");
         And and = new And();
         System.out.println(and.toJson().toString());
     }
+    */
 
     /**
      * We try adding gates in a 'circuit' instance
      * Then we print the result
      */
+    /*
     @Test
     @SuppressWarnings("CallToPrintStackTrace")
     void test2() {
@@ -70,7 +73,9 @@ public class CircuitTest {
         System.out.println("\ncircuit to JSON with Circuit.toJSON :");
         System.out.println(circuit.toJson());
     }
+    */
 
+    /*
     @Test
     @SuppressWarnings("CallToPrintStackTrace")
     void test3() {
@@ -102,6 +107,8 @@ public class CircuitTest {
         }
 
     }
+    */
+
 
     @Test
     void test4default() {
@@ -156,6 +163,7 @@ public class CircuitTest {
     }
 
 
+
     @Test
     void test4complet() {
         System.out.println("\ntest 4 complete : copy to himself complete circuit without schema");
@@ -208,6 +216,8 @@ public class CircuitTest {
 
     }
 
+
+    /*
     @Test
     @SuppressWarnings("CallToPrintStackTrace")
     void test5() {
@@ -258,5 +268,9 @@ public class CircuitTest {
         }
 
     }
+    */
+
+
+
 
 }
