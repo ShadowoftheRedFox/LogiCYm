@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javax.swing.JFileChooser;
@@ -583,9 +582,9 @@ public class Editor extends VBox {
         }
         elementController.setName(label);
         if (data != null) {
-            elementController.setPosition(data.position.multiply(UIElement.baseSize));
-            elementController.setRotation(data.rotation);
-            elementController.setColor(data.color);
+            elementController.getInfos().setPosition(data.position.multiply(UIElement.baseSize));
+            elementController.getInfos().setRotation(data.rotation);
+            elementController.getInfos().setColor(data.color);
         }
         addGate(elementController);
     }

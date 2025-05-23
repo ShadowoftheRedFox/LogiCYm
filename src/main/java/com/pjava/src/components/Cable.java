@@ -81,7 +81,7 @@ public class Cable extends Element {
             if (gateState != null) {
                 state.or(gateState);
             }
-        } else {
+        } else  {
             BitSet gateState = inputGate.getState();
             if (gateState != null) {
                 state.or(gateState);
