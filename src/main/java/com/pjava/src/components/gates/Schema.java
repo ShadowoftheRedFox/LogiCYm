@@ -20,7 +20,6 @@ import com.pjava.src.components.input.Lever;
 import com.pjava.src.components.input.Numeric;
 import com.pjava.src.components.output.Display;
 import com.pjava.src.components.output.Output;
-import com.pjava.src.errors.BusSizeException;
 import com.pjava.src.utils.UtilsSave;
 
 /**
@@ -191,7 +190,6 @@ public class Schema extends Gate {
                 "Shema has no state, it's just a bridge between the circuit it's in an his inner circuit.\n 'Cable.updateState()' should use this bridge when it detect that his output gate is a schema");
         return null;
     }
-
 
     // #endregion
 
