@@ -8,9 +8,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An abstract class used to save,read and find circuit.
- */
+
+ //An abstract class used to save,read and find circuit.
 public abstract class UtilsSave {
 
     /**
