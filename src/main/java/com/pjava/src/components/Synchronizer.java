@@ -93,6 +93,15 @@ public abstract class Synchronizer {
             }
             return;
         }
+        //TODO verif if it's good (Hugo pls) signed Axel
+        if(inputSimulator != null && inputSimulator.simulationActivated){
+            try{
+                 inputSimulator.simulationOrganizer();
+            }
+            catch( Exception e){
+                System.err.println(e);
+            }
+        }
 
         // calculte the time to the next update
         long nextUpdate = System.currentTimeMillis() + (shouldPropagate() ? 0 : hertzToMs(simulationSpeed));
@@ -183,6 +192,11 @@ public abstract class Synchronizer {
     public static int getSimulationSpeed() {
         return simulationSpeed;
     }
+
+    public static FileReaderSimulation getInputSimulator() {
+        return inputSimulator;
+    }
+
     // #endregion
 
     // #region Setters
@@ -199,6 +213,10 @@ public abstract class Synchronizer {
         Synchronizer.simulationSpeed = simulationSpeed;
         // if always propagating, then the simulation is "running"
         simulationRunning = shouldPropagate();
+    }
+
+    public static void setInputSimulator(FileReaderSimulation newSimulator){
+        Synchronizer.inputSimulator = newSimulator;
     }
     // #endregion
 }

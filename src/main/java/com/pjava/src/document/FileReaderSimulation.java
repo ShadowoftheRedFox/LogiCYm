@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.HashMap;
 
 import com.pjava.src.components.Circuit;
 import com.pjava.src.components.input.Lever;

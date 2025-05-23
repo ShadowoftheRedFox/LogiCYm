@@ -91,6 +91,7 @@ public class SimulationFileLoader {
             FileReaderSimulation newSimulation = new FileReaderSimulation();
             newSimulation.maxStep = data[0].length-1;
             newSimulation.circuit=circuit;
+            newSimulation.simulationActivated=true;
 
             for(int i = 0; i< data.length ; i++){
               String leverName = data[i][0];

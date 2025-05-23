@@ -703,31 +703,22 @@ public class Editor extends VBox {
         Path filePath = SimulationFileLoader.loadSimulationFile(stage);
 
         if (filePath != null) {
-            // Display loading message
             System.out.println("Loading simulation data from: " + filePath);
-
-            // Run the simulation
-            boolean success = SimulationFileLoader.runSimulation(filePath);
-
-            if (success) {
-                System.out.println("Simulation loaded and running successfully!");
-                // Enable the disable simulation button
-                disableSimulationButton.setDisable(false);
-                // Disable the enable simulation button
-                enableSimulationButton.setDisable(true);
-            } else {
-                System.err.println("Failed to run simulation.");
-            try{
-                FileReaderSimulation simulation = SimulationFileLoader.startSimulation(filePath,editedCircuit);
-                if (simulation!=null) {
+            Circuit circuit = new Circuit();
+            
+            try {
+                Synchronizer.setInputSimulator(SimulationFileLoader.startSimulation(filePath, circuit));
+                
+                if (Synchronizer.getInputSimulator() != null) {
                     System.out.println("Simulation loaded successfully!");
+                    
                     disableSimulationButton.setDisable(false);
                     enableSimulationButton.setDisable(true);
                 } else {
-                    System.err.println("Failed to run simulation.");
+                    System.err.println("Failed to load simulation.");
                 }
             } catch (Exception e) {
-                System.err.println("Error loading simulation:" +e.getMessage());
+                System.err.println("Error loading simulation: " + e.getMessage());
                 e.printStackTrace();
             }
         } else {
