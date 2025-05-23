@@ -36,6 +36,8 @@ public class SimulationFileLoader {
         FileChooser.ExtensionFilter txtFilter = 
             new FileChooser.ExtensionFilter("Text Files (*.txt)", "*.txt");
         fileChooser.getExtensionFilters().addAll(csvFilter, txtFilter);
+        
+        // Show the dialog
         File selectedFile = fileChooser.showOpenDialog(stage);
         
         if (selectedFile != null) {
@@ -45,7 +47,11 @@ public class SimulationFileLoader {
                 if (!readDir.exists()) {
                     readDir.mkdirs();
                 }
+                
+                // Create destination path
                 Path destPath = Paths.get(READ_DIRECTORY + selectedFile.getName());
+                
+                // Copy the file to our read directory
                 Files.copy(selectedFile.toPath(), destPath, StandardCopyOption.REPLACE_EXISTING);
                 
                 System.out.println("File saved to: " + destPath);
@@ -74,6 +80,8 @@ public class SimulationFileLoader {
                 System.err.println("Error: Empty or invalid data in simulation file");
                 return false;
             }
+            
+            // Run simulation with the data
             FileReaderSimulation.Simulation(data);
             return true;
             

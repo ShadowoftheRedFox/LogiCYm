@@ -1,5 +1,6 @@
 package com.pjava.src.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -8,8 +9,16 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
- //An abstract class used to save,read and find circuit.
+// import org.openjfx.swing.JFileChooser;
+
+import javafx.stage.FileChooser;
+
+/**
+ * An abstract class used to save,read and find circuit.
+ */
 public abstract class UtilsSave {
 
     /**
@@ -41,6 +50,37 @@ public abstract class UtilsSave {
         } catch (IOException e) {
             System.err.println("read error: " + e.getMessage());
         }
+    }
+
+    public static FileChooser openSaveFolder() {
+        FileChooser fileChooser = new FileChooser();
+        File intialDirectory = new File("./data");
+        fileChooser.setTitle("Select file to open");
+        fileChooser.setInitialDirectory(intialDirectory);
+        FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON Files (*.json)",
+                "*.json");
+        fileChooser.getExtensionFilters().addAll(jsonFilter);
+        return fileChooser;
+    }
+
+    public static JFileChooser openAndSaveInFolder() {
+        JFileChooser fileChooser = new JFileChooser();
+        File intialDirectory = new File("./data");
+        fileChooser.setCurrentDirectory(intialDirectory);
+        fileChooser.setDialogTitle("Choose file to save as");
+        FileFilter fileFilter = new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return f.getName().endsWith(saveExtension);
+            }
+
+            @Override
+            public String getDescription() {
+                return "coucou";
+            }
+        };
+        fileChooser.setFileFilter(fileFilter);
+        return fileChooser;
     }
 
     /**
@@ -103,7 +143,7 @@ public abstract class UtilsSave {
 
     /**
      * Merge a name of field and the path for create create,read or verif the field
-     * 
+     *
      * @param path The base directory path.
      * @param name The name of the file or subdirectory to merge.
      * @return The resulting merged path.

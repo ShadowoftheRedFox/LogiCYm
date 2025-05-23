@@ -1,7 +1,6 @@
 package com.pjava.src.components;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -9,6 +8,8 @@ import org.json.JSONObject;
 import com.pjava.src.components.gates.Schema;
 import com.pjava.src.errors.BusSizeException;
 import com.pjava.src.utils.Cyclic;
+
+import javafx.geometry.Point2D;
 
 /**
  * The base class of any logic gate. It has inputs, outputs, and gives a result
@@ -63,6 +64,9 @@ public abstract class Gate extends Element {
 
     /**
      * This function is called when input cables states changes.
+     * <p>
+     * </p>
+     * {@inheritDoc}
      */
     public void updateState() {
         // if same state or unpowered, do not send update
@@ -149,15 +153,6 @@ public abstract class Gate extends Element {
     }
 
     /**
-     * This function is called when inputCable changes. It should updates the
-     * return the state accordingly to the inputs. It should also return null if
-     * any of the inputs are null.
-     *
-     * @return The current state.
-     */
-    public abstract BitSet getState();
-
-    /**
      * Connect this gate with the arg0 gate. Depending of the case, it either
      * get an existing Cable or create a new one. It also make the necessary
      * internal modification to both gate and cable. It will take the first
@@ -222,7 +217,6 @@ public abstract class Gate extends Element {
                         arg0.updatePower();
 
                         Synchronizer.addToCallStack(result);
-                        Synchronizer.updateSimulation();
                         Synchronizer.addToCallStack(arg0);
                         Synchronizer.updateSimulation();
                         return result;

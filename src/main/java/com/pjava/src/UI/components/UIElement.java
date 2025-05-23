@@ -84,7 +84,6 @@ public abstract class UIElement {
      * @param event mouseEvent
      */
     protected void pressed(MouseEvent event) {
-        System.out.println(getClass().getSimpleName() + " pressed");
     }
 
     /**
@@ -93,7 +92,6 @@ public abstract class UIElement {
      * @param event mouseEvent
      */
     protected void released(MouseEvent event) {
-        System.out.println(getClass().getSimpleName() + " released");
     }
 
     /**
@@ -226,6 +224,8 @@ public abstract class UIElement {
         // and to prevent creating meaningless methods
         if (infos.setPosition(position, true)) {
             this.position = position;
+            self.setLayoutX(position.getX()*baseSize);
+            self.setLayoutY(position.getY()*baseSize);
         }
     }
 

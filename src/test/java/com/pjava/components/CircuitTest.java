@@ -94,14 +94,19 @@ public class CircuitTest {
             circuit2.addNewGate("Button");
             circuit2.addNewGate("Clock");
 
-            circuit2.save("./data/save4.json");
+            circuit2.save("save4", null);
 
             Circuit circuit = new Circuit("Bonjour");
 
-            circuit.save();
+            circuit.save(null);
             // Should do the same thing :
+            circuit.save("", null);
+            circuit.save("data", null);
+            circuit.save("/data", null);
+            circuit.save("data/", null);
+            circuit.save("./data/", null);
+            circuit.save("./data/Bonjour.json", null);
 
-            circuit.save("./data/blabla.json");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -136,7 +141,7 @@ public class CircuitTest {
 
             // save
             circuit3.save();
-            circuit3.save("./data/test/sirkui_3.json");
+            circuit3.save("./data/test/sirkui_3.json", null);
 
             System.out.println("Selection :");
             int j = 0;
@@ -224,12 +229,12 @@ public class CircuitTest {
         System.out.println("\ntest 5 : loading circuit files");
         Circuit circuit4 = new Circuit();
         try {
-            circuit4.loadGatesFromFile("./data/save4/circuit_1.json");
+            circuit4.loadGatesFromFile("save4/circuit_1.json");
         } catch (Exception e) {
             System.err.println(e);
         }
 
-        System.out.println("\nLoading './data/save4/circuit_1.json'..");
+        System.out.println("\nLoading 'save4/circuit_1.json'..");
         System.out.println("numéro : clé : Gate");
         int j = 0;
         for (String i : circuit4.getAllGates().keySet()) {
@@ -239,7 +244,7 @@ public class CircuitTest {
 
         // from test 3 : [circuit2_bis] data/bbonqjour.json
         try {
-            circuit4.loadGatesFromFile("./data/bbonqjour.json");
+            circuit4.loadGatesFromFile("bbonqjour");
         } catch (Exception e) {
             System.err.println(e);
         }
