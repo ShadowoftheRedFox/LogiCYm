@@ -211,4 +211,9 @@ public class Pin extends VBox {
     public Color getColor() {
         return color;
     }
+
+    // Dans la classe Pin, ajoutez cette méthode:
+    public static Pin create() {
+        return (Pin) UIElement.create("Pin");
+    }
 }

@@ -23,6 +23,7 @@ import com.pjava.src.UI.components.cables.UISplitter;
 import com.pjava.src.UI.components.gates.UIAnd;
 import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
+import com.pjava.src.UI.components.UISchema;
 import com.pjava.src.UI.components.input.UIButton;
 import com.pjava.src.UI.components.input.UIClock;
 import com.pjava.src.UI.components.input.UIGround;
@@ -841,6 +842,14 @@ public class Editor extends VBox {
     public void clickSchema(ActionEvent event) {
         setUnsavedChanges(true);
         System.out.println("Click Schema!");
+        try {
+            // Créer un schéma par défaut ou ouvrir un dialogue pour sélectionner un fichier
+            UISchema schemaController = new UISchema(); // Schéma par défaut
+            addGate(schemaController);
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la création du schéma : " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     // #endregion
 

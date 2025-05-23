@@ -60,7 +60,7 @@ public class UIOr extends UIGate {
     }
 
     /**
-     * set the logic of a Or Gate
+     * set the ²& of a Or Gate
      *
      * @param or a Or gate
      */
