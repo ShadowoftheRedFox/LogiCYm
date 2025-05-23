@@ -9,7 +9,7 @@ import java.util.BitSet;
  */
 public class Power extends Input {
     /**
-     * The constant value of 0.
+     * The constant value of 1.
      */
     private final BitSet value;
 
@@ -31,14 +31,15 @@ public class Power extends Input {
 
         setPowered(true);
         value = new BitSet(size);
-        value.set(0);
+        for(int i = 0; i<outputBus[0]; i++) value.set(i);
     }
 
 
     @Override
     public BitSet getState() {
         // in case the internal values changed
-        value.set(0);
+        for(int i = 0; i<outputBus[0]; i++) value.set(i);
+        System.err.println("aaaaaaaaaaaaaaaaaaaaaaa" + value);
         return value;
     }
 }
