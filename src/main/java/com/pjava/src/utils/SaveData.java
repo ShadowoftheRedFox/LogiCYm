@@ -15,12 +15,12 @@ public class SaveData {
     public int uuid = -1;
 
     public SaveData(int uuid, String label, Color color, Point2D position, Rotation rotation) {
-            this.uuid = uuid;
-            this.label = label;
-            this.color = color;
-            this.position = position;
-            this.rotation = rotation;
-        }
+        this.uuid = uuid;
+        this.label = label;
+        this.color = color;
+        this.position = position;
+        this.rotation = rotation;
+    }
 
     public JSONObject toJson() {
         JSONObject json = new JSONObject();

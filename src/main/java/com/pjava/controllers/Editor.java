@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.swing.JFileChooser;
@@ -496,6 +495,7 @@ public class Editor extends VBox {
             JSONArray data = new JSONArray();
             selectedNodes.forEach(node -> {
                 UIElement element = (UIElement) node.getUserData();
+                System.out.println(element.getLogic());
                 data.put(new SaveData(element.getLogic().uuid(), element.getName(), element.getColor(),
                         element.getPosition(), element.getRotation()).toJson());
             });
@@ -617,10 +617,10 @@ public class Editor extends VBox {
         Collection<UIElement> uiGates = new ArrayList<>();
 
         gates.forEach((label, gate) -> {
+            //SaveData gateData = data.stream().filter(e -> e.uuid == gate.uuid()).findFirst().get();
             try {
-                data.forEach(e -> System.out.println(e.label));
-                SaveData gateData = data.stream().filter(e -> Integer.parseInt(e.label) == gate.uuid()).findFirst().get();
-                addGate(gate, label, gateData);
+                data.forEach(e -> System.out.println(e.uuid == gate.uuid()));
+                addGate(gate, label, null);
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }

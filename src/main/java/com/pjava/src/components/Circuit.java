@@ -1584,7 +1584,6 @@ public class Circuit {
     public JSONObject toJson() {
         // adding gates within the circuit to a JSON array
         JSONArray gate_JsonArray = new JSONArray();
-        System.out.println(allGates.size());
         for (Gate gate : allGates.values()) {
             // System.out.println(gate);
             gate_JsonArray.put(gate.toJson());
@@ -1656,7 +1655,6 @@ public class Circuit {
         try {
             FileWriter writer = new FileWriter(filePath);
             JSONObject json = this.toJson();
-            System.out.println(json.toString());
             json.put("gateData", data);
             writer.write(json.toString(1));
             writer.close();
