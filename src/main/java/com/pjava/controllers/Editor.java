@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javax.swing.JFileChooser;
@@ -197,6 +198,7 @@ public class Editor extends VBox {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @FXML
     private void initialize() {
         manager.getScene().widthProperty().addListener(new ChangeListener<Number>() {
@@ -282,10 +284,11 @@ public class Editor extends VBox {
 
                 editedCircuit.loadGatesFromFile(file.getPath());
 
-                addGates(editedCircuit.getAllGates(), editedCircuit.getAllGatesData());
+                addGates((HashMap<String, Gate>) editedCircuit.getAllGates().clone(),(ArrayList<SaveData>) editedCircuit.getAllGatesData().clone());
 
             } catch (Exception e) {
                 UIUtils.errorPopup(e.getMessage());
+                e.printStackTrace();
             }
         });
 
@@ -450,6 +453,7 @@ public class Editor extends VBox {
             // connect cable
             cableController.connect(source, target, sourceGate, targetGate);
             container.getChildren().add(cableController.getNode());
+
             cableController.getNode().toBack();
 
             // FIXME selection doesn't work
@@ -510,6 +514,7 @@ public class Editor extends VBox {
                 }
             } else
                 editedCircuit.save(data);
+            clearSelection();
             setUnsavedChanges(false);
         } catch (Exception e) {
             UIUtils.errorPopup(e.getMessage());
@@ -521,91 +526,74 @@ public class Editor extends VBox {
         deleteSelectedElements(null);
     }
 
-    public void addGate(Gate gate, String label, SaveData data) throws Exception {
-        addGate(gate.getClass().getSimpleName(), label, data);
+    public void addGateFromSave(Gate gate, String label, SaveData data) throws Exception {
+        addGateFromSave(gate.getClass().getSimpleName(), label, data);
     }
 
-    public void addGate(String type, SaveData data) throws Exception {
-        addGate(type, data);
+    public void addGateFromSave(String type, SaveData data) throws Exception {
+        addGateFromSave(type, data);
     }
 
-    public void addGate(String type, String label, SaveData data) throws Exception {
+    public void addGateFromSave(String type, String label, SaveData data) throws Exception {
         UIGate elementController;
         switch (type) {
             case "Power":
                 elementController = (UIPower) UIGate.create("UIPower");
-                if (label != "")
-                    elementController.setName(label);
                 break;
             case "Ground":
                 elementController = (UIGround) UIGate.create("UIGround");
-                if (label != "")
-                    elementController.setName(label);
                 break;
             case "Lever":
                 elementController = (UILever) UIGate.create("UILever");
-                if (label != "")
-                    elementController.setName(label);
                 break;
             case "Button":
                 elementController = (UIButton) UIGate.create("UIButton");
-                if (label != "")
-                    elementController.setName(label);
                 break;
             case "Clock":
                 elementController = (UIClock) UIGate.create("UIClock");
-                if (label != "")
-                    elementController.setName(label);
                 break;
             case "Display":
                 elementController = (UIDisplay) UIGate.create("UIDisplay");
-                if (label != "")
-                    elementController.setName(label);
                 break;
             // case "Numeric":
             // elementController = (UINumeric) UIGate.create("UINumeric");
-            // if (label != "")
             // elementController.setName(label);
             // break;
             case "Not":
                 elementController = (UINot) UIGate.create("UINot");
-                if (label != "")
-                    elementController.setName(label);
                 break;
             case "And":
                 elementController = (UIAnd) UIGate.create("UIAnd");
-                if (label != "")
-                    elementController.setName(label);
                 break;
             case "Or":
                 elementController = (UIOr) UIGate.create("UIOr");
-                if (label != "")
-                    elementController.setName(label);
                 break;
             case "NodeSplitter":
                 elementController = (UINodeSplitter) UIGate.create("UINodeSplitter");
-                if (label != "")
-                    elementController.setName(label);
                 break;
             case "Splitter":
                 elementController = (UISplitter) UIGate.create("UISplitter");
-                if (label != "")
-                    elementController.setName(label);
                 break;
             case "Merger":
                 elementController = (UIMerger) UIGate.create("UIMerger");
-                if (label != "")
-                    elementController.setName(label);
                 break;
 
             default:
                 throw new Exception("ElementController of type " + type + " not found");
         }
+        elementController.setName(label);
+        if (data != null) {
+            elementController.setPosition(data.position.multiply(UIElement.baseSize));
+            elementController.setRotation(data.rotation);
+            elementController.setColor(data.color);
+        }
+        addGate(elementController);
+    }
 
-        // elementController.setPosition(data.position);
-        // elementController.setRotation(data.rotation);
-        // elementController.setColor(data.color);
+    public void addGate(UIGate elementController) throws Exception {
         container.getChildren().add(elementController.getNode());
+        editedCircuit.addGate(elementController.getLogic());
+
         pinsListener(elementController);
         elementController.getNode().setOnMousePressed(mouseEvent -> {
             selectElement(elementController);
@@ -614,15 +602,16 @@ public class Editor extends VBox {
     }
 
     public void addGates(HashMap<String, Gate> gates, ArrayList<SaveData> data) {
-        Collection<UIElement> uiGates = new ArrayList<>();
-
         gates.forEach((label, gate) -> {
-            //SaveData gateData = data.stream().filter(e -> e.uuid == gate.uuid()).findFirst().get();
+            SaveData gateData = null;
             try {
-                data.forEach(e -> System.out.println(e.uuid == gate.uuid()));
-                addGate(gate, label, null);
+                for (SaveData e : data) {
+                    if (e.uuid == gate.uuid())
+                        gateData = e;
+                }
+                addGateFromSave(gate, label, gateData);
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                e.printStackTrace();
             }
         });
 
@@ -760,129 +749,66 @@ public class Editor extends VBox {
     // TODO spawn gate on center of teh scroll pane (with current scroll value)
     // BUG deconnection
     @FXML
-    public void clickAnd(ActionEvent event) {
+    public void clickAnd(ActionEvent event) throws Exception {
         System.out.println("Click And!");
         UIAnd andController = (UIAnd) UIElement.create("UIAnd");
-        Node and = andController.getNode();
-        container.getChildren().add(and);
-
-        pinsListener(andController);
-        andController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(andController);
-            replaceInfos(andController.getInfos().getNode());
-        });
+        addGate(andController);
     }
 
     @FXML
-    public void clickOr(ActionEvent event) {
+    public void clickOr(ActionEvent event) throws Exception {
         System.out.println("Click Or!");
         UIOr orController = (UIOr) UIElement.create("UIOr");
-        Node or = orController.getNode();
-        container.getChildren().add(or);
-
-        pinsListener(orController);
-        orController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(orController);
-            replaceInfos(orController.getInfos().getNode());
-        });
+        addGate(orController);
     }
 
     @FXML
-    public void clickNot(ActionEvent event) {
+    public void clickNot(ActionEvent event) throws Exception {
         System.out.println("Click Not!");
         UINot notController = (UINot) UIElement.create("UINot");
-        Node not = notController.getNode();
-        container.getChildren().add(not);
-
-        pinsListener(notController);
-        notController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(notController);
-            replaceInfos(notController.getInfos().getNode());
-        });
+        addGate(notController);
     }
 
     @FXML
-    public void clickButton(ActionEvent event) {
+    public void clickButton(ActionEvent event) throws Exception {
         System.out.println("Click Button!");
         UIButton buttonController = (UIButton) UIElement.create("UIButton");
-        Node button = buttonController.getNode();
-        container.getChildren().add(button);
-
-        pinsListener(buttonController);
-        buttonController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(buttonController);
-            replaceInfos(buttonController.getInfos().getNode());
-        });
+        addGate(buttonController);
     }
 
     @FXML
-    public void clickClock(ActionEvent event) {
+    public void clickClock(ActionEvent event) throws Exception {
         System.out.println("Click clock!");
         UIClock clockController = (UIClock) UIElement.create("UIClock");
-        Node clock = clockController.getNode();
-        container.getChildren().add(clock);
-
-        pinsListener(clockController);
-        clockController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(clockController);
-            replaceInfos(clockController.getInfos().getNode());
-        });
+        addGate(clockController);
     }
 
     @FXML
-    public void clickLever(ActionEvent event) {
+    public void clickLever(ActionEvent event) throws Exception {
         System.out.println("Click lever!");
         UILever leverController = (UILever) UIElement.create("UILever");
-        Node lever = leverController.getNode();
-        container.getChildren().add(lever);
-
-        pinsListener(leverController);
-        leverController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(leverController);
-            replaceInfos(leverController.getInfos().getNode());
-        });
+        addGate(leverController);
     }
 
     @FXML
-    public void clickPower(ActionEvent event) {
+    public void clickPower(ActionEvent event) throws Exception {
         System.out.println("Click power!");
         UIPower powerController = (UIPower) UIElement.create("UIPower");
-        Node power = powerController.getNode();
-        container.getChildren().add(power);
-
-        pinsListener(powerController);
-        powerController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(powerController);
-            replaceInfos(powerController.getInfos().getNode());
-        });
+        addGate(powerController);
     }
 
     @FXML
-    public void clickGround(ActionEvent event) {
+    public void clickGround(ActionEvent event) throws Exception {
         System.out.println("Click ground!");
         UIGround groundController = (UIGround) UIElement.create("UIGround");
-        Node ground = groundController.getNode();
-        container.getChildren().add(ground);
-
-        pinsListener(groundController);
-        groundController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(groundController);
-            replaceInfos(groundController.getInfos().getNode());
-        });
+        addGate(groundController);
     }
 
     @FXML
-    public void clickDisplay(ActionEvent event) {
+    public void clickDisplay(ActionEvent event) throws Exception {
         System.out.println("Click display!");
         UIDisplay displayController = (UIDisplay) UIElement.create("UIDisplay");
-        Node display = displayController.getNode();
-        container.getChildren().add(display);
-
-        pinsListener(displayController);
-        displayController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(displayController);
-            replaceInfos(displayController.getInfos().getNode());
-        });
+        addGate(displayController);
     }
 
     @FXML

@@ -226,6 +226,8 @@ public abstract class UIElement {
         // and to prevent creating meaningless methods
         if (infos.setPosition(position, true)) {
             this.position = position;
+            self.setLayoutX(position.getX());
+            self.setLayoutY(position.getY());
         }
     }
 

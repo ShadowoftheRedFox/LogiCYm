@@ -1654,9 +1654,7 @@ public class Circuit {
         // We write in the designed file
         try {
             FileWriter writer = new FileWriter(filePath);
-            JSONObject json = this.toJson();
-            json.put("gateData", data);
-            writer.write(json.toString(1));
+            writer.write(this.toJson().put("gateData", data).toString(1));
             writer.close();
 
             System.out.println("Circuit saved with success in: " + filePath);
