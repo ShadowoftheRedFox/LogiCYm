@@ -10,6 +10,8 @@ import com.pjava.src.components.gates.Schema;
 import com.pjava.src.errors.BusSizeException;
 import com.pjava.src.utils.Cyclic;
 
+import javafx.geometry.Point2D;
+
 /**
  * The base class of any logic gate. It has inputs, outputs, and gives a result
  * depending of its type.

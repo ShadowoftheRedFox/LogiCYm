@@ -6,10 +6,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.function.BiConsumer;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.swing.JFileChooser;
+
+import org.json.JSONArray;
 
 import com.pjava.src.UI.SceneManager;
 import com.pjava.src.UI.components.Pin;
@@ -30,23 +32,11 @@ import com.pjava.src.UI.components.input.UIPower;
 import com.pjava.src.UI.components.output.UIDisplay;
 import com.pjava.src.components.Circuit;
 import com.pjava.src.components.Gate;
-import com.pjava.src.components.cables.Merger;
-import com.pjava.src.components.cables.NodeSplitter;
-import com.pjava.src.components.cables.Splitter;
-import com.pjava.src.components.gates.And;
-import com.pjava.src.components.gates.Not;
-import com.pjava.src.components.gates.Or;
-import com.pjava.src.components.gates.Schema;
-import com.pjava.src.components.input.Clock;
-import com.pjava.src.components.input.Ground;
-import com.pjava.src.components.input.Lever;
-import com.pjava.src.components.input.Numeric;
-import com.pjava.src.components.input.Power;
-import com.pjava.src.components.output.Display;
 import com.pjava.src.document.SimulationFileLoader;
 import com.pjava.src.utils.UIUtils;
 import com.pjava.src.utils.UIUtils.ValidationAnwser;
 import com.pjava.src.utils.UtilsSave;
+import com.pjava.src.utils.SaveData;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -65,9 +55,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -80,7 +67,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -268,10 +254,19 @@ public class Editor extends VBox {
                     if (event.isControlDown())
                         saveEditor(false);
                     break;
+                case A:
+                    if (event.isControlDown())
+                        selectAllElements(null);
                 default:
                     break;
             }
         });
+
+        newFileButton.setOnAction(event -> {
+            saveEditor(true);
+            resetEditor();
+        });
+
         saveButton.setOnAction(event -> {
             saveEditor(false);
         });
@@ -288,7 +283,7 @@ public class Editor extends VBox {
 
                 editedCircuit.loadGatesFromFile(file.getPath());
 
-                addGates(editedCircuit.getAllGates());
+                addGates(editedCircuit.getAllGates(), editedCircuit.getAllGatesData());
 
             } catch (Exception e) {
                 UIUtils.errorPopup(e.getMessage());
@@ -496,17 +491,25 @@ public class Editor extends VBox {
     }
 
     private void saveEditor(Boolean defaultSaving) {
+        selectAllElements(null);
         try {
+            JSONArray data = new JSONArray();
+            selectedNodes.forEach(node -> {
+                UIElement element = (UIElement) node.getUserData();
+                data.put(new SaveData(element.getLogic().uuid(), element.getName(), element.getColor(),
+                        element.getPosition(), element.getRotation()).toJson());
+            });
+
             if (defaultSaving) {
                 JFileChooser c = UtilsSave.openAndSaveInFolder();
                 int result = c.showOpenDialog(null);
 
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File saveFile = c.getSelectedFile();
-                    editedCircuit.save(saveFile.getParent(), saveFile.getName());
+                    editedCircuit.save(saveFile.getPath(), data);
                 }
             } else
-                editedCircuit.save();
+                editedCircuit.save(data);
             setUnsavedChanges(false);
         } catch (Exception e) {
             UIUtils.errorPopup(e.getMessage());
@@ -514,24 +517,23 @@ public class Editor extends VBox {
     }
 
     public void resetEditor() {
-        selectElement(allController);
-        deleteSelectedElement();
+        selectAllElements(null);
+        deleteSelectedElements(null);
     }
 
-    public void addGate(Gate gate, String label) throws Exception {
-        addGate(gate.getClass().getSimpleName(), label);
+    public void addGate(Gate gate, String label, SaveData data) throws Exception {
+        addGate(gate.getClass().getSimpleName(), label, data);
     }
 
-    public void addGate(String type) throws Exception {
-        addGate(type, "");
+    public void addGate(String type, SaveData data) throws Exception {
+        addGate(type, data);
     }
 
-    public void addGate(String type, String label) throws Exception {
+    public void addGate(String type, String label, SaveData data) throws Exception {
         UIGate elementController;
         switch (type) {
             case "Power":
                 elementController = (UIPower) UIGate.create("UIPower");
-                ;
                 if (label != "")
                     elementController.setName(label);
                 break;
@@ -560,6 +562,11 @@ public class Editor extends VBox {
                 if (label != "")
                     elementController.setName(label);
                 break;
+            // case "Numeric":
+            // elementController = (UINumeric) UIGate.create("UINumeric");
+            // if (label != "")
+            // elementController.setName(label);
+            // break;
             case "Not":
                 elementController = (UINot) UIGate.create("UINot");
                 if (label != "")
@@ -594,28 +601,30 @@ public class Editor extends VBox {
             default:
                 throw new Exception("ElementController of type " + type + " not found");
         }
+
+        // elementController.setPosition(data.position);
+        // elementController.setRotation(data.rotation);
+        // elementController.setColor(data.color);
         container.getChildren().add(elementController.getNode());
         pinsListener(elementController);
         elementController.getNode().setOnMousePressed(mouseEvent -> {
-            replaceInfos(elementController.getInfos().getNode());
             selectElement(elementController);
+            replaceInfos(elementController.getInfos().getNode());
         });
-        allController.add(elementController);
     }
 
-    public void addGates(HashMap<String, Gate> gates) {
+    public void addGates(HashMap<String, Gate> gates, ArrayList<SaveData> data) {
         Collection<UIElement> uiGates = new ArrayList<>();
 
-        System.out.println("---------");
         gates.forEach((label, gate) -> {
-            System.out.println("Loading " + gate.toString());
             try {
-                addGate(gate, label);
+                data.forEach(e -> System.out.println(e.label));
+                SaveData gateData = data.stream().filter(e -> Integer.parseInt(e.label) == gate.uuid()).findFirst().get();
+                addGate(gate, label, gateData);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
         });
-        System.out.println("---------");
 
     }
 
@@ -649,7 +658,6 @@ public class Editor extends VBox {
             gridPane.getColumnConstraints().add(col);
         }
     }
-
     // #endregion
 
     private void replaceInfos(Node content) {
@@ -668,9 +676,8 @@ public class Editor extends VBox {
         if (unsavedChanges) {
             Consumer<ValidationAnwser> callback = (res) -> {
                 if (res == ValidationAnwser.APPROVED) {
-                    // TODO save here
                     try {
-                        editedCircuit.save();
+                        saveEditor(true);
                     } catch (Exception e) {
                         UIUtils.errorPopup(e.getMessage());
                     }

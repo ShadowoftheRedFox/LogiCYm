@@ -89,19 +89,18 @@ public class CircuitTest {
             circuit2.addNewGate("Button");
             circuit2.addNewGate("Clock");
 
-            circuit2.save("save4");
+            circuit2.save("save4", null);
 
             Circuit circuit = new Circuit("Bonjour");
 
-            circuit.save();
+            circuit.save(null);
             // Should do the same thing :
-            circuit.save("");
-            circuit.save("data");
-            circuit.save("/data");
-            circuit.save("data/");
-            circuit.save("./data/");
-            circuit.save("", "Bonjour");
-            circuit.save("", "Bonjour.json");
+            circuit.save("", null);
+            circuit.save("data", null);
+            circuit.save("/data", null);
+            circuit.save("data/", null);
+            circuit.save("./data/", null);
+            circuit.save("./data/Bonjour.json", null);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -135,7 +134,7 @@ public class CircuitTest {
 
             // save
             circuit3.save();
-            circuit3.save("test", "sirkui_3");
+            circuit3.save("./data/test/sirkui_3.json", null);
 
             System.out.println("Selection :");
             int j = 0;

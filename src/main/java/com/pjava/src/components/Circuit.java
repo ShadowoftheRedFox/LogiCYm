@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.pjava.src.UI.Rotation;
 import com.pjava.src.components.cables.Merger;
 import com.pjava.src.components.cables.NodeSplitter;
 import com.pjava.src.components.cables.Splitter;
@@ -28,7 +29,11 @@ import com.pjava.src.components.input.Numeric;
 import com.pjava.src.components.input.Power;
 import com.pjava.src.components.output.Display;
 import com.pjava.src.components.output.Output;
+import com.pjava.src.utils.SaveData;
 import com.pjava.src.utils.UtilsSave;
+
+import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
 
 // TODO : connect back and front, correct implementation of all the back tools
 // TODO : connect back and front
@@ -36,11 +41,9 @@ import com.pjava.src.utils.UtilsSave;
 
 // TODO : test with a complex circuit
 
-
 // TODO : load from an absolute path
 // TODO : save from an absolute path
 // TODO : keep flag for shema circuit path
-
 
 /**
  * FIXME Esteban JAVADOC
@@ -69,6 +72,13 @@ public class Circuit {
      * Value : Gate
      */
     private HashMap<String, Gate> allGates = new HashMap<>();
+
+    /**
+     * Map of all the gates of a circuit
+     * Key : uuid or custom label
+     * Value : Gate
+     */
+    private ArrayList<SaveData> allGatesData = new ArrayList<>();
 
     /**
      * List of all the input gates of a circuit
@@ -186,6 +196,15 @@ public class Circuit {
     }
 
     /**
+     * get an HashMap of all gates
+     *
+     * @return all gates
+     */
+    public ArrayList<SaveData> getAllGatesData() {
+        return this.allGatesData;
+    }
+
+    /**
      * get input gates
      *
      * @return the input of gate
@@ -266,6 +285,9 @@ public class Circuit {
         this.name = name;
     }
 
+    public final void setAllGatesData(ArrayList<SaveData> data) {
+        this.allGatesData = data;
+    }
     // #endregion
 
     // #region setSchemaInputGatePort
@@ -777,6 +799,20 @@ public class Circuit {
         try {
             JSONArray gate_JsonArray = circuit_Json.getJSONArray("Gate");
 
+            if (circuit_Json.has("gateData")) {
+                JSONArray gateData_JsonArray = circuit_Json.getJSONArray("gateData");
+                ArrayList<SaveData> gateData = new ArrayList<>();
+                for (int i = 0; i < gateData_JsonArray.length(); i++) {
+                    JSONObject gateData_Json = gateData_JsonArray.getJSONObject(i);
+
+                    gateData.add(new SaveData(gateData_Json.getInt("uuid"), gateData_Json.getString("label"),
+                            Color.valueOf(gateData_Json.getString("color")),
+                            new Point2D(gateData_Json.getInt("x"), gateData_Json.getInt("y")),
+                            Rotation.valueOf(gateData_Json.getString("rotation"))));
+                }
+
+                setAllGatesData(gateData);
+            }
 
             // 1 : We create new gates from those we find in the json Object and we set
             // their old uuid as a label
@@ -1548,6 +1584,7 @@ public class Circuit {
     public JSONObject toJson() {
         // adding gates within the circuit to a JSON array
         JSONArray gate_JsonArray = new JSONArray();
+        System.out.println(allGates.size());
         for (Gate gate : allGates.values()) {
             // System.out.println(gate);
             gate_JsonArray.put(gate.toJson());
@@ -1574,9 +1611,23 @@ public class Circuit {
      */
     public void save() throws Exception {
         // Creating filePath :
-        String filePath = String.format("%s%s.json", UtilsSave.saveFolder.toString(), this.name);
+        String filePath = String.format("%s/%s.json", UtilsSave.saveFolder.toString(), this.name);
 
-        this.save(filePath);
+        this.save(filePath, null);
+    }
+
+    /**
+     * Shorthand for {@link #save(String folderPath)}
+     * Saves the circuit to the default location with the circuit's name as
+     * filename.
+     *
+     * @throws Exception if the save operation fails
+     */
+    public void save(JSONArray data) throws Exception {
+        // Creating filePath :
+        String filePath = String.format("%s/%s.json", UtilsSave.saveFolder.toString(), this.name);
+
+        this.save(filePath, data);
     }
 
     /**
@@ -1586,7 +1637,7 @@ public class Circuit {
      * @param filePath absolute or relative path to a json circuit
      * @throws Exception if the save operation fails
      */
-    public void save(String filePath) throws Exception {
+    public void save(String filePath, JSONArray data) throws Exception {
         filePath = filePath.replace("/", File.separator);
 
         // We create the designed file
@@ -1604,7 +1655,10 @@ public class Circuit {
         // We write in the designed file
         try {
             FileWriter writer = new FileWriter(filePath);
-            writer.write(this.toJson().toString(1));
+            JSONObject json = this.toJson();
+            System.out.println(json.toString());
+            json.put("gateData", data);
+            writer.write(json.toString(1));
             writer.close();
 
             System.out.println("Circuit saved with success in: " + filePath);
