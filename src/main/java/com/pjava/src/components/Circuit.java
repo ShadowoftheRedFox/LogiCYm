@@ -1573,7 +1573,7 @@ public class Circuit {
      */
     public void save() throws Exception {
         // Creating filePath :
-        String filePath = String.format("%s%s.json", UtilsSave.saveFolder.toString(), this.name);
+        String filePath = String.format("%s/%s.json", UtilsSave.saveFolder.toString(), this.name);
 
         this.save(filePath);
     }

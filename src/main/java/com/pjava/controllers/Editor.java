@@ -262,9 +262,7 @@ public class Editor extends VBox {
                 fileChooser.getExtensionFilters().addAll(jsonFilter);
 
                 File saveFile = fileChooser.showOpenDialog(manager.getStage());
-
-                // TODO Attention ça marche pas
-               // editedCircuit.save(saveFile.getParent(), saveFile.getName());
+                editedCircuit.save(saveFile.getParent() + saveFile.getName());
             } catch (Exception e) {
                 UIUtils.errorPopup(e.getMessage());
             }
