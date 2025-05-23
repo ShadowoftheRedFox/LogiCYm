@@ -109,7 +109,7 @@ public class CircuitTest {
     }
     */
 
-    /*
+
     @Test
     void test4default() {
         System.out.println("\ntest 4 default : copy to himself default circuit");
@@ -161,9 +161,9 @@ public class CircuitTest {
         }
 
     }
-    */
 
-    /*
+
+
     @Test
     void test4complet() {
         System.out.println("\ntest 4 complete : copy to himself complete circuit without schema");
@@ -215,7 +215,7 @@ public class CircuitTest {
         }
 
     }
-    */
+
 
     /*
     @Test
