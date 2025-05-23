@@ -4,6 +4,8 @@ import java.util.BitSet;
 
 import org.json.JSONObject;
 
+import com.pjava.src.components.Synchronizer;
+
 /**
  * A button input.
  * Button can be pressed and is released after a delay has passed.
@@ -35,7 +37,7 @@ public class Button extends Input {
     /**
      * Create a new button with the given delay.
      *
-     * @param delay    The given delay in miliseconds.
+     * @param delay The given delay in miliseconds.
      * @throws Exception Throws when delay is lesser or equals to 0.
      * @see #setDelay(long)
      */
@@ -43,7 +45,6 @@ public class Button extends Input {
         super(new int[] { 1 });
         setDelay(delay);
     }
-
 
     /**
      * Press the button. It will switch state for a period of time equals to
@@ -57,6 +58,7 @@ public class Button extends Input {
         lastCycle = System.currentTimeMillis();
         state.set(0, true);
         updateState();
+        Synchronizer.updateSimulation();
     }
 
     /**
@@ -68,6 +70,7 @@ public class Button extends Input {
         if (System.currentTimeMillis() - lastCycle >= delay) {
             state.set(0, false);
             updateState();
+            Synchronizer.updateSimulation();
         }
     }
 

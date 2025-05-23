@@ -37,7 +37,6 @@ public class Merger extends Gate {
         setInputBus(busInput);
     }
 
-
     /**
      * Get the sum of the provided array of buses, throwing exceptions if the
      * resulting bus size is invalid.

@@ -4,6 +4,8 @@ import java.util.BitSet;
 
 import org.json.JSONObject;
 
+import com.pjava.src.components.Synchronizer;
+
 /**
  * A lever input. Emit or not a signal {@link #flip()} is called.
  */
@@ -26,13 +28,13 @@ public class Lever extends Input {
         state.set(0, flipped);
     }
 
-
     /**
      * Flip the lever.
      */
     public void flip() {
         state.flip(0);
         updateState();
+        Synchronizer.updateSimulation();
     }
 
     // #region Getters

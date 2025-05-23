@@ -126,6 +126,7 @@ public abstract class UtilsSave {
      * Search a file name in a case
      *
      * @param path Check if the given file exists
+     * @return a boolean if File exist
      */
     public static boolean isFileExists(Path path) {
         if (path == null) {
@@ -143,7 +144,9 @@ public abstract class UtilsSave {
     /**
      * Merge a name of field and the path for create create,read or verif the field
      *
-     * @return the merged path
+     * @param path The base directory path.
+     * @param name The name of the file or subdirectory to merge.
+     * @return The resulting merged path.
      */
     public static Path Merge(Path path, String name) {
         return Paths.get(path.toString(), name);
@@ -151,8 +154,8 @@ public abstract class UtilsSave {
 
     /**
      * print the list of all the document in the case save
-     *
-     * @return the array of paths to the files, null if error.
+     * @param path The directory to list.
+     * @return A list of file paths in the directory, or null if an error occurs.
      */
     public static ArrayList<Path> list(Path path) {
         if (path == null) {
@@ -170,7 +173,11 @@ public abstract class UtilsSave {
             return null;
         }
     }
-
+    /**
+     * Entry point for testing file operations:
+     *
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
         Path save = Paths.get("./data");
         String name = "simu.txt";
