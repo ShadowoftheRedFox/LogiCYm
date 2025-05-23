@@ -67,6 +67,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.scene.text.Text;
+
 
 public class Editor extends VBox {
     @FXML
@@ -665,7 +667,6 @@ public class Editor extends VBox {
         }
     }
     // #endregion
-=======
     private void endSelection(MouseEvent event) {
         // TODO look for selected elements with selectedNodes
         container.getChildren().remove(selectionRectangle);
@@ -719,10 +720,6 @@ public class Editor extends VBox {
     private void selectElement(Collection<UIElement> array) {
         clearSelection();
         if (array != null) {
-<<<<<<< HEAD
-            for(UIElement element : array){
-                selectedNodes.add(element.getNode());
-=======
             selectedNodes.addAll(array);
             selectedNodes.forEach(element -> {
                 if (element == null) {
@@ -759,7 +756,6 @@ public class Editor extends VBox {
                 ((UICable) selectedElement).disconnect();
             } else {
                 System.out.println("Something unexpected have been selected: " + selectedElement);
->>>>>>> main
             }
         }
         deleteButton.setDisable(selectedNodes.size() == 0);
