@@ -18,7 +18,6 @@ public class Splitter extends Gate {
      * Create a default splitter,
      * input bus size is set to 2.
      *
-     * @param input The size of the input bus.
      * @throws Exception Throws if {@link #setInputBus(int[])} throws.
      */
     public Splitter() throws Exception {
