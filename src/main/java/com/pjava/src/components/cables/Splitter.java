@@ -36,7 +36,6 @@ public class Splitter extends Gate {
         setInputBus(new int[] { input });
     }
 
-
     /**
      * A mirror of the input. Use {@link #getState(Cable)} or {@link #getState(int)}
      * instead.
@@ -45,10 +44,7 @@ public class Splitter extends Gate {
      */
     @Override
     public BitSet getState() {
-        if (getInputCable().get(0) == null) {
-            return null;
-        }
-        return getInputCable().get(0).getState();
+        return null;
     }
 
     /**
@@ -64,7 +60,7 @@ public class Splitter extends Gate {
      * @see #getState(int)
      */
     public BitSet getState(Cable cable) throws NullPointerException, Exception {
-        if(!getPowered()){
+        if (!getPowered()) {
             return null;
         }
         if (cable == null) {

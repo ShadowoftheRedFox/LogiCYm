@@ -621,6 +621,9 @@ public class Editor extends VBox {
     // #endregion
 
     // #region Gate spawn
+    // BUG bad cable selection
+    // TODO spawn gate on center of teh scroll pane (with current scroll value)
+    // BUG deconnection
     @FXML
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
