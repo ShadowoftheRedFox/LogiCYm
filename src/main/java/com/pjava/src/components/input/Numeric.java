@@ -143,7 +143,7 @@ public class Numeric extends Input {
     /**
      * return a copy of the input value.
      *
-     * @return
+     * @return tne input value
      */
     public String getValue() {
         return String.format(this.value);

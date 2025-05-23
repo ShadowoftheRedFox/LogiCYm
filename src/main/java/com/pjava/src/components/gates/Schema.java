@@ -20,21 +20,14 @@ import com.pjava.src.components.input.Lever;
 import com.pjava.src.components.input.Numeric;
 import com.pjava.src.components.output.Display;
 import com.pjava.src.components.output.Output;
+import com.pjava.src.errors.BusSizeException;
 import com.pjava.src.utils.UtilsSave;
 
-
-// TODO : override Gate.updateState() for it to directly '.updateState()' the inner gate connected to a port
-// the output are forwarded too
-// TODO : ask hugo for help
-
-// ToDo cables position
-// ToDo position, label, rotation of gates
-// ToDo unit tests
 
 /**
  * The schema gate is special as he hold a circuit within himself.
  * His main objective is to connect this inner circuit to the circuit he belongs
- * (outside circuit).
+ * He act like a bridge.
  */
 public class Schema extends Gate {
 
@@ -161,8 +154,9 @@ public class Schema extends Gate {
 
     @Override
     public BitSet getState() {
-        return state;
+        throw new Error("Shema has no state, it's just a bridge between the circuit it's in an his inner circuit.\n 'Cable.updateState()' should use this bridge when it detect that his output gate is a schema");
     }
+
 
     // #endregion
 
