@@ -3,11 +3,10 @@ package com.pjava.src.components;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.pjava.src.components.gates.Schema;
-
 import com.pjava.src.errors.BusSizeException;
 import com.pjava.src.utils.Cyclic;
 
@@ -64,24 +63,19 @@ public abstract class Gate extends Element {
 
     /**
      * This function is called when input cables states changes.
-     *
-     * @param propagate Whether or not to propagate the changes to the outputs.
      */
-    public void updateState(boolean propagate) {
+    public void updateState() {
         // if same state or unpowered, do not send update
         if (!getPowered()) {
             return;
         }
 
         // update the state otherwise
-        if (propagate) {
-            getOutputCable().forEach(cable -> {
-                if (cable != null) {
-                    // TODO : should we add the cable to the list of 'the next elements to update' or update it directly ?
-                    cable.updateState();
-                }
-            });
-        }
+        getOutputCable().forEach(cable -> {
+            if (cable != null) {
+                Synchronizer.addToCallStack(cable);
+            }
+        });
     }
 
     /**
@@ -227,9 +221,10 @@ public abstract class Gate extends Element {
                         result.updatePower();
                         arg0.updatePower();
 
-                        // TODO : add to the list of 'the next elements to update' ?
-                        result.updateState();
-                        arg0.updateState();
+                        Synchronizer.addToCallStack(result);
+                        Synchronizer.updateSimulation();
+                        Synchronizer.addToCallStack(arg0);
+                        Synchronizer.updateSimulation();
                         return result;
                     }
                 }
@@ -260,9 +255,9 @@ public abstract class Gate extends Element {
                         thisOutputCable.updatePower();
                         arg0.updatePower();
 
-                        // TODO : add to the list of 'the next elements to update' ?
-                        thisOutputCable.updateState();
-                        arg0.updateState();
+                        Synchronizer.addToCallStack(thisOutputCable);
+                        Synchronizer.addToCallStack(arg0);
+                        Synchronizer.updateSimulation();
                         return thisOutputCable;
                     } else if (thisOutputCable == null && arg0InputCable != null) {
                         if (arg0InputCable.inputGate != null) {
@@ -275,9 +270,9 @@ public abstract class Gate extends Element {
                         arg0InputCable.updatePower();
                         arg0.updatePower();
 
-                        // TODO : add to the list of 'the next elements to update' ?
-                        arg0InputCable.updateState();
-                        arg0.updateState();
+                        Synchronizer.addToCallStack(arg0InputCable);
+                        Synchronizer.addToCallStack(arg0);
+                        Synchronizer.updateSimulation();
                         return arg0InputCable;
                     } else {
                         // should never fall here
@@ -363,8 +358,8 @@ public abstract class Gate extends Element {
             arg0.inputCable.set(arg0InputIndex, result);
 
             result.updatePower();
-            // TODO : add to the list of 'the next elements to update' ?
-            result.updateState();
+            Synchronizer.addToCallStack(result);
+            Synchronizer.updateSimulation();
             return result;
         } else // if either is null
         if (thisOutputCable != null && arg0InputCable == null) {
@@ -375,8 +370,8 @@ public abstract class Gate extends Element {
             arg0.inputCable.set(arg0InputIndex, thisOutputCable);
 
             arg0.updatePower();
-            // TODO : add to the list of 'the next elements to update' ?
-            arg0.updateState();
+            Synchronizer.addToCallStack(arg0);
+            Synchronizer.updateSimulation();
             return thisOutputCable;
         } else if (thisOutputCable == null && arg0InputCable != null) {
             if (arg0InputCable.inputGate != null) {
@@ -386,8 +381,8 @@ public abstract class Gate extends Element {
             this.outputCable.set(thisOutputIndex, arg0InputCable);
 
             arg0InputCable.updatePower();
-            // TODO : add to the list of 'the next elements to update'
-            arg0InputCable.updateState();
+            Synchronizer.addToCallStack(arg0InputCable);
+            Synchronizer.updateSimulation();
             return arg0InputCable;
         }
 
@@ -397,25 +392,29 @@ public abstract class Gate extends Element {
     // #region connectInnerInputGate
 
     /**
-     * FIXME javadoc
      * Connects an inner input of a schema to a specific input port of a gate.
-     * This method establishes a cable connection between the schema's inner input port
+     * This method establishes a cable connection between the schema's inner input
+     * port
      * and the specified gate's input port.
      *
-     * @param schema the schema containing the inner input to connect
-     * @param schemaInnerInputIndex the index of the schema's inner input port to connect,
-     *                             or -1 to automatically find/create an available port
-     * @param gate the target gate to connect to
-     * @param gateInputIndex the index of the gate's input port to connect to
-
+     * @param schema                the schema containing the inner input to connect
+     * @param schemaInnerInputIndex the index of the schema's inner input port to
+     *                              connect,
+     *                              or -1 to automatically find/create an available
+     *                              port
+     * @param gate                  the target gate to connect to
+     * @param gateInputIndex        the index of the gate's input port to connect to
+     *
      * @return the Cable object representing the established connection, or null if
      *         connection failed due to incompatible bus sizes
-     * @throws Exception if connection is possible but bus is already full
-     * @throws NullPointerException if the gate parameter is null
+     * @throws Exception                 if connection is possible but bus is
+     *                                   already full
+     * @throws NullPointerException      if the gate parameter is null
      * @throws IndexOutOfBoundsException if gateInputIndex is outside valid range
-     * @throws BusSizeException if there are bus size compatibility issues
+     * @throws BusSizeException          if there are bus size compatibility issues
      */
-    public static Cable connectInnerInputGate(Schema schema, int schemaInnerInputIndex, Gate gate, int gateInputIndex)
+    protected static Cable connectInnerInputGate(Schema schema, int schemaInnerInputIndex, Gate gate,
+            int gateInputIndex)
             throws Exception, NullPointerException, IndexOutOfBoundsException, BusSizeException {
         // verifications
         if (gate == null) {
@@ -481,8 +480,8 @@ public abstract class Gate extends Element {
             gate.getInputCable().set(gateInputIndex, result);
 
             result.updatePower();
-            // TODO : add to the list of 'the next elements to update' ?
-            result.updateState();
+            Synchronizer.addToCallStack(result);
+            Synchronizer.updateSimulation();
             return result;
         } else // if either is null
         if (thisInnerInputCable != null && gateInputCable == null) {
@@ -493,8 +492,8 @@ public abstract class Gate extends Element {
             gate.getInputCable().set(gateInputIndex, thisInnerInputCable);
 
             gate.updatePower();
-            // TODO : add to the list of 'the next elements to update' ?
-            gate.updateState();
+            Synchronizer.addToCallStack(gate);
+            Synchronizer.updateSimulation();
             return thisInnerInputCable;
         } else if (thisInnerInputCable == null && gateInputCable != null) {
             if (gateInputCable.getInputGate() != null) {
@@ -504,8 +503,8 @@ public abstract class Gate extends Element {
             schema.getInnerInputCable().set(schemaInnerInputIndex, gateInputCable);
 
             gateInputCable.updatePower();
-            // TODO : add to the list of 'the next elements to update' ?
-            gateInputCable.updateState();
+            Synchronizer.addToCallStack(gateInputCable);
+            Synchronizer.updateSimulation();
             return gateInputCable;
         }
 
@@ -517,26 +516,31 @@ public abstract class Gate extends Element {
     // #region connectInnerOutputGate
 
     /**
-     * FIXME javadoc
      * Connects an inner output of a schema to a specific output port of a gate.
      * This method establishes a cable connection between the gate's output port
      * and the schema's inner output port, allowing the gate's output to be
      * accessible through the schema's interface.
      *
-     * @param schema the schema containing the inner output to connect
-     * @param gate the source gate to connect from
-     * @param gateOutputIndex the index of the gate's output port to connect from
-     * @param schemaInnerOutputIndex the index of the schema's inner output port to connect,
-     *                              or -1 to automatically find/create an available port
+     * @param schema                 the schema containing the inner output to
+     *                               connect
+     * @param gate                   the source gate to connect from
+     * @param gateOutputIndex        the index of the gate's output port to connect
+     *                               from
+     * @param schemaInnerOutputIndex the index of the schema's inner output port to
+     *                               connect,
+     *                               or -1 to automatically find/create an available
+     *                               port
      *
      * @return the Cable object representing the established connection, or null if
      *         connection failed due to incompatible bus sizes
-     * @throws Exception if connection is possible but bus is already full
-     * @throws NullPointerException if the gate parameter is null
+     * @throws Exception                 if connection is possible but bus is
+     *                                   already full
+     * @throws NullPointerException      if the gate parameter is null
      * @throws IndexOutOfBoundsException if gateOutputIndex is outside valid range
-     * @throws BusSizeException if there are bus size compatibility issues
-    */
-    public static Cable connectInnerOutputGate(Schema schema, int schemaInnerOutputIndex, Gate gate, int gateOutputIndex)
+     * @throws BusSizeException          if there are bus size compatibility issues
+     */
+    protected static Cable connectInnerOutputGate(Schema schema, int schemaInnerOutputIndex, Gate gate,
+            int gateOutputIndex)
             throws Exception, NullPointerException, IndexOutOfBoundsException, BusSizeException {
         // verifications
         if (gate == null) {
@@ -602,8 +606,8 @@ public abstract class Gate extends Element {
             gate.getOutputCable().set(gateOutputIndex, result);
 
             result.updatePower();
-            // TODO : add to the list of 'the next elements to update' ?
-            result.updateState();
+            Synchronizer.addToCallStack(result);
+            Synchronizer.updateSimulation();
             return result;
         } else // if either is null
         if (thisInnerOutputCable != null && gateOutputCable == null) {
@@ -614,8 +618,8 @@ public abstract class Gate extends Element {
             gate.getOutputCable().set(gateOutputIndex, thisInnerOutputCable);
 
             gate.updatePower();
-            // TODO : add to the list of 'the next elements to update' ?
-            gate.updateState();
+            Synchronizer.addToCallStack(gate);
+            Synchronizer.updateSimulation();
             return thisInnerOutputCable;
         } else if (thisInnerOutputCable == null && gateOutputCable != null) {
             if (gateOutputCable.getOutputGate() != null) {
@@ -625,8 +629,8 @@ public abstract class Gate extends Element {
             schema.getInnerOutputCable().set(schemaInnerOutputIndex, gateOutputCable);
 
             gateOutputCable.updatePower();
-            // TODO : add to the list of 'the next elements to update' ?
-            gateOutputCable.updateState();
+            Synchronizer.addToCallStack(gateOutputCable);
+            Synchronizer.updateSimulation();
             return gateOutputCable;
         }
 
@@ -634,7 +638,6 @@ public abstract class Gate extends Element {
     }
 
     // #endregion
-
 
     /**
      * Disconnect a cable from any input or output of this gate, also removing
@@ -657,8 +660,8 @@ public abstract class Gate extends Element {
                 if (cable.equals(getInputCable().get(i))) {
                     inputCable.set(i, null);
                     updatePower();
-                    // TODO : add to the list of 'the next elements to update' ?
-                    updateState();
+                    Synchronizer.addToCallStack(this);
+                    Synchronizer.updateSimulation();
                 }
             }
         }
@@ -668,8 +671,8 @@ public abstract class Gate extends Element {
             // disconnect this gate from the cable
             cable.inputGate = null;
             cable.updatePower();
-            // TODO : add to the list of 'the next elements to update' ?
-            cable.updateState();
+            Synchronizer.addToCallStack(cable);
+            Synchronizer.updateSimulation();
 
             // disconnect the cable from this gate
             for (int i = 0; i < getOutputCable().size(); i++) {

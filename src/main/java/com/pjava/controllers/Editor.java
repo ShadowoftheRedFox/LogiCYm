@@ -264,7 +264,7 @@ public class Editor extends VBox {
 
                 File saveFile = fileChooser.showOpenDialog(manager.getStage());
 
-                editedCircuit.save(saveFile.getParent(), saveFile.getName());
+                editedCircuit.save(saveFile.getParent() + saveFile.getName());
             } catch (Exception e) {
                 UIUtils.errorPopup(e.getMessage());
             }
@@ -566,22 +566,15 @@ public class Editor extends VBox {
     private void loadSimulationFile() {
         // Get the primary stage from the scene
         Stage stage = (Stage) this.getScene().getWindow();
-
-        // Open file chooser dialog and get the saved file path
         Path filePath = SimulationFileLoader.loadSimulationFile(stage);
 
         if (filePath != null) {
-            // Display loading message
             System.out.println("Loading simulation data from: " + filePath);
-
-            // Run the simulation
             boolean success = SimulationFileLoader.runSimulation(filePath);
 
             if (success) {
                 System.out.println("Simulation loaded and running successfully!");
-                // Enable the disable simulation button
                 disableSimulationButton.setDisable(false);
-                // Disable the enable simulation button
                 enableSimulationButton.setDisable(true);
             } else {
                 System.err.println("Failed to run simulation.");
@@ -621,6 +614,9 @@ public class Editor extends VBox {
     // #endregion
 
     // #region Gate spawn
+    // BUG bad cable selection
+    // TODO spawn gate on center of teh scroll pane (with current scroll value)
+    // BUG deconnection
     @FXML
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");

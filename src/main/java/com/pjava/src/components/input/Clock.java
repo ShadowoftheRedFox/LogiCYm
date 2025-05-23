@@ -4,6 +4,8 @@ import java.util.BitSet;
 
 import org.json.JSONObject;
 
+import com.pjava.src.components.Synchronizer;
+
 /**
  * A specific type of gate that can periodically send an update. It doesn't have
  * any inputs, and has only one output bus of size 1. This gate can be
@@ -49,7 +51,6 @@ public class Clock extends Input {
         setCycleSpeed(cycleSpeed);
     }
 
-
     /**
      * Make a cycle instantaneously.
      */
@@ -58,6 +59,7 @@ public class Clock extends Input {
 
         lastCycle = System.currentTimeMillis();
         updateState();
+        Synchronizer.updateSimulation();
     }
 
     /**

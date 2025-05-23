@@ -16,7 +16,6 @@ public class Merger extends Gate {
     /**
      * Create a default merger, 2 input bus of size 1.
      *
-     * @param busInput The list of bus sizes.
      * @throws Exception Throws if inputs is null, empty or if the sum of each bus
      *                   is greater than 32.
      */
@@ -37,7 +36,6 @@ public class Merger extends Gate {
         // setup true buses
         setInputBus(busInput);
     }
-
 
     /**
      * Get the sum of the provided array of buses, throwing exceptions if the

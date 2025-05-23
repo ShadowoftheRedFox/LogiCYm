@@ -104,21 +104,15 @@ public abstract class Element {
     };
 
     /**
-     * This function is called when inputs state change.
-     * Equivalent of {@code updateState(true)} ({@link #updateState(boolean)}).
-     */
-    public void updateState() {
-        updateState(true);
-    };
-
-    /**
      * This function is called when inputs state changes.
      * It should updates the return the state accordingly to the inputs.
      * It should also return null if any of the inputs are null.
-     *
-     * @param propagate Whether or not to propagate the changes to the outputs.
+     * <p>
+     * </p>
+     * Each call should check if it needs to propagate the signal. If yes, it must
+     * add itself to the {@link Synchronizer#addToCallStack(Element)}.
      */
-    abstract void updateState(boolean propagate);
+    abstract void updateState();
 
     @Override
     public boolean equals(Object obj) {
