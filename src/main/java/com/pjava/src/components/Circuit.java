@@ -45,6 +45,9 @@ import javafx.scene.paint.Color;
 // TODO : save from an absolute path
 // TODO : keep flag for shema circuit path
 
+// TODO : add "findWithName(String gateName)" to permanently keep a name to reffer to
+
+
 /**
  * FIXME Esteban JAVADOC
  * A class that centralizes all the stations created to be able to save them and
@@ -568,45 +571,6 @@ public class Circuit {
      */
     public Gate addNewGate(String type, String label) throws Exception {
         return addNewGate(type, label, null, null, null, null);
-    }
-
-    /**
-     * shorthand for
-     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
-     * Setting custom base parameters.
-     *
-     * Creates and adds a new gate with custom label and bus sizes
-     *
-     * @param type    the type of gate to create
-     * @param label   the custom label for the gate (if empty, UUID will be used)
-     * @param busSize size of input and output bus
-     * @return the newly created and added gate
-     * @throws Exception if the gate type doesn't exist, label is already taken, or
-     *                   creation fails
-     */
-    public Gate addNewGate(String type, String label, int busSize) throws Exception {
-        return addNewGate(type, label, new int[] { busSize }, new int[] { busSize }, null, null);
-    }
-
-    /**
-     * shorthand for
-     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
-     * Setting custom base parameters
-     * The default size of the input/output bus of the gate will be used.
-     *
-     * Creates and adds a new gate with custom label and bus sizes
-     *
-     * @param type          the type of gate to create
-     * @param label         the custom label for the gate (if empty, UUID will be
-     *                      used)
-     * @param sizeBusInput  array specifying the size of each input bus
-     * @param sizeBusOutput array specifying the size of each output bus
-     * @return the newly created and added gate
-     * @throws Exception if the gate type doesn't exist, label is already taken, or
-     *                   creation fails
-     */
-    public Gate addNewGate(String type, String label, int busSize) throws Exception {
-        return addNewGate(type, label, new int[]{busSize}, new int[]{busSize}, null, null);
     }
 
     /**
@@ -1668,6 +1632,18 @@ public class Circuit {
     public void save() throws Exception {
         // Creating filePath :
         String filePath = String.format("%s/%s.json", UtilsSave.saveFolder.toString(), this.name);
+
+        this.save(filePath, null);
+    }
+
+    /**
+     * Shorthand for {@link #save(String folderPath)}
+     * Saves the circuit to the given path
+     *
+     * @param filePath the given path
+     * @throws Exception if the save operation fails
+     */
+    public void save(String filePath) throws Exception {
 
         this.save(filePath, null);
     }
