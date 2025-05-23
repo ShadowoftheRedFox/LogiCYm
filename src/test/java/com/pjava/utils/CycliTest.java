@@ -11,6 +11,7 @@ import com.pjava.src.components.cables.NodeSplitter;
 import com.pjava.src.components.gates.Not;
 import com.pjava.src.components.gates.Or;
 import com.pjava.src.components.input.Clock;
+import com.pjava.src.components.input.Power;
 import com.pjava.src.utils.Cyclic;
 
 public class CycliTest {
@@ -68,25 +69,19 @@ public class CycliTest {
 
     @Test
     void isUnstable() throws Exception {
-        class TestNot extends Not {
-            @Override
-            public void setPowered(boolean powered) {
-                super.setPowered(powered);
-            }
-        }
-        TestNot not1 = new TestNot();
-        TestNot not2 = new TestNot();
+        Not not = new Not();
 
-        not1.connect(not2);
-        not2.connect(not1);
+        Power p = new Power();
+        Or a = new Or();
 
-        not1.setPowered(true);
-        not2.setPowered(true);
+        p.connect(a);
+        a.connect(not);
+        not.connect(a);
 
         Cyclic cycle = new Cyclic();
 
         assertNull(cycle.getUnstable());
-        assertTrue(cycle.isCyclic(not1));
+        assertTrue(cycle.isCyclic(not));
         assertEquals(true, cycle.getUnstable());
     }
 }

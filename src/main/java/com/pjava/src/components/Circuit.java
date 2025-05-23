@@ -132,7 +132,7 @@ public class Circuit {
         try {
             this.addGatesFromJson(selection);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new Error("Failed to load from JSON", e);
         }
     }
 
@@ -383,7 +383,8 @@ public class Circuit {
      *
      * @param gate  the gate to add to the circuit (must not be null)
      * @param label the unique identifier for the gate (must not be null, blank, or
-     *              already taken)
+     *              already taken). Can he hardcoded for easy reference, but it is
+     *              otherwise the gate uuid.
      * @return the gate that was added to the circuit
      * @throws Exception if the label is null/blank, already exists, or if the gate
      *                   cannot be added

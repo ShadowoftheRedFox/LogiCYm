@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pjava.src.components.Cable;
+import com.pjava.src.components.Circuit;
 import com.pjava.src.components.Element;
 import com.pjava.src.components.Gate;
 
@@ -266,6 +267,26 @@ public class Cyclic {
             // if it changes more than 100 times (cuz why not), system is unstable
 
             // isolate the cycle from the outputs of the cycle
+            Circuit prepareClone = new Circuit();
+            ArrayList<String> cycleLabels = new ArrayList<>();
+            for (Element element : cycleList) {
+                if (element instanceof Gate) {
+                    try {
+                        prepareClone.addGate((Gate) element);
+                        cycleLabels.add(element.uuid().toString());
+                    } catch (Exception e) {
+                        throw new Error("Error during clone preparation", e);
+                    }
+                }
+            }
+
+            System.out.println("Cycle to clone: " + cycleList);
+            try {
+                System.out.println(prepareClone.selectGatesFromIdList(cycleLabels));
+                Circuit isolatedCycle = new Circuit(prepareClone.selectGatesFromIdList(cycleLabels));
+                System.out.println("Cloned cycle  : " + isolatedCycle.getAllGates());
+            } catch (Exception e) {
+            }
         } else {
             unstable = null;
         }
