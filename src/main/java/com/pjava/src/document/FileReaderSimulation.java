@@ -1,20 +1,15 @@
 package com.pjava.src.document;
 
-import com.pjava.src.components.input.Lever;
-import com.pjava.src.components.Circuit;
-import com.pjava.src.components.gates.Schema;
-import com.pjava.src.components.Gate;
-
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 
+import com.pjava.src.components.Circuit;
+import com.pjava.src.components.input.Lever;
 
 public class FileReaderSimulation {
 
@@ -64,8 +59,10 @@ public Boolean perpetual = false;
             return new String[0][0];
         }
     }
+
     /**
      * Create a simulation of the file read with lever and the input give
+     *
      * @param the tab create with createTab
      */
 
@@ -138,7 +135,6 @@ public Boolean perpetual = false;
             }
         }
     }
-
 
     /**
      * Displays the lever values

@@ -25,24 +25,22 @@ public class Lever extends Input {
      */
     public Lever(boolean flipped) {
         super(new int[] { 1 });
+        BitSet state = getState();
         state.set(0, flipped);
+        setState(state);
+        updateState();
     }
 
     /**
      * Flip the lever.
      */
     public void flip() {
+        BitSet state = getState();
         state.flip(0);
+        setState(state);
         updateState();
         Synchronizer.updateSimulation();
     }
-
-    // #region Getters
-    @Override
-    public BitSet getState() {
-        return (BitSet) state.clone();
-    }
-    // #endregion
 
     @Override
     public JSONObject toJson() {

@@ -76,7 +76,6 @@ public class Numeric extends Input {
         setInputValue(initialValue);
     }
 
-
     // #region Setters
 
     /**
@@ -123,7 +122,7 @@ public class Numeric extends Input {
             }
         }
 
-        this.state = BitSet.valueOf(newValueFormated.getBytes());
+        setState(BitSet.valueOf(newValueFormated.getBytes()));
         this.value = newValueFormated;
     }
 
@@ -147,11 +146,6 @@ public class Numeric extends Input {
      */
     public String getValue() {
         return String.format(this.value);
-    }
-
-    @Override
-    public BitSet getState() {
-        return (BitSet) state.clone();
     }
 
     // #endregion

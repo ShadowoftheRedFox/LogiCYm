@@ -1,9 +1,11 @@
 package com.pjava;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import com.pjava.controllers.Editor;
 import com.pjava.src.UI.SceneManager;
+import com.pjava.src.utils.UtilsSave;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -57,6 +59,11 @@ public class App extends Application {
      * @param args Command line arguments.
      */
     public static void main(String[] args) {
+
+        if(!UtilsSave.isFileExists(Path.of("./data"))){
+            UtilsSave.mkdir(Path.of("./data"));
+        }
+
         launch(args);
     }
 }

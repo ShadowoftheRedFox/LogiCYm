@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.pjava.src.UI.Rotation;
 import com.pjava.src.components.cables.Merger;
 import com.pjava.src.components.cables.NodeSplitter;
 import com.pjava.src.components.cables.Splitter;
@@ -28,7 +29,11 @@ import com.pjava.src.components.input.Numeric;
 import com.pjava.src.components.input.Power;
 import com.pjava.src.components.output.Display;
 import com.pjava.src.components.output.Output;
+import com.pjava.src.utils.SaveData;
 import com.pjava.src.utils.UtilsSave;
+
+import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
 
 // TODO : connect back and front, correct implementation of all the back tools
 // TODO : connect back and front
@@ -36,10 +41,11 @@ import com.pjava.src.utils.UtilsSave;
 
 // TODO : test with a complex circuit
 
-
 // TODO : load from an absolute path
 // TODO : save from an absolute path
 // TODO : keep flag for shema circuit path
+
+// TODO : add "findWithName(String gateName)" to permanently keep a name to reffer to
 
 
 /**
@@ -69,6 +75,13 @@ public class Circuit {
      * Value : Gate
      */
     private HashMap<String, Gate> allGates = new HashMap<>();
+
+    /**
+     * Map of all the gates of a circuit
+     * Key : uuid or custom label
+     * Value : Gate
+     */
+    private ArrayList<SaveData> allGatesData = new ArrayList<>();
 
     /**
      * List of all the input gates of a circuit
@@ -191,6 +204,15 @@ public class Circuit {
     }
 
     /**
+     * get an HashMap of all gates
+     *
+     * @return all gates
+     */
+    public ArrayList<SaveData> getAllGatesData() {
+        return this.allGatesData;
+    }
+
+    /**
      * get input gates
      *
      * @return the input of gate
@@ -279,6 +301,9 @@ public class Circuit {
         this.name = name;
     }
 
+    public final void setAllGatesData(ArrayList<SaveData> data) {
+        this.allGatesData = data;
+    }
     // #endregion
 
     // #region setSchemaInputGatePort
@@ -583,45 +608,6 @@ public class Circuit {
      * @throws Exception if the gate type doesn't exist, label is already taken, or
      *                   creation fails
      */
-    public Gate addNewGate(String type, String label, int busSize) throws Exception {
-        return addNewGate(type, label, new int[]{busSize}, new int[]{busSize}, null, null);
-    }
-
-    /**
-     * shorthand for
-     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
-     * Setting custom base parameters.
-     *
-     * Creates and adds a new gate with custom label and bus sizes
-     *
-     * @param type    the type of gate to create
-     * @param label   the custom label for the gate (if empty, UUID will be used)
-     * @param busSize size of input and output bus
-     * @return the newly created and added gate
-     * @throws Exception if the gate type doesn't exist, label is already taken, or
-     *                   creation fails
-     */
-    public Gate addNewGate(String type, String label, int busSize) throws Exception {
-        return addNewGate(type, label, new int[] { busSize }, new int[] { busSize }, null, null);
-    }
-
-    /**
-     * shorthand for
-     * {@link #addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput, String schemaFile, JSONObject schemaJson)}
-     * Setting custom base parameters
-     * The default size of the input/output bus of the gate will be used.
-     *
-     * Creates and adds a new gate with custom label and bus sizes
-     *
-     * @param type          the type of gate to create
-     * @param label         the custom label for the gate (if empty, UUID will be
-     *                      used)
-     * @param sizeBusInput  array specifying the size of each input bus
-     * @param sizeBusOutput array specifying the size of each output bus
-     * @return the newly created and added gate
-     * @throws Exception if the gate type doesn't exist, label is already taken, or
-     *                   creation fails
-     */
     public Gate addNewGate(String type, String label, int[] sizeBusInput, int[] sizeBusOutput) throws Exception {
         return addNewGate(type, label, sizeBusInput, sizeBusOutput, null, null);
     }
@@ -832,6 +818,21 @@ public class Circuit {
         try {
             JSONArray gate_JsonArray = circuit_Json.getJSONArray("Gate");
 
+            if (circuit_Json.has("gateData")) {
+                JSONArray gateData_JsonArray = circuit_Json.getJSONArray("gateData");
+                ArrayList<SaveData> gateData = new ArrayList<>();
+                for (int i = 0; i < gateData_JsonArray.length(); i++) {
+                    JSONObject gateData_Json = gateData_JsonArray.getJSONObject(i);
+
+                    gateData.add(new SaveData(gateData_Json.getInt("uuid"), gateData_Json.getString("label"),
+                            Color.valueOf(gateData_Json.getString("color")),
+                            new Point2D(gateData_Json.getInt("x"), gateData_Json.getInt("y")),
+                            Rotation.valueOf(gateData_Json.getString("rotation"))));
+                }
+
+                setAllGatesData(gateData);
+            }
+
             // 1 : We create new gates from those we find in the json Object and we set
             // their old uuid as a label
             for (int i = 0; i < gate_JsonArray.length(); i++) {
@@ -842,14 +843,14 @@ public class Circuit {
 
                 ArrayList<Integer> listToInt = new ArrayList<Integer>();
                 JSONArray busSize_JsonArray = gate_Json.getJSONArray("inputBus");
-                for (int j = 0; i < busSize_JsonArray.length(); i++) {
+                for (int j = 0; j < busSize_JsonArray.length(); j++) {
                     listToInt.add(busSize_JsonArray.getInt(j));
                 }
                 int[] sizeBusInput = listToInt.stream().mapToInt(Integer::intValue).toArray();
 
                 listToInt.clear();
                 busSize_JsonArray = gate_Json.getJSONArray("outputBus");
-                for (int j = 0; i < busSize_JsonArray.length(); i++) {
+                for (int j = 0; j < busSize_JsonArray.length(); j++) {
                     listToInt.add(busSize_JsonArray.getInt(j));
                 }
                 int[] sizeBusOutput = listToInt.stream().mapToInt(Integer::intValue).toArray();
@@ -1632,7 +1633,33 @@ public class Circuit {
         // Creating filePath :
         String filePath = String.format("%s/%s.json", UtilsSave.saveFolder.toString(), this.name);
 
-        this.save(filePath);
+        this.save(filePath, null);
+    }
+
+    /**
+     * Shorthand for {@link #save(String folderPath)}
+     * Saves the circuit to the given path
+     *
+     * @param filePath the given path
+     * @throws Exception if the save operation fails
+     */
+    public void save(String filePath) throws Exception {
+
+        this.save(filePath, null);
+    }
+
+    /**
+     * Shorthand for {@link #save(String folderPath)}
+     * Saves the circuit to the default location with the circuit's name as
+     * filename.
+     *
+     * @throws Exception if the save operation fails
+     */
+    public void save(JSONArray data) throws Exception {
+        // Creating filePath :
+        String filePath = String.format("%s/%s.json", UtilsSave.saveFolder.toString(), this.name);
+
+        this.save(filePath, data);
     }
 
     /**
@@ -1642,7 +1669,7 @@ public class Circuit {
      * @param filePath absolute or relative path to a json circuit
      * @throws Exception if the save operation fails
      */
-    public void save(String filePath) throws Exception {
+    public void save(String filePath, JSONArray data) throws Exception {
         filePath = filePath.replace("/", File.separator);
 
         // We create the designed file
@@ -1660,7 +1687,7 @@ public class Circuit {
         // We write in the designed file
         try {
             FileWriter writer = new FileWriter(filePath);
-            writer.write(this.toJson().toString(1));
+            writer.write(this.toJson().put("gateData", data).toString(1));
             writer.close();
 
             System.out.println("Circuit saved with success in: " + filePath);

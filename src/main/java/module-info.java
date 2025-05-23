@@ -8,6 +8,7 @@ module com.pjava {
     requires javafx.fxml;
     requires transitive org.json;
     requires javafx.graphics;
+    requires transitive java.desktop;
 
     // export our package
     exports com.pjava;

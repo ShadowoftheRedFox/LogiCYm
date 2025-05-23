@@ -24,9 +24,9 @@ public abstract class Synchronizer {
      * seconds. If simulation speed is negative or 0, it will call it as fast as
      * possible.
      *
-     * By default, simulation speed is as fast a possible (0).
+     * By default, simulation speed is as fast a possible (-1).
      */
-    private static int simulationSpeed = 0;
+    private static int simulationSpeed = -1;
     /**
      * This a flag used to check if the simulation is running. In a running
      * simulation, {@link #updateSimulation()} will do nothing.
@@ -88,9 +88,14 @@ public abstract class Synchronizer {
         }
         // stop the simulation if both group are empty
         if (nextUpdateGroupFalse.size() == 0 && nextUpdateGroupTrue.size() == 0) {
-            simulationRunning = false;
+            if (!shouldPropagate()) {
+                simulationRunning = false;
+            }
             return;
         }
+
+        // calculte the time to the next update
+        long nextUpdate = System.currentTimeMillis() + (shouldPropagate() ? 0 : hertzToMs(simulationSpeed));
 
         // call the elements updateState
         if (groupOrder) {
@@ -106,16 +111,17 @@ public abstract class Synchronizer {
         }
         groupOrder = !groupOrder;
 
-        // TODO maybe a timer?
+        // calculate the amount of time left before next update
+        long beforeNextUpdate = System.currentTimeMillis() - nextUpdate;
+
         // each call have been made, apply the timeout to the next cycle
-        if (shouldPropagate()) {
+        if (shouldPropagate() || beforeNextUpdate <= 0) {
             updateSimulation(true);
         } else {
-            // TODO calculate current time before updateState to dampens the delay of the
             // updateState
             Utils.timeout(() -> {
                 updateSimulation(true);
-            }, hertzToMs(simulationSpeed), new TimeoutCatch() {
+            }, beforeNextUpdate, new TimeoutCatch() {
                 @Override
                 public void handle(Exception e) {
                     throw new Error("Internal simulation update has been broken", e);
@@ -191,6 +197,8 @@ public abstract class Synchronizer {
      */
     public static void setSimulationSpeed(int simulationSpeed) {
         Synchronizer.simulationSpeed = simulationSpeed;
+        // if always propagating, then the simulation is "running"
+        simulationRunning = shouldPropagate();
     }
     // #endregion
 }

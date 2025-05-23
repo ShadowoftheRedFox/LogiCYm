@@ -68,7 +68,7 @@ public class Cable extends Element {
         }
 
         // if multiple input, add (the "or" bitwise) the result
-        state.clear();
+        BitSet state = new BitSet();
         // special case if gate in a splitter
         if (inputGate instanceof Splitter) {
             BitSet gateState;
@@ -88,20 +88,13 @@ public class Cable extends Element {
             }
         }
 
-        // // another early return
-        if (oldState.equals(this.getState())) {
-            // set to the old state
-            state.clear();
-            state.or(oldState);
+        // another early return
+        if (oldState.equals(state)) {
             return;
         }
 
+        setState(state);
         setOldState();
-
-        // no output gate ? no problem !
-        if (outputGate == null) {
-            return;
-        }
 
         // DEBUG if anything break, it's here 200%
 
@@ -130,10 +123,10 @@ public class Cable extends Element {
             }
 
             // we directly pass our state to the corresponding cable
-            correspondingCable.state = getState();
+            correspondingCable.setState(getState());
 
             // We will then update the output gate of the corresponding cable
-            if (correspondingCable.oldState.equals(correspondingCable.state)) {
+            if (correspondingCable.oldState.equals(correspondingCable.getState())) {
                 return;
             }
             correspondingCable.setOldState();
@@ -141,8 +134,8 @@ public class Cable extends Element {
             Synchronizer.addToCallStack(correspondingCable.outputGate);
         } else {
             // we update the output gate of this cable
-            Synchronizer.addToCallStack(outputGate);
         }
+        Synchronizer.addToCallStack(outputGate);
     }
 
     /**
@@ -161,32 +154,6 @@ public class Cable extends Element {
                 outputGate.updatePower();
             }
         }
-    }
-
-    /**
-     * FIXME javadoc
-     * Creates and returns a deep copy of this Cable object.
-     *
-     * @return a new Cable object that is a copy of this cable, or null if an
-     *         exception occurs during the cloning process
-     */
-    @Override
-    public Cable clone() {
-        Cable res = null;
-        try {
-            res = new Cable(this.getBusSize());
-
-            res.setInputGate(this.inputGate);
-            res.setOutputGate(this.outputGate);
-
-            res.setInputPort(this.inputPort);
-            res.setOutputPort(this.outputPort);
-
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-
-        return res;
     }
 
     // #region Getters
@@ -259,42 +226,6 @@ public class Cable extends Element {
         }
 
         this.busSize = busSize;
-    }
-
-    /**
-     * FIXME javadoc
-     * Sets the input gate for this cable connection.
-     *
-     * HACK should be private, or at least protected
-     * BUG can break connections
-     *
-     *
-     * @param gate the gate to set as input source (must not be null)
-     * @throws Exception if the gate parameter is null
-     */
-    private void setInputGate(Gate gate) throws Exception {
-        if (gate == null) {
-            throw new Exception("null input gate");
-        }
-        this.inputGate = gate;
-    }
-
-    /**
-     * FIXME javadoc
-     * Sets the output gate for this cable connection.
-     *
-     * HACK should be private, or at least protected
-     * BUG can break connections
-     *
-     * @param gate the gate to set as output destination (must not be null)
-     * @throws Exception if the gate parameter is null
-     */
-    private void setOutputGate(Gate gate) throws Exception {
-        if (gate == null) {
-            throw new Exception("null output gate");
-        }
-        this.outputGate = gate;
-
     }
 
     /**

@@ -94,14 +94,19 @@ public class CircuitTest {
             circuit2.addNewGate("Button");
             circuit2.addNewGate("Clock");
 
-            circuit2.save("./data/save4.json");
+            circuit2.save("save4", null);
 
             Circuit circuit = new Circuit("Bonjour");
 
-            circuit.save();
+            circuit.save(null);
             // Should do the same thing :
+            circuit.save("", null);
+            circuit.save("data", null);
+            circuit.save("/data", null);
+            circuit.save("data/", null);
+            circuit.save("./data/", null);
+            circuit.save("./data/Bonjour.json", null);
 
-            circuit.save("./data/blabla.json");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -111,48 +116,47 @@ public class CircuitTest {
 
 
     @Test
-    void test4default() {
-        System.out.println("\ntest 4 default : copy to himself default circuit");
-        Circuit circuit3 = new Circuit("Circuit_test4");
+    void test4() {
+        System.out.println("\ntest 4 : copy to himself default circuit");
+        Circuit circuit = new Circuit("circuit_default");
 
         try {
             // all gates
-            circuit3.addNewGate("Power", "p1");
-            circuit3.addNewGate("Ground", "g1");
-            circuit3.addNewGate("Not", "not1");
-            circuit3.addNewGate("And", "and1");
-            circuit3.addNewGate("Or", "or1");
-            circuit3.addNewGate("Lever", "lev1");
-            circuit3.addNewGate("Button", "but1");
-            circuit3.addNewGate("Numeric", "num1");
-            circuit3.addNewGate("Clock", "clo1");
-            circuit3.addNewGate("Display", "dis1");
-            circuit3.addNewGate("NodeSplitter", "cableSplit1");
-            circuit3.addNewGate("Splitter", "busSplit1");
-            circuit3.addNewGate("Merger", "busMerg1");
+            circuit.addNewGate("Power", "p1");
+            circuit.addNewGate("Ground", "g1");
+            circuit.addNewGate("Not", "not1");
+            circuit.addNewGate("And", "and1");
+            circuit.addNewGate("Or", "or1");
+            circuit.addNewGate("Lever", "lev1");
+            circuit.addNewGate("Button", "but1");
+            circuit.addNewGate("Numeric", "num1");
+            circuit.addNewGate("Clock", "clo1");
+            circuit.addNewGate("Display", "dis1");
+            circuit.addNewGate("NodeSplitter", "cableSplit1");
+            circuit.addNewGate("Splitter", "busSplit1");
+            circuit.addNewGate("Merger", "busMerg1");
 
             // connecting some
-            circuit3.connectGate("p1", "not1", 0, 0);
+            circuit.connectGate("p1", "not1", 0, 0);
 
             // save
-            circuit3.save();
-            circuit3.save("./data/test/sirkui_3.json");
+            circuit.save("./data/test/circuit_default.json");
 
             System.out.println("Selection :");
             int j = 0;
-            for (String i : circuit3.getAllGates().keySet()) {
+            for (String i : circuit.getAllGates().keySet()) {
                 System.out.println(
                         String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.getAllGates().get(i).toJson()));
                 j++;
             }
 
-            circuit3.addGatesFromJson(circuit3.toJson());
+            circuit.addGatesFromJson(circuit.toJson());
 
             System.out.println("\nResult :");
             j = 0;
-            for (String i : circuit3.getAllGates().keySet()) {
+            for (String i : circuit.getAllGates().keySet()) {
                 System.out.println(
-                        String.format("%d : key = %s : GateJSON = %s", j, i, circuit3.getAllGates().get(i).toJson()));
+                        String.format("%d : key = %s : GateJSON = %s", j, i, circuit.getAllGates().get(i).toJson()));
                 j++;
             }
 
@@ -224,12 +228,12 @@ public class CircuitTest {
         System.out.println("\ntest 5 : loading circuit files");
         Circuit circuit4 = new Circuit();
         try {
-            circuit4.loadGatesFromFile("./data/save4/circuit_1.json");
+            circuit4.loadGatesFromFile("save4/circuit_1.json");
         } catch (Exception e) {
             System.err.println(e);
         }
 
-        System.out.println("\nLoading './data/save4/circuit_1.json'..");
+        System.out.println("\nLoading 'save4/circuit_1.json'..");
         System.out.println("numéro : clé : Gate");
         int j = 0;
         for (String i : circuit4.getAllGates().keySet()) {
@@ -239,7 +243,7 @@ public class CircuitTest {
 
         // from test 3 : [circuit2_bis] data/bbonqjour.json
         try {
-            circuit4.loadGatesFromFile("./data/bbonqjour.json");
+            circuit4.loadGatesFromFile("bbonqjour");
         } catch (Exception e) {
             System.err.println(e);
         }

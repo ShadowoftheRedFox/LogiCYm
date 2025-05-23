@@ -6,13 +6,21 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.function.Consumer;
+
+import javax.swing.JFileChooser;
+
+import org.json.JSONArray;
 
 import com.pjava.src.UI.SceneManager;
 import com.pjava.src.UI.components.Pin;
 import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
+import com.pjava.src.UI.components.cables.UIMerger;
+import com.pjava.src.UI.components.cables.UINodeSplitter;
+import com.pjava.src.UI.components.cables.UISplitter;
 import com.pjava.src.UI.components.gates.UIAnd;
 import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
@@ -23,11 +31,14 @@ import com.pjava.src.UI.components.input.UILever;
 import com.pjava.src.UI.components.input.UIPower;
 import com.pjava.src.UI.components.output.UIDisplay;
 import com.pjava.src.components.Circuit;
+import com.pjava.src.components.Gate;
+import com.pjava.src.components.Synchronizer;
 import com.pjava.src.document.FileReaderSimulation;
 import com.pjava.src.document.SimulationFileLoader;
 import com.pjava.src.utils.UIUtils;
 import com.pjava.src.utils.UIUtils.ValidationAnwser;
 import com.pjava.src.utils.UtilsSave;
+import com.pjava.src.utils.SaveData;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -58,7 +69,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -190,6 +200,7 @@ public class Editor extends VBox {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @FXML
     private void initialize() {
         manager.getScene().widthProperty().addListener(new ChangeListener<Number>() {
@@ -242,49 +253,44 @@ public class Editor extends VBox {
                 case BACK_SPACE:
                     deleteSelectedElements(null);
                     break;
+                case S:
+                    if (event.isControlDown())
+                        saveEditor(false);
+                    break;
+                case A:
+                    if (event.isControlDown())
+                        selectAllElements(null);
                 default:
                     break;
             }
         });
-        saveButton.setOnAction(event -> {
-            try {
-                editedCircuit.save();
-            } catch (Exception e) {
-                UIUtils.errorPopup(e.getMessage());
-            }
-        });
-        saveAsButton.setOnAction(event -> {
-            try {
-                FileChooser fileChooser = new FileChooser();
-                File intialDirectory = new File("./data");
-                fileChooser.setTitle("Select file to save as");
-                fileChooser.setInitialDirectory(intialDirectory);
-                FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON Files (*.json)",
-                        "*.json");
-                fileChooser.getExtensionFilters().addAll(jsonFilter);
 
-                File saveFile = fileChooser.showOpenDialog(manager.getStage());
-                editedCircuit.save(saveFile.getParent() + saveFile.getName());
-            } catch (Exception e) {
-                UIUtils.errorPopup(e.getMessage());
-            }
+        newFileButton.setOnAction(event -> {
+            saveEditor(true);
+            resetEditor();
+        });
+
+        saveButton.setOnAction(event -> {
+            saveEditor(false);
+        });
+
+        saveAsButton.setOnAction(event -> {
+            saveEditor(true);
+
         });
 
         openFileButton.setOnAction(event -> {
             try {
-                FileChooser fileChooser = new FileChooser();
-                File intialDirectory = new File("./data");
-                fileChooser.setTitle("Select file to open");
-                fileChooser.setInitialDirectory(intialDirectory);
-                FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON Files (*.json)",
-                        "*.json");
-                fileChooser.getExtensionFilters().addAll(jsonFilter);
-
-                File file = fileChooser.showOpenDialog(manager.getStage());
+                File file = UtilsSave.openSaveFolder().showOpenDialog(manager.getStage());
+                resetEditor();
 
                 editedCircuit.loadGatesFromFile(file.getPath());
+
+                addGates((HashMap<String, Gate>) editedCircuit.getAllGates().clone(),(ArrayList<SaveData>) editedCircuit.getAllGatesData().clone());
+
             } catch (Exception e) {
                 UIUtils.errorPopup(e.getMessage());
+                e.printStackTrace();
             }
         });
 
@@ -449,6 +455,7 @@ public class Editor extends VBox {
             // connect cable
             cableController.connect(source, target, sourceGate, targetGate);
             container.getChildren().add(cableController.getNode());
+
             cableController.getNode().toBack();
 
             // FIXME selection doesn't work
@@ -485,12 +492,139 @@ public class Editor extends VBox {
      * @param value the value of hz
      */
     private void setSimulationSpeed(int value) {
-        // TODO edit simulation speed somewhere
+        Synchronizer.setSimulationSpeed(value);
     }
 
-    /**
-     * Create the grid in page
-     */
+    private void saveEditor(Boolean defaultSaving) {
+        selectAllElements(null);
+        try {
+            JSONArray data = new JSONArray();
+            selectedNodes.forEach(node -> {
+                UIElement element = (UIElement) node.getUserData();
+                System.out.println(element.getLogic());
+                data.put(new SaveData(element.getLogic().uuid(), element.getName(), element.getColor(),
+                        element.getPosition(), element.getRotation()).toJson());
+            });
+
+            if (defaultSaving) {
+                JFileChooser c = UtilsSave.openAndSaveInFolder();
+                int result = c.showOpenDialog(null);
+
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File saveFile = c.getSelectedFile();
+                    editedCircuit.save(saveFile.getPath(), data);
+                }
+            } else
+                editedCircuit.save(data);
+            clearSelection();
+            setUnsavedChanges(false);
+        } catch (Exception e) {
+            UIUtils.errorPopup(e.getMessage());
+        }
+    }
+
+    public void resetEditor() {
+        editedCircuit.getAllGates().clear();
+        selectAllElements(null);
+        deleteSelectedElements(null);
+    }
+
+    public void addGateFromSave(Gate gate, String label, SaveData data) throws Exception {
+        addGateFromSave(gate.getClass().getSimpleName(), label, data);
+    }
+
+    public void addGateFromSave(String type, SaveData data) throws Exception {
+        addGateFromSave(type, data);
+    }
+
+    public void addGateFromSave(String type, String label, SaveData data) throws Exception {
+        UIGate elementController;
+        switch (type) {
+            case "Power":
+                elementController = (UIPower) UIGate.create("UIPower");
+                break;
+            case "Ground":
+                elementController = (UIGround) UIGate.create("UIGround");
+                break;
+            case "Lever":
+                elementController = (UILever) UIGate.create("UILever");
+                break;
+            case "Button":
+                elementController = (UIButton) UIGate.create("UIButton");
+                break;
+            case "Clock":
+                elementController = (UIClock) UIGate.create("UIClock");
+                break;
+            case "Display":
+                elementController = (UIDisplay) UIGate.create("UIDisplay");
+                break;
+            // case "Numeric":
+            // elementController = (UINumeric) UIGate.create("UINumeric");
+            // elementController.setName(label);
+            // break;
+            case "Not":
+                elementController = (UINot) UIGate.create("UINot");
+                break;
+            case "And":
+                elementController = (UIAnd) UIGate.create("UIAnd");
+                break;
+            case "Or":
+                elementController = (UIOr) UIGate.create("UIOr");
+                break;
+            case "NodeSplitter":
+                elementController = (UINodeSplitter) UIGate.create("UINodeSplitter");
+                break;
+            case "Splitter":
+                elementController = (UISplitter) UIGate.create("UISplitter");
+                break;
+            case "Merger":
+                elementController = (UIMerger) UIGate.create("UIMerger");
+                break;
+
+            default:
+                throw new Exception("ElementController of type " + type + " not found");
+        }
+        elementController.setName(label);
+        if (data != null) {
+            elementController.getInfos().setPosition(data.position.multiply(UIElement.baseSize));
+            elementController.getInfos().setRotation(data.rotation);
+            elementController.getInfos().setColor(data.color);
+        }
+        // TODO To connect gates with cables:
+        addGate(elementController);
+    }
+
+    public void addGate(UIGate elementController) {
+        container.getChildren().add(elementController.getNode());
+        try {
+            editedCircuit.addGate(elementController.getLogic());
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+
+        pinsListener(elementController);
+        elementController.getNode().setOnMousePressed(mouseEvent -> {
+            selectElement(elementController);
+            replaceInfos(elementController.getInfos().getNode());
+        });
+    }
+
+    public void addGates(HashMap<String, Gate> gates, ArrayList<SaveData> data) {
+        gates.forEach((label, gate) -> {
+            SaveData gateData = null;
+            try {
+                for (SaveData e : data) {
+                    if (e.uuid == gate.uuid())
+                        gateData = e;
+                }
+                addGateFromSave(gate, label, gateData);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
+
     public void resizeGrid() {
         final double paneWidth = viewScroll.getWidth();
         final double paneHeight = viewScroll.getHeight();
@@ -521,7 +655,6 @@ public class Editor extends VBox {
             gridPane.getColumnConstraints().add(col);
         }
     }
-
     // #endregion
 
     private void replaceInfos(Node content) {
@@ -540,9 +673,8 @@ public class Editor extends VBox {
         if (unsavedChanges) {
             Consumer<ValidationAnwser> callback = (res) -> {
                 if (res == ValidationAnwser.APPROVED) {
-                    // TODO save here
                     try {
-                        editedCircuit.save();
+                        saveEditor(true);
                     } catch (Exception e) {
                         UIUtils.errorPopup(e.getMessage());
                     }
@@ -566,10 +698,25 @@ public class Editor extends VBox {
     private void loadSimulationFile() {
         // Get the primary stage from the scene
         Stage stage = (Stage) this.getScene().getWindow();
+
+        // Open file chooser dialog and get the saved file path
         Path filePath = SimulationFileLoader.loadSimulationFile(stage);
 
         if (filePath != null) {
+            // Display loading message
             System.out.println("Loading simulation data from: " + filePath);
+
+            // Run the simulation
+            boolean success = SimulationFileLoader.runSimulation(filePath);
+
+            if (success) {
+                System.out.println("Simulation loaded and running successfully!");
+                // Enable the disable simulation button
+                disableSimulationButton.setDisable(false);
+                // Disable the enable simulation button
+                enableSimulationButton.setDisable(true);
+            } else {
+                System.err.println("Failed to run simulation.");
             try{
                 FileReaderSimulation simulation = SimulationFileLoader.startSimulation(filePath,editedCircuit);
                 if (simulation!=null) {
@@ -625,130 +772,72 @@ public class Editor extends VBox {
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
         UIAnd andController = (UIAnd) UIElement.create("UIAnd");
-        Node and = andController.getNode();
-        container.getChildren().add(and);
-
-        pinsListener(andController);
-        andController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(andController);
-            replaceInfos(andController.getInfos().getNode());
-        });
+        try {
+            addGate(andController);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     public void clickOr(ActionEvent event) {
         System.out.println("Click Or!");
         UIOr orController = (UIOr) UIElement.create("UIOr");
-        Node or = orController.getNode();
-        container.getChildren().add(or);
-
-        pinsListener(orController);
-        orController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(orController);
-            replaceInfos(orController.getInfos().getNode());
-        });
+        addGate(orController);
     }
 
     @FXML
     public void clickNot(ActionEvent event) {
         System.out.println("Click Not!");
         UINot notController = (UINot) UIElement.create("UINot");
-        Node not = notController.getNode();
-        container.getChildren().add(not);
-
-        pinsListener(notController);
-        notController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(notController);
-            replaceInfos(notController.getInfos().getNode());
-        });
+        addGate(notController);
     }
 
     @FXML
     public void clickButton(ActionEvent event) {
         System.out.println("Click Button!");
         UIButton buttonController = (UIButton) UIElement.create("UIButton");
-        Node button = buttonController.getNode();
-        container.getChildren().add(button);
-
-        pinsListener(buttonController);
-        buttonController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(buttonController);
-            replaceInfos(buttonController.getInfos().getNode());
-        });
+        addGate(buttonController);
     }
 
     @FXML
     public void clickClock(ActionEvent event) {
         System.out.println("Click clock!");
         UIClock clockController = (UIClock) UIElement.create("UIClock");
-        Node clock = clockController.getNode();
-        container.getChildren().add(clock);
-
-        pinsListener(clockController);
-        clockController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(clockController);
-            replaceInfos(clockController.getInfos().getNode());
-        });
+        addGate(clockController);
     }
 
     @FXML
     public void clickLever(ActionEvent event) {
         System.out.println("Click lever!");
         UILever leverController = (UILever) UIElement.create("UILever");
-        Node lever = leverController.getNode();
-        container.getChildren().add(lever);
-
-        pinsListener(leverController);
-        leverController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(leverController);
-            replaceInfos(leverController.getInfos().getNode());
-        });
+        addGate(leverController);
     }
 
     @FXML
     public void clickPower(ActionEvent event) {
         System.out.println("Click power!");
         UIPower powerController = (UIPower) UIElement.create("UIPower");
-        Node power = powerController.getNode();
-        container.getChildren().add(power);
-
-        pinsListener(powerController);
-        powerController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(powerController);
-            replaceInfos(powerController.getInfos().getNode());
-        });
+        addGate(powerController);
     }
 
     @FXML
     public void clickGround(ActionEvent event) {
         System.out.println("Click ground!");
         UIGround groundController = (UIGround) UIElement.create("UIGround");
-        Node ground = groundController.getNode();
-        container.getChildren().add(ground);
-
-        pinsListener(groundController);
-        groundController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(groundController);
-            replaceInfos(groundController.getInfos().getNode());
-        });
+        addGate(groundController);
     }
 
     @FXML
     public void clickDisplay(ActionEvent event) {
         System.out.println("Click display!");
         UIDisplay displayController = (UIDisplay) UIElement.create("UIDisplay");
-        Node display = displayController.getNode();
-        container.getChildren().add(display);
-
-        pinsListener(displayController);
-        displayController.getNode().setOnMousePressed(mouseEvent -> {
-            selectElement(displayController);
-            replaceInfos(displayController.getInfos().getNode());
-        });
+        addGate(displayController);
     }
 
     @FXML
     public void clickCable(ActionEvent event) {
+        setUnsavedChanges(true);
         System.out.println("Click Cable!");
         UICable cableController = (UICable) UIElement.create("UICable");
         Node and = cableController.getNode();
@@ -762,12 +851,20 @@ public class Editor extends VBox {
 
     @FXML
     public void clickMerger(ActionEvent event) {
+        setUnsavedChanges(true);
         System.out.println("Click Merger!");
     }
 
     @FXML
     public void clickSplitter(ActionEvent event) {
+        setUnsavedChanges(true);
         System.out.println("Click Splitter!");
+    }
+
+    @FXML
+    public void clickSchema(ActionEvent event) {
+        setUnsavedChanges(true);
+        System.out.println("Click Schema!");
     }
     // #endregion
 
@@ -778,7 +875,6 @@ public class Editor extends VBox {
      *
      * @param event clic on element
      */
-
     private void pressSelection(MouseEvent event) {
         // make sure selection always start on the grid
         if (!gridPane.equals(event.getTarget()) &&
@@ -886,6 +982,12 @@ public class Editor extends VBox {
     private void toggleSimulation(boolean activated) {
         enableSimulationButton.setDisable(activated);
         disableSimulationButton.setDisable(!activated);
+        editedCircuit.getClockGates().forEach((name, clock) -> {
+            clock.setEnabled(activated);
+        });
+        if (activated) {
+            Synchronizer.updateSimulation();
+        }
     }
 
     /**
