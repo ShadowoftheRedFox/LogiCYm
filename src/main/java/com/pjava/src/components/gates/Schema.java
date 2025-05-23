@@ -38,7 +38,7 @@ public class Schema extends Gate {
     private String name;
 
     /**
-     * FIXME javadoc
+     * File path to a circuit to create the schema
      */
     private String filePath = null;
 
@@ -58,10 +58,12 @@ public class Schema extends Gate {
 
     /**
      * FIXME javadoc
+     * input that are inside the schema.
      */
     private ArrayList<Cable> innerInputCable = new ArrayList<>();
     /**
      * FIXME javadoc
+     * output that are inside the schema.
      */
     private ArrayList<Cable> innerOutputCable = new ArrayList<>();
 
@@ -74,8 +76,8 @@ public class Schema extends Gate {
      * The schema's inner circuit is saved in the folder
      * './data/schema/SCHEMA_NAME.json'
      *
-     * @param selection
-     * @throws Exception
+     * @param selection schema in json format
+     * @throws Exception json format can't be read
      */
     public Schema(JSONObject selection) throws Exception {
         this.loadFromJson(selection);
@@ -86,7 +88,6 @@ public class Schema extends Gate {
      * Create a new schema with the given circuit file json,
      * set his name from the circuit name.
      *
-     * @param schemaName The name of the schema.
      * @param filePath   File path to a circuit to create the schema
      * @throws Exception Throws if the schema fails to save, or name is invalid, or
      *                   gates array is invalid.
@@ -130,28 +131,55 @@ public class Schema extends Gate {
     // #endregion
 
     // #region Getters
-
+    /**
+     * Returns the name of the circuit.
+     *
+     * @return the circuit name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the file path of the circuit.
+     *
+     * @return the file path
+     */
     public String getFilePath() {
         return filePath;
     }
+    /**
+     * Returns the inner circuit.
+     *
+     * @return the inner Circuit object
+     */
 
     public Circuit getInnerCircuit() {
         return innerCircuit;
     }
-
+    /**
+     * Returns the list of input cables connected to the inner circuit.
+     *
+     * @return a list of input cables
+     */
     public ArrayList<Cable> getInnerInputCable(){
         return innerInputCable;
     }
-
+    /**
+     * Returns the list of output cables connected to the inner circuit.
+     *
+     * @return a list of output cables
+     */
     public ArrayList<Cable> getInnerOutputCable(){
         return innerOutputCable;
     }
 
-
+    /**
+     * It serves only as a bridge between the outer and inner circuits.
+     *
+     * @return nothing, always throws an error
+     * @throws Error indicating that schema elements do not have a state
+     */
     @Override
     public BitSet getState() {
         throw new Error("Shema has no state, it's just a bridge between the circuit it's in an his inner circuit.\n 'Cable.updateState()' should use this bridge when it detect that his output gate is a schema");
@@ -165,8 +193,8 @@ public class Schema extends Gate {
         /**
          * check if the name is correct
          *
-         * @param name
-         * @throws IllegalArgumentException
+         * @param name name of the schema
+         * @throws IllegalArgumentException if name is empty
          */
         public final void setName(String name) throws IllegalArgumentException {
             if (name == null || name.isBlank()) {
@@ -183,7 +211,7 @@ public class Schema extends Gate {
     /**
      * Set the schema gate inner circuit and ports from a json selection of gates
      *
-     * @param selection
+     * @param selection schema in Json format
      */
     public final void loadFromJson(JSONObject selection) {
         // input/output gate that are set to -1 will be connected to the schema gate
@@ -224,7 +252,7 @@ public class Schema extends Gate {
      * and all schema inner output port will become a output gate with an assigned
      * port.
      *
-     * @return
+     * @return the inner Circuit
      */
     public Circuit convertInnerCircuitToCircuit() {
         Circuit newCircuit = new Circuit(this.name);
@@ -424,6 +452,12 @@ public class Schema extends Gate {
 
     // #region toJson
 
+    /**
+     * Converts this schema element to a JSON object.
+     *
+     * @return a JSONObject representing this schema
+     *
+     */
     @Override
     public JSONObject toJson() {
         JSONObject json = super.toJson();
@@ -442,8 +476,8 @@ public class Schema extends Gate {
     /**
      * rename the schema and save it as './data/schema/NAME.json'
      *
-     * @param name
-     * @throws IllegalArgumentException
+     * @param name name of the schema
+     * @throws IllegalArgumentException if name is empty
      */
     public final void setNameAndSave(String name) throws IllegalArgumentException {
         if (name == null || name.isBlank()) {
@@ -460,8 +494,9 @@ public class Schema extends Gate {
 
     /**
      * Shorthand for {@link #saveInnerCircuit(String filePath)}
+     * Saves the inner circuit to its current file path.
      *
-     * @throws Exception
+     * @throws Exception if saving fail
      */
     public void saveInnerCircuit() throws Exception {
         this.saveInnerCircuit(this.filePath);
@@ -474,8 +509,8 @@ public class Schema extends Gate {
      * i.e : all schéma's port are tranformed into input/output gates
      * We use {@link #convertInnerCircuitToCircuit()}
      *
-     * @param filePath
-     * @throws Exception
+     * @param filePath The destination path for the JSON file.
+     * @throws Exception If an error occurs while saving the file.
      */
     public void saveInnerCircuit(String filePath) throws Exception {
         // Formating folderPath

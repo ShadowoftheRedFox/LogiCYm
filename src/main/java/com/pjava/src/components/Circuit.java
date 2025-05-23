@@ -37,6 +37,10 @@ import com.pjava.src.utils.UtilsSave;
 
 // TODO : test with a complex circuit
 
+/** FIXME Esteban JAVADOC
+ * A class that centralizes all the stations created to be able to save them and better manage them
+ */
+
 public class Circuit {
 
     // #region Attributes
@@ -229,6 +233,10 @@ public class Circuit {
     // #endregion
 
     // #region Setters
+    /**
+     * set the name of the circuit
+     * @param name name of the circuit
+     */
 
     public final void setName(String name) {
         if (name == null || name.isBlank()) {
