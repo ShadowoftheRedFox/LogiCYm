@@ -1113,7 +1113,7 @@ public class Circuit {
 
             // 1.bis : We whant to turn all Input(Lever/Numeric) and Output into schema port
             // Input
-            for (String key : tempCircuit.getInputGates().keySet()) {
+            for (String key : ((HashMap<String,Input>)tempCircuit.getInputGates().clone()).keySet()) {
                 // We only want to make schema port from thoses input gates
                 Input gate = tempCircuit.getInputGates().get(key);
                 if (!(gate instanceof Lever || gate instanceof Numeric)) {
@@ -1173,7 +1173,7 @@ public class Circuit {
             }
 
             // output
-            for (String key : tempCircuit.getOutputGates().keySet()) {
+            for (String key : ((HashMap<String,Output>)tempCircuit.getOutputGates().clone()).keySet()) {
 
                 // We only want to make schema port from thoses output gates
                 /*

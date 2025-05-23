@@ -68,6 +68,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -1115,31 +1116,43 @@ public class Editor extends VBox {
      * @param event the ActionEvent triggering the deletion
      */
     @FXML
+
     private void deleteSelectedElements(ActionEvent event) {
-        // Use a new list to avoid ConcurrentModificationException
         ArrayList<Node> nodesToRemove = new ArrayList<>(selectedNodes);
 
         for (Node node : nodesToRemove) {
-            // If it's a UIElement, handle disconnections
             if (node.getUserData() instanceof UIElement) {
                 UIElement element = (UIElement) node.getUserData();
 
-                // If the element is a logic gate, manage its connections
                 if (element instanceof UIGate) {
                     UIGate gate = (UIGate) element;
                     gate.disconnect();
+                    container.getChildren().remove(node);
                 } else if (element instanceof UICable) {
                     UICable cable = (UICable) element;
                     cable.disconnect();
+                    container.getChildren().remove(cable.getNode()); // Supprimer le container, pas la ligne
+                }
+            } else {
+                // Pour les lignes sélectionnées directement
+                if (node instanceof Line) {
+                    // Trouver le câble parent
+                    for (Node containerChild : container.getChildren()) {
+                        if (containerChild.getUserData() instanceof UICable) {
+                            UICable cable = (UICable) containerChild.getUserData();
+                            if (cable.getLine() == node) {
+                                cable.disconnect();
+                                container.getChildren().remove(containerChild);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
-
-            // Remove the node from the container
-            container.getChildren().remove(node);
         }
 
-        // Clear the selection
         clearSelection();
+        setUnsavedChanges(true);
     }
 
     /**
@@ -1330,4 +1343,5 @@ public class Editor extends VBox {
         updateSelectionActions();
     }
     // #endregion
+
 }
