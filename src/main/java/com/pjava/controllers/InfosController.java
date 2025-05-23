@@ -92,6 +92,7 @@ public class InfosController {
                 setState(enableToggle.isSelected());
             });
         }
+        // BUG maximum callstack exceeded
         if (inputSize != null) {
             inputSize.textProperty().addListener(new ChangeListener<String>() {
                 @Override
@@ -99,7 +100,9 @@ public class InfosController {
                     int value = 0;
                     try {
                         value = Integer.parseInt(newValue);
-                        setInputSize(value);
+                        if (!setInputSize(value)) {
+                            inputSize.setText(oldValue);
+                        }
                     } catch (Exception e) {
                         inputSize.setText(oldValue);
                     }
@@ -118,7 +121,9 @@ public class InfosController {
                     int value = 0;
                     try {
                         value = Integer.parseInt(newValue);
-                        setOutputSize(value);
+                        if (!setOutputSize(value)) {
+                            outputSize.setText(oldValue);
+                        }
                     } catch (Exception e) {
                         outputSize.setText(oldValue);
                     }
@@ -263,7 +268,6 @@ public class InfosController {
         if (point == null ||
         // check non negative position (out of bound of the grid)
                 point.getX() < 0 || point.getY() < 0) {
-            System.out.println(point);
             return false;
         }
         if (!fromOrigin) {

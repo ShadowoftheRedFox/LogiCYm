@@ -522,6 +522,7 @@ public class Editor extends VBox {
     }
 
     public void resetEditor() {
+        editedCircuit.getAllGates().clear();
         selectAllElements(null);
         deleteSelectedElements(null);
     }
@@ -587,12 +588,17 @@ public class Editor extends VBox {
             elementController.getInfos().setRotation(data.rotation);
             elementController.getInfos().setColor(data.color);
         }
+        // TODO To connect gates with cables:
         addGate(elementController);
     }
 
-    public void addGate(UIGate elementController) throws Exception {
+    public void addGate(UIGate elementController) {
         container.getChildren().add(elementController.getNode());
-        editedCircuit.addGate(elementController.getLogic());
+        try {
+            editedCircuit.addGate(elementController.getLogic());
+        } catch (Exception e) {
+            throw new Error(e);
+        }
 
         pinsListener(elementController);
         elementController.getNode().setOnMousePressed(mouseEvent -> {
@@ -749,63 +755,67 @@ public class Editor extends VBox {
     // TODO spawn gate on center of teh scroll pane (with current scroll value)
     // BUG deconnection
     @FXML
-    public void clickAnd(ActionEvent event) throws Exception {
+    public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
         UIAnd andController = (UIAnd) UIElement.create("UIAnd");
-        addGate(andController);
+        try {
+            addGate(andController);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
-    public void clickOr(ActionEvent event) throws Exception {
+    public void clickOr(ActionEvent event) {
         System.out.println("Click Or!");
         UIOr orController = (UIOr) UIElement.create("UIOr");
         addGate(orController);
     }
 
     @FXML
-    public void clickNot(ActionEvent event) throws Exception {
+    public void clickNot(ActionEvent event) {
         System.out.println("Click Not!");
         UINot notController = (UINot) UIElement.create("UINot");
         addGate(notController);
     }
 
     @FXML
-    public void clickButton(ActionEvent event) throws Exception {
+    public void clickButton(ActionEvent event) {
         System.out.println("Click Button!");
         UIButton buttonController = (UIButton) UIElement.create("UIButton");
         addGate(buttonController);
     }
 
     @FXML
-    public void clickClock(ActionEvent event) throws Exception {
+    public void clickClock(ActionEvent event) {
         System.out.println("Click clock!");
         UIClock clockController = (UIClock) UIElement.create("UIClock");
         addGate(clockController);
     }
 
     @FXML
-    public void clickLever(ActionEvent event) throws Exception {
+    public void clickLever(ActionEvent event) {
         System.out.println("Click lever!");
         UILever leverController = (UILever) UIElement.create("UILever");
         addGate(leverController);
     }
 
     @FXML
-    public void clickPower(ActionEvent event) throws Exception {
+    public void clickPower(ActionEvent event) {
         System.out.println("Click power!");
         UIPower powerController = (UIPower) UIElement.create("UIPower");
         addGate(powerController);
     }
 
     @FXML
-    public void clickGround(ActionEvent event) throws Exception {
+    public void clickGround(ActionEvent event) {
         System.out.println("Click ground!");
         UIGround groundController = (UIGround) UIElement.create("UIGround");
         addGate(groundController);
     }
 
     @FXML
-    public void clickDisplay(ActionEvent event) throws Exception {
+    public void clickDisplay(ActionEvent event) {
         System.out.println("Click display!");
         UIDisplay displayController = (UIDisplay) UIElement.create("UIDisplay");
         addGate(displayController);
