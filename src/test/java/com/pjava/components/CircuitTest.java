@@ -100,8 +100,8 @@ public class CircuitTest {
             circuit.save("/data");
             circuit.save("data/");
             circuit.save("./data/");
-            circuit.save("", "Bonjour");
-            circuit.save("", "Bonjour.json");
+            //circuit.save("", "Bonjour");
+            //circuit.save("", "Bonjour.json");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -135,7 +135,7 @@ public class CircuitTest {
 
             // save
             circuit3.save();
-            circuit3.save("test", "sirkui_3");
+           // circuit3.save("test", "sirkui_3");
 
             System.out.println("Selection :");
             int j = 0;

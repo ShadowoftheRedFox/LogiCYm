@@ -18,7 +18,7 @@ public class SchemaTest {
     @Test
     void basic() throws Exception {
 
-        // TODO : update the test to fit the new shema implementation
+        // TODO : update the test to fit the new schema implementation
         /*
             Power p1 = new Power(2);
             Power p3 = new Power(2);
