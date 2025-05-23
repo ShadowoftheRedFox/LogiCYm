@@ -35,7 +35,7 @@ public abstract class Element {
         /**
          * Event to handle the updatePower of the given element.
          *
-         * @param element The element that has been ipdated.
+         * @param element The element that has been updated.
          */
         default public void updatePower(Element element) {
         }

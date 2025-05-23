@@ -460,7 +460,7 @@ public abstract class Gate extends Element {
                 // incompatible sizes
                 return null;
             } else {
-                throw new Exception("connection possible but bus allready full");
+                throw new Exception("connection possible but bus already full");
             }
         } else // check if both cable are empty
         if (thisInnerInputCable == null && gateInputCable == null) {
@@ -480,7 +480,7 @@ public abstract class Gate extends Element {
         } else // if either is null
         if (thisInnerInputCable != null && gateInputCable == null) {
             if (thisInnerInputCable.getOutputGate() != null) {
-                throw new Exception("connection possible but bus allready full");
+                throw new Exception("connection possible but bus already full");
             }
             thisInnerInputCable.outputGate = gate;
             gate.getInputCable().set(gateInputIndex, thisInnerInputCable);
@@ -491,7 +491,7 @@ public abstract class Gate extends Element {
             return thisInnerInputCable;
         } else if (thisInnerInputCable == null && gateInputCable != null) {
             if (gateInputCable.getInputGate() != null) {
-                throw new Exception("connection possible but bus allready full");
+                throw new Exception("connection possible but bus already full");
             }
             gateInputCable.inputGate = schema;
             schema.getInnerInputCable().set(schemaInnerInputIndex, gateInputCable);
@@ -586,7 +586,7 @@ public abstract class Gate extends Element {
                 // incompatible sizes
                 return null;
             } else {
-                throw new Exception("connection possible but bus allready full");
+                throw new Exception("connection possible but bus already full");
             }
         } else // check if both cable are empty
         if (thisInnerOutputCable == null && gateOutputCable == null) {
@@ -606,7 +606,7 @@ public abstract class Gate extends Element {
         } else // if either is null
         if (thisInnerOutputCable != null && gateOutputCable == null) {
             if (thisInnerOutputCable.getInputGate() != null) {
-                throw new Exception("connection possible but bus allready full");
+                throw new Exception("connection possible but bus already full");
             }
             thisInnerOutputCable.inputGate = gate;
             gate.getOutputCable().set(gateOutputIndex, thisInnerOutputCable);
@@ -617,7 +617,7 @@ public abstract class Gate extends Element {
             return thisInnerOutputCable;
         } else if (thisInnerOutputCable == null && gateOutputCable != null) {
             if (gateOutputCable.getOutputGate() != null) {
-                throw new Exception("connection possible but bus allready full");
+                throw new Exception("connection possible but bus already full");
             }
             gateOutputCable.outputGate = schema;
             schema.getInnerOutputCable().set(schemaInnerOutputIndex, gateOutputCable);

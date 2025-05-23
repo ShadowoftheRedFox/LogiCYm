@@ -2,6 +2,8 @@ package com.pjava.src.UI.components.input;
 
 import com.pjava.src.UI.components.Pin;
 import com.pjava.src.UI.components.UIGate;
+import com.pjava.src.components.Element;
+import com.pjava.src.components.Element.ElementEvent;
 import com.pjava.src.components.input.Clock;
 
 import javafx.fxml.FXML;
@@ -41,6 +43,17 @@ public class UIClock extends UIGate {
         outputController.originController = this;
 
         outputPins.add(outputController);
+
+
+        getLogic().getUpdateEvents().add(new ElementEvent() {
+            public void updateState(Element element) {
+                updateVisuals();
+            };
+
+            public void updatePower(Element element) {
+                updateVisuals();
+            };
+        });
     }
 
     @Override
