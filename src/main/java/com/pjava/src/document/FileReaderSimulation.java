@@ -1,6 +1,9 @@
 package com.pjava.src.document;
 
 import com.pjava.src.components.input.Lever;
+import com.pjava.src.components.Circuit;
+import com.pjava.src.components.gates.Schema;
+import com.pjava.src.components.Gate;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,7 +54,7 @@ public class FileReaderSimulation {
      * @param the tab create with createTab
      */
 
-    public static void Simulation(String[][] tab){
+  /*  public static void Simulation(String[][] tab){
 
         Map<String, Lever> levers = new HashMap<>();
         for (int i = 0; i < tab.length; i++) {
@@ -84,11 +87,24 @@ public class FileReaderSimulation {
                 }
             }
         }
+    } */
+/*  */
+    public static void Simulation(String[][] tab) throws Exception{
+        Circuit circuit = null;
+        ArrayList<Lever> listeInput = new ArrayList<>();
+        listeInput = circuit.getLeverGate();
+        //String path = "H:/Documents/GitHub/LogiCYm/src/main/java/com/pjava/src/document/Read/"; 
+        for (int i = 0; i < tab.length; i++) {
+            String name = tab[i][0];
+        }
+
     }
+
+
     /**
      * Displays the lever values
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Path path = Paths.get("H:/Documents/GitHub/LogiCYm/src/main/java/com/pjava/src/document/Read/simu.txt");
         String[][] tab = createTab(path);
 

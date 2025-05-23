@@ -251,7 +251,6 @@ public class Editor extends VBox {
                 UIUtils.errorPopup(e.getMessage());
             }
         });
-
         saveAsButton.setOnAction(event -> {
             try {
                 FileChooser fileChooser = new FileChooser();
@@ -263,7 +262,6 @@ public class Editor extends VBox {
                 fileChooser.getExtensionFilters().addAll(jsonFilter);
 
                 File saveFile = fileChooser.showOpenDialog(manager.getStage());
-
                 editedCircuit.save(saveFile.getParent() + saveFile.getName());
             } catch (Exception e) {
                 UIUtils.errorPopup(e.getMessage());
