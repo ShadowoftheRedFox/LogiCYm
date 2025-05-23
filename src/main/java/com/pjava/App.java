@@ -1,7 +1,6 @@
 package com.pjava;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 import com.pjava.controllers.Editor;
 import com.pjava.src.UI.SceneManager;
@@ -59,9 +58,8 @@ public class App extends Application {
      * @param args Command line arguments.
      */
     public static void main(String[] args) {
-
-        if(!UtilsSave.isFileExists(Path.of("./data"))){
-            UtilsSave.mkdir(Path.of("./data"));
+        if (!UtilsSave.isFileExists(UtilsSave.saveFolder)) {
+            UtilsSave.mkdir(UtilsSave.saveFolder);
         }
 
         launch(args);
