@@ -1,6 +1,7 @@
 package com.pjava.controllers;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import com.pjava.src.UI.components.input.UILever;
 import com.pjava.src.UI.components.input.UIPower;
 import com.pjava.src.UI.components.output.UIDisplay;
 import com.pjava.src.components.Circuit;
+import com.pjava.src.document.FileReaderSimulation;
 import com.pjava.src.document.SimulationFileLoader;
 import com.pjava.src.utils.UIUtils;
 import com.pjava.src.utils.UIUtils.ValidationAnwser;
@@ -568,14 +570,18 @@ public class Editor extends VBox {
 
         if (filePath != null) {
             System.out.println("Loading simulation data from: " + filePath);
-            boolean success = SimulationFileLoader.runSimulation(filePath);
-
-            if (success) {
-                System.out.println("Simulation loaded and running successfully!");
-                disableSimulationButton.setDisable(false);
-                enableSimulationButton.setDisable(true);
-            } else {
-                System.err.println("Failed to run simulation.");
+            try{
+                FileReaderSimulation simulation = SimulationFileLoader.startSimulation(filePath,editedCircuit);
+                if (simulation!=null) {
+                    System.out.println("Simulation loaded successfully!");
+                    disableSimulationButton.setDisable(false);
+                    enableSimulationButton.setDisable(true);
+                } else {
+                    System.err.println("Failed to run simulation.");
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading simulation:" +e.getMessage());
+                e.printStackTrace();
             }
         } else {
             System.out.println("Simulation file selection canceled.");

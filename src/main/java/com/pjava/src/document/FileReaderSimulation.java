@@ -18,6 +18,21 @@ import java.util.HashMap;
 
 public class FileReaderSimulation {
 
+public HashMap<String,ArrayList<Boolean>> leverSimulator= new HashMap<>();
+
+public int actualStep=0;
+public int maxStep=-1;
+
+public long stepDelay;
+public long timeLastStep;
+
+public Circuit circuit;
+
+public Boolean simulationActivated;
+
+public Boolean perpetual = false;
+
+
     
 /**
  * Create a 2D array to store the different values ​​of the file
@@ -54,7 +69,7 @@ public class FileReaderSimulation {
      * @param the tab create with createTab
      */
 
-  /*  public static void Simulation(String[][] tab){
+   /* public static void Simulation(String[][] tab){
 
         Map<String, Lever> levers = new HashMap<>();
         for (int i = 0; i < tab.length; i++) {
@@ -88,23 +103,47 @@ public class FileReaderSimulation {
             }
         }
     } */
-/*  */
-    public static void Simulation(String[][] tab) throws Exception{
-        Circuit circuit = null;
-        ArrayList<Lever> listeInput = new ArrayList<>();
-        listeInput = circuit.getLeverGate();
-        //String path = "H:/Documents/GitHub/LogiCYm/src/main/java/com/pjava/src/document/Read/"; 
-        for (int i = 0; i < tab.length; i++) {
-            String name = tab[i][0];
+    public void simulationOrganizer() throws Exception{
+        if(!this.simulationActivated){
+            return;
         }
+        if( System.currentTimeMillis() - timeLastStep > stepDelay){
+            if( actualStep < maxStep){
+                actualStep++;
+            }
+            else{
+                actualStep = 0;
+                if(!perpetual){
+                    simulationActivated = false;
+                }
+            }
+            if(simulationActivated){
+                HashMap<String,Boolean> leverStepState = new HashMap<>();
+                for(String key: leverSimulator.keySet()){
+                    leverStepState.put(key, leverSimulator.get(key).get(actualStep));
+                }
+                simulationStep(leverStepState);
+                timeLastStep= System.currentTimeMillis();
+            }
+        }
+    }
 
+    public void simulationStep(HashMap<String,Boolean> leverStepState) throws Exception{
+        if (leverStepState.size() < circuit.getLeverGates().size()){
+            throw new Exception("Simulation don't have enought input");
+        }
+        for( String id : circuit.getLeverGates().keySet()){
+            if(circuit.getLeverGates().get(id).getState(0) != leverStepState.get(id)){
+                circuit.getLeverGates().get(id).flip();
+            }
+        }
     }
 
 
     /**
      * Displays the lever values
      */
-    public static void main(String[] args) throws Exception {
+ /*   public static void main(String[] args) throws Exception {
         Path path = Paths.get("H:/Documents/GitHub/LogiCYm/src/main/java/com/pjava/src/document/Read/simu.txt");
         String[][] tab = createTab(path);
 
@@ -112,5 +151,5 @@ public class FileReaderSimulation {
             System.out.println(Arrays.toString(col));
         }
         Simulation(tab);
-    }
+    }*/
 }

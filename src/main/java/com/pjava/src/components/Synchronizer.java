@@ -1,7 +1,9 @@
 package com.pjava.src.components;
 
+import java.io.FileReader;
 import java.util.HashSet;
 
+import com.pjava.src.document.FileReaderSimulation;
 import com.pjava.src.utils.Utils;
 import com.pjava.src.utils.Utils.TimeoutCatch;
 
@@ -30,7 +32,10 @@ public abstract class Synchronizer {
      * simulation, {@link #updateSimulation()} will do nothing.
      */
     private static boolean simulationRunning = false;
-
+    /**
+     * Set the lever input to predeterminate state from a file step by step
+     */
+    private static FileReaderSimulation inputSimulator = null;
     /**
      * The next group of element to update. Each {@link Element#updateState()} will
      * add their own instance into this group. Then the group will update a cycle
