@@ -316,11 +316,11 @@ public abstract class Gate extends Element {
 
         if (thisOutputIndex < 0 || this.outputBus.length <= thisOutputIndex) {
             throw new IndexOutOfBoundsException(
-                    "Expected 0 <= thisOutputIndex < " + this.outputBus.length + ", received " + thisOutputIndex);
+                    this + ": Expected 0 <= thisOutputIndex < " + this.outputBus.length + ", received " + thisOutputIndex);
         }
-        if (arg0InputIndex < 0 || arg0.outputBus.length <= arg0InputIndex) {
+        if (arg0InputIndex < 0 || arg0.inputBus.length <= arg0InputIndex) {
             throw new IndexOutOfBoundsException(
-                    "Expected 0 <= arg0InputIndex < " + arg0.outputBus.length + ", received " + arg0InputIndex);
+                    arg0 + ": Expected 0 <= arg0InputIndex < " + arg0.outputBus.length + ", received " + arg0InputIndex);
         }
 
         if (this.outputBus[thisOutputIndex] != arg0.inputBus[arg0InputIndex]) {
@@ -338,7 +338,7 @@ public abstract class Gate extends Element {
                 // incompatible sizes
                 return null;
             } else {
-                throw new Exception("connection possible but bus already full");
+                throw new Exception("connection possible but both port are already taken");
             }
         } else // check if both cable are empty
         if (thisOutputCable == null && arg0InputCable == null) {
@@ -358,7 +358,7 @@ public abstract class Gate extends Element {
         } else // if either is null
         if (thisOutputCable != null && arg0InputCable == null) {
             if (thisOutputCable.outputGate != null) {
-                throw new Exception("connection possible but bus already full");
+                throw new Exception("connection possible but " + this + " output port already taken");
             }
             thisOutputCable.outputGate = arg0;
             arg0.inputCable.set(arg0InputIndex, thisOutputCable);
@@ -369,7 +369,7 @@ public abstract class Gate extends Element {
             return thisOutputCable;
         } else if (thisOutputCable == null && arg0InputCable != null) {
             if (arg0InputCable.inputGate != null) {
-                throw new Exception("connection possible but bus already full");
+                throw new Exception("connection possible but " + arg0 + " input port already taken");
             }
             arg0InputCable.inputGate = this;
             this.outputCable.set(thisOutputIndex, arg0InputCable);
@@ -1111,7 +1111,7 @@ public abstract class Gate extends Element {
             // index of the port of the target Gate
             rowOutput.put(1, this.getOutputCable().get(indexPortOutput).getOutputPort());
 
-            outputGatesArray.put(rowOutput);
+            outputGatesArray.put(rowOutput.toList());
         }
         json.put("outputTo", outputGatesArray);
 
@@ -1128,7 +1128,7 @@ public abstract class Gate extends Element {
             // index of the port of the target Gate
             rowInput.put(1, this.getInputCable().get(indexPortInput).getInputPort());
 
-            inputGatesArray.put(rowInput);
+            inputGatesArray.put(rowInput.toList());
         }
         json.put("inputFrom", inputGatesArray);
 

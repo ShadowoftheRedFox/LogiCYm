@@ -47,6 +47,7 @@ import javafx.scene.paint.Color;
 
 // TODO : add "findWithName(String gateName)" to permanently keep a name to reffer to
 
+// TODO : update le front avec les states de cable et non pas la logique des portes
 
 /**
  * FIXME Esteban JAVADOC
@@ -1489,7 +1490,7 @@ public class Circuit {
         try {
             res = this.allGates.get(fromGate).connect(this.allGates.get(toGate), fromPort, toPort);
         } catch (Exception e) {
-            System.err.println(e);
+            System.err.println(String.format("Couldn't connect '%s'.%d to '%s'.%d : '%s'", fromGate, fromPort, toGate, toPort, e.getMessage()));
         }
 
         return res;
