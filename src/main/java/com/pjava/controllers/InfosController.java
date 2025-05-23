@@ -17,6 +17,9 @@ import com.pjava.src.UI.components.input.UIPower;
 import com.pjava.src.UI.components.output.UIDisplay;
 import com.pjava.src.errors.BusSizeException;
 
+import javafx.animation.PauseTransition;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -30,6 +33,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 public class InfosController {
     @FXML
@@ -92,42 +96,74 @@ public class InfosController {
                 setState(enableToggle.isSelected());
             });
         }
-        // BUG maximum callstack exceeded
+        // BUG looping
         if (inputSize != null) {
-            inputSize.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    int value = 0;
-                    try {
-                        value = Integer.parseInt(newValue);
-                        if (!setInputSize(value)) {
-                            inputSize.setText(oldValue);
-                        }
-                    } catch (Exception e) {
+            // create a kind of timer to wait before checking value
+            final PauseTransition delay = new PauseTransition(Duration.millis(250));
+            // create a buffer to look into whithout triggering the original textfield
+            final StringProperty buffer = new SimpleStringProperty();
+            // when delay finished, fire the buffer
+            delay.setOnFinished(event -> buffer.set(inputSize.getText()));
+            // listen to change on original field, if timer is not done, restart it
+            inputSize.textProperty().addListener((obs, oldValue, newValue) -> {
+                delay.playFromStart();
+            });
+
+            // when the buffer fires, check value and replace
+            buffer.addListener((obs, oldValue, newValue) -> {
+                if (oldValue == newValue) {
+                    return;
+                }
+                if (newValue == null || newValue.isBlank()) {
+                    inputSize.setText("1");
+                }
+                int value = 0;
+                try {
+                    value = Integer.parseInt(newValue);
+                    if (!setInputSize(value)) {
                         inputSize.setText(oldValue);
                     }
+                } catch (Exception e) {
+                    inputSize.setText(oldValue);
                 }
+                // TODO update bus size in the back
+            });
+        }
+        if (outputSize != null) {
+            // create a kind of timer to wait before checking value
+            final PauseTransition delay = new PauseTransition(Duration.millis(250));
+            // create a buffer to look into whithout triggering the original textfield
+            final StringProperty buffer = new SimpleStringProperty();
+            // when delay finished, fire the buffer
+            delay.setOnFinished(event -> buffer.set(inputSize.getText()));
+            // listen to change on original field, if timer is not done, restart it
+            inputSize.textProperty().addListener((obs, oldValue, newValue) -> {
+                delay.playFromStart();
+            });
+
+            // when the buffer fires, check value and replace
+            buffer.addListener((obs, oldValue, newValue) -> {
+                if (oldValue == newValue) {
+                    return;
+                }
+                if (newValue.isBlank()) {
+                    outputSize.setText("1");
+                }
+                int value = 0;
+                try {
+                    value = Integer.parseInt(newValue);
+                    if (!setOutputSize(value)) {
+                        outputSize.setText(oldValue);
+                    }
+                } catch (Exception e) {
+                    outputSize.setText(oldValue);
+                }
+                // TODO update bus size in the back
             });
         }
         if (labelField != null) {
             labelField.setOnAction(event -> {
                 setLabel(labelField.getText());
-            });
-        }
-        if (outputSize != null) {
-            outputSize.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    int value = 0;
-                    try {
-                        value = Integer.parseInt(newValue);
-                        if (!setOutputSize(value)) {
-                            outputSize.setText(oldValue);
-                        }
-                    } catch (Exception e) {
-                        outputSize.setText(oldValue);
-                    }
-                }
             });
         }
         // can't receive event from position since it's disabled, only change from code

@@ -1,7 +1,6 @@
 package com.pjava.controllers;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -33,12 +32,11 @@ import com.pjava.src.UI.components.output.UIDisplay;
 import com.pjava.src.components.Circuit;
 import com.pjava.src.components.Gate;
 import com.pjava.src.components.Synchronizer;
-import com.pjava.src.document.FileReaderSimulation;
 import com.pjava.src.document.SimulationFileLoader;
+import com.pjava.src.utils.SaveData;
 import com.pjava.src.utils.UIUtils;
 import com.pjava.src.utils.UIUtils.ValidationAnwser;
 import com.pjava.src.utils.UtilsSave;
-import com.pjava.src.utils.SaveData;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -286,7 +284,8 @@ public class Editor extends VBox {
 
                 editedCircuit.loadGatesFromFile(file.getPath());
 
-                addGates((HashMap<String, Gate>) editedCircuit.getAllGates().clone(),(ArrayList<SaveData>) editedCircuit.getAllGatesData().clone());
+                addGates((HashMap<String, Gate>) editedCircuit.getAllGates().clone(),
+                        (ArrayList<SaveData>) editedCircuit.getAllGatesData().clone());
 
             } catch (Exception e) {
                 UIUtils.errorPopup(e.getMessage());
@@ -622,7 +621,41 @@ public class Editor extends VBox {
                 e.printStackTrace();
             }
         });
+    }
 
+    /**
+     * Used to position the newly added element from the buttons listener are the
+     * center of the user screen, and not at (0,0)
+     *
+     * @param element The element to move.
+     */
+    private void repositionNewElement(UIElement element) {
+        if (element == null) {
+            return;
+        }
+
+        // get the size of the scroll pane (the view)
+        final double viewWidth = viewScroll.getWidth();
+        final double viewHeight = viewScroll.getHeight();
+        // get the amount of scroll
+        final double percentScrollX = viewScroll.getHvalue();
+        final double percentScrollY = viewScroll.getVvalue();
+        // get the size of the grid
+        final double gridWidth = gridPane.getWidth();
+        final double gridHeight = gridPane.getHeight();
+
+        // calculate the position on the grid
+        final double X = gridWidth * percentScrollX + viewWidth / 2;
+        final double Y = gridHeight * percentScrollY - viewHeight / 2;
+
+        Point2D center = new Point2D(Math.floor(X / UIElement.baseSize), Math.floor(Y / UIElement.baseSize));
+        if (center.getY() < 0) {
+            center.add(0, -center.getY());
+        }
+
+        System.out.println("Center position: " + center);
+
+        element.setPosition(center);
     }
 
     public void resizeGrid() {
@@ -705,13 +738,13 @@ public class Editor extends VBox {
         if (filePath != null) {
             System.out.println("Loading simulation data from: " + filePath);
             Circuit circuit = new Circuit();
-            
+
             try {
                 Synchronizer.setInputSimulator(SimulationFileLoader.startSimulation(filePath, circuit));
-                
+
                 if (Synchronizer.getInputSimulator() != null) {
                     System.out.println("Simulation loaded successfully!");
-                    
+
                     disableSimulationButton.setDisable(false);
                     enableSimulationButton.setDisable(true);
                 } else {
@@ -763,11 +796,8 @@ public class Editor extends VBox {
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
         UIAnd andController = (UIAnd) UIElement.create("UIAnd");
-        try {
-            addGate(andController);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        addGate(andController);
+        repositionNewElement(andController);
     }
 
     @FXML
@@ -775,6 +805,7 @@ public class Editor extends VBox {
         System.out.println("Click Or!");
         UIOr orController = (UIOr) UIElement.create("UIOr");
         addGate(orController);
+        repositionNewElement(orController);
     }
 
     @FXML
@@ -782,6 +813,7 @@ public class Editor extends VBox {
         System.out.println("Click Not!");
         UINot notController = (UINot) UIElement.create("UINot");
         addGate(notController);
+        repositionNewElement(notController);
     }
 
     @FXML
@@ -789,6 +821,7 @@ public class Editor extends VBox {
         System.out.println("Click Button!");
         UIButton buttonController = (UIButton) UIElement.create("UIButton");
         addGate(buttonController);
+        repositionNewElement(buttonController);
     }
 
     @FXML
@@ -796,6 +829,7 @@ public class Editor extends VBox {
         System.out.println("Click clock!");
         UIClock clockController = (UIClock) UIElement.create("UIClock");
         addGate(clockController);
+        repositionNewElement(clockController);
     }
 
     @FXML
@@ -803,6 +837,7 @@ public class Editor extends VBox {
         System.out.println("Click lever!");
         UILever leverController = (UILever) UIElement.create("UILever");
         addGate(leverController);
+        repositionNewElement(leverController);
     }
 
     @FXML
@@ -810,6 +845,7 @@ public class Editor extends VBox {
         System.out.println("Click power!");
         UIPower powerController = (UIPower) UIElement.create("UIPower");
         addGate(powerController);
+        repositionNewElement(powerController);
     }
 
     @FXML
@@ -817,6 +853,7 @@ public class Editor extends VBox {
         System.out.println("Click ground!");
         UIGround groundController = (UIGround) UIElement.create("UIGround");
         addGate(groundController);
+        repositionNewElement(groundController);
     }
 
     @FXML
@@ -824,6 +861,7 @@ public class Editor extends VBox {
         System.out.println("Click display!");
         UIDisplay displayController = (UIDisplay) UIElement.create("UIDisplay");
         addGate(displayController);
+        repositionNewElement(displayController);
     }
 
     @FXML
