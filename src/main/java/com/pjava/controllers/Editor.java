@@ -580,12 +580,7 @@ public class Editor extends VBox {
             case "NodeSplitter":
                 elementController = (UINodeSplitter) UIGate.create("UINodeSplitter");
                 break;
-            case "Splitter":
-                elementController = (UISplitter) UIGate.create("UISplitter");
-                break;
-            case "Merger":
-                elementController = (UIMerger) UIGate.create("UIMerger");
-                break;
+
 
             default:
                 throw new Exception("ElementController of type " + type + " not found");
