@@ -31,10 +31,6 @@ public class CircuitTest {
     // " + here +"
     // + here
 
-    private String here = " /!\\=============/!\\ ";
-    // here +
-    // " + here +"
-    // + here
 
     /**
      * We try '.toJson()' with a gate
