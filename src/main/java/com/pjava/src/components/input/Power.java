@@ -39,7 +39,6 @@ public class Power extends Input {
     public BitSet getState() {
         // in case the internal values changed
         for(int i = 0; i<outputBus[0]; i++) value.set(i);
-        System.err.println("aaaaaaaaaaaaaaaaaaaaaaa" + value);
         return value;
     }
 }

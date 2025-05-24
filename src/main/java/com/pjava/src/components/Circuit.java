@@ -672,22 +672,22 @@ public class Circuit {
 
         // TODO : debug
         // debug
-        ArrayList<Integer> printSizeBusInput = new ArrayList<>();
-        if (sizeBusInput != null) {
-            for (int val : sizeBusInput) {
-                printSizeBusInput.add(val);
-            }
-        }
-        ArrayList<Integer> printSizeBusOutput = new ArrayList<>();
-        if (sizeBusOutput != null) {
-            for (int val : sizeBusOutput) {
-                printSizeBusOutput.add(val);
-            }
-        }
+        // ArrayList<Integer> printSizeBusInput = new ArrayList<>();
+        // if (sizeBusInput != null) {
+        //     for (int val : sizeBusInput) {
+        //         printSizeBusInput.add(val);
+        //     }
+        // }
+        // ArrayList<Integer> printSizeBusOutput = new ArrayList<>();
+        // if (sizeBusOutput != null) {
+        //     for (int val : sizeBusOutput) {
+        //         printSizeBusOutput.add(val);
+        //     }
+        // }
 
-        System.err.println(
-                String.format("type : '%s' label : '%s' sizeInput : %s sizeOutput : %s schemaFile '%s' schemaJson %s",
-                        type, label, printSizeBusInput, printSizeBusOutput, schemaFile, schemaJson));
+        // System.err.println(
+        //         String.format("type : '%s' label : '%s' sizeInput : %s sizeOutput : %s schemaFile '%s' schemaJson %s",
+        //                 type, label, printSizeBusInput, printSizeBusOutput, schemaFile, schemaJson));
         // --- end debug
 
         Gate newGate;
@@ -992,7 +992,9 @@ public class Circuit {
             throw new Exception("schema is null");
         }
 
+
         Circuit tempCircuit = new Circuit();
+
 
         try {
             JSONArray gate_JsonArray = circuit_Json.getJSONArray("Gate");
@@ -1007,14 +1009,14 @@ public class Circuit {
 
                 ArrayList<Integer> listToInt = new ArrayList<Integer>();
                 JSONArray busSize_JsonArray = gate_Json.getJSONArray("inputBus");
-                for (int j = 0; i < busSize_JsonArray.length(); i++) {
+                for (int j = 0; j < busSize_JsonArray.length(); j++) {
                     listToInt.add(busSize_JsonArray.getInt(j));
                 }
                 int[] sizeBusInput = listToInt.stream().mapToInt(Integer::intValue).toArray();
 
                 listToInt.clear();
                 busSize_JsonArray = gate_Json.getJSONArray("outputBus");
-                for (int j = 0; i < busSize_JsonArray.length(); i++) {
+                for (int j = 0; j < busSize_JsonArray.length(); j++) {
                     listToInt.add(busSize_JsonArray.getInt(j));
                 }
                 int[] sizeBusOutput = listToInt.stream().mapToInt(Integer::intValue).toArray();
@@ -1110,10 +1112,13 @@ public class Circuit {
                     }
                 }
             }
-
             // 1.bis : We whant to turn all Input(Lever/Numeric) and Output into schema port
             // Input
-            for (String key : ((HashMap<String,Input>)tempCircuit.getInputGates().clone()).keySet()) {
+
+            ArrayList<String> keyGateToSupp = new ArrayList<>();
+            ArrayList<Integer> keyJsonToSupp = new ArrayList<>();
+
+            for (String key : tempCircuit.getInputGates().keySet()) {
                 // We only want to make schema port from thoses input gates
                 Input gate = tempCircuit.getInputGates().get(key);
                 if (!(gate instanceof Lever || gate instanceof Numeric)) {
@@ -1166,11 +1171,12 @@ public class Circuit {
                 }
 
                 // we now delete the gate from the circuit and the json
-                gate_JsonArray.remove(input_jsonIndex);
-
                 // remove from the circuit
-                tempCircuit.delGate(key);
+                keyGateToSupp.add(key);
+                keyJsonToSupp.add(input_jsonIndex);
+
             }
+
 
             // output
             for (String key : ((HashMap<String,Output>)tempCircuit.getOutputGates().clone()).keySet()) {
@@ -1228,12 +1234,22 @@ public class Circuit {
                     }
                 }
 
-                // we now delete the gate from the circuit and the json
-                gate_JsonArray.remove(output_jsonIndex);
-
-                // remove from the circuit
-                tempCircuit.delGate(key);
+                keyGateToSupp.add(key);
+                keyJsonToSupp.add(output_jsonIndex);
             }
+
+            // we now delete the gate from the circuit and the json
+            // remove from the circuit
+
+            int intdex = 0;
+            keyJsonToSupp.sort(null);
+            for(int i : keyJsonToSupp){
+                gate_JsonArray.remove(i-intdex);
+                intdex++;
+            }
+            tempCircuit.delGateFromIdList(keyGateToSupp);
+
+
 
             // 2 : Once all the gate are created, we connect them thanks to their old uuid
             // Though, cables will now use their new 'uuid'
@@ -1268,7 +1284,6 @@ public class Circuit {
                         }
                     }
                 }
-
                 // inner output port detected
                 JSONArray output_JsonArray = gate_Json.getJSONArray("outputTo");
                 for (int baseGateOutputIndex = 0; baseGateOutputIndex < output_JsonArray
@@ -1293,6 +1308,7 @@ public class Circuit {
                 }
             }
 
+
             // Then we connect all the other gates an thoses with no inner input/output
             // indication (-1)
             for (int i = 0; i < gate_JsonArray.length(); i++) {
@@ -1308,13 +1324,12 @@ public class Circuit {
                             && innerOuputGatesWithIndex.get(i).contains(baseGateOutputIndex)) {
                         continue;
                     }
-
                     String targetGateOldId = String
                             .valueOf(output_JsonArray.getJSONArray(baseGateOutputIndex).getInt(0));
                     int targetGateInputIndex = output_JsonArray.getJSONArray(baseGateOutputIndex).getInt(1);
-
                     // the target gate is the schema
                     if (targetGateOldId.equals("-1")) {
+
                         Gate.connectInnerOutputGate(
                                 schema,
                                 targetGateInputIndex,
@@ -1349,6 +1364,7 @@ public class Circuit {
                     }
                 }
             }
+
 
             // 3 : We fuse the temporary ciruit with the main one
             for (Gate gate : tempCircuit.allGates.values()) {
