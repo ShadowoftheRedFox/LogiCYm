@@ -215,9 +215,9 @@ public class UICable extends UIElement {
             if (!getLogic().getPowered()) {
                 color = Color.RED;
             } else if (getLogic().getState(0)) {
-                color = Color.LIGHTGREEN;
-            } else {
                 color = Color.DARKGREEN;
+            } else {
+                color = Color.LIGHTGREEN;
             }
         }
 
@@ -263,6 +263,7 @@ public class UICable extends UIElement {
 
         // Le nœud sera supprimé par deleteSelectedElements() dans Editor
     }
+
     /**
      * Disconnect the given gate from this cable.
      * If you want to disconnect both side, calling disconnect on the cable is
@@ -288,6 +289,8 @@ public class UICable extends UIElement {
             gate.getLogic().disconnect(getLogic());
             gate.updateVisuals();
         }
+
+
     }
 
     /**

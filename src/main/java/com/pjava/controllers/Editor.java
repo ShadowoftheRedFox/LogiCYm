@@ -19,7 +19,7 @@ import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.UI.components.cables.UIMerger;
-import com.pjava.src.UI.components.cables.UINodeSplitter;
+import com.pjava.src.UI.components.gates.UINodeSplitter;
 import com.pjava.src.UI.components.cables.UISplitter;
 import com.pjava.src.UI.components.gates.UIAnd;
 import com.pjava.src.UI.components.gates.UINot;
@@ -34,6 +34,7 @@ import com.pjava.src.UI.components.output.UIDisplay;
 import com.pjava.src.components.Circuit;
 import com.pjava.src.components.Gate;
 import com.pjava.src.components.Synchronizer;
+import com.pjava.src.components.cables.NodeSplitter;
 import com.pjava.src.document.FileReaderSimulation;
 import com.pjava.src.document.SimulationFileLoader;
 import com.pjava.src.utils.UIUtils;
@@ -288,7 +289,8 @@ public class Editor extends VBox {
 
                 editedCircuit.loadGatesFromFile(file.getPath());
 
-                addGates((HashMap<String, Gate>) editedCircuit.getAllGates().clone(),(ArrayList<SaveData>) editedCircuit.getAllGatesData().clone());
+                addGates((HashMap<String, Gate>) editedCircuit.getAllGates().clone(),
+                        (ArrayList<SaveData>) editedCircuit.getAllGatesData().clone());
 
             } catch (Exception e) {
                 UIUtils.errorPopup(e.getMessage());
@@ -769,6 +771,17 @@ public class Editor extends VBox {
         UIAnd andController = (UIAnd) UIElement.create("UIAnd");
         try {
             addGate(andController);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void clickNodeSplitter(ActionEvent event) {
+        System.out.println("Click NodeSplitter!");
+        UINodeSplitter nodeSplitterController = (UINodeSplitter) UIElement.create("UINodeSplitter");
+        try {
+            addGate(nodeSplitterController);
         } catch (Exception e) {
             e.printStackTrace();
         }
