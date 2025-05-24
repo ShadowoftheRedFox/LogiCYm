@@ -74,71 +74,6 @@ public abstract class UIGate extends UIElement {
     }
 
     /**
-     * Déconnecte un câble d'input (input pins deviennent bleus)
-     */
-    public void disconnectInput(UICable cable) {
-        if (cable == null) {
-            return;
-        }
-
-        // Disconnect the cable from this gate
-        cable.disconnect(this);
-
-        // Remove the cable from the connected cables list
-        if (connectedCables.contains(cable)) {
-            // Recolor pins: input pins deviennent bleus, output pins deviennent rouges
-            if (cable.getInputPin() != null) {
-                cable.getInputPin().setColor(Color.BLUE); // Input pin = bleu
-            }
-            if (cable.getOutputPin() != null) {
-                cable.getOutputPin().setColor(Color.RED); // Output pin = rouge
-            }
-
-            // Remove the cable visually from the container
-            Node cableNode = cable.getNode();
-            if (cableNode != null && cableNode.getParent() != null) {
-                ((Pane) cableNode.getParent()).getChildren().remove(cableNode);
-            }
-
-            // Remove the cable completely from the list
-            connectedCables.remove(cable);
-        }
-    }
-
-    /**
-     * Déconnecte un câble d'output (output pins deviennent rouges)
-     */
-    public void disconnectOutput(UICable cable) {
-        if (cable == null) {
-            return;
-        }
-
-        // Disconnect the cable from this gate
-        cable.disconnect(this);
-
-        // Remove the cable from the connected cables list
-        if (connectedCables.contains(cable)) {
-            // CORRECTION: Garder la logique cohérente
-            // Input pins = bleu, Output pins = rouge
-            if (cable.getInputPin() != null) {
-                cable.getInputPin().setColor(Color.BLUE); // Input pin = bleu
-            }
-            if (cable.getOutputPin() != null) {
-                cable.getOutputPin().setColor(Color.RED); // Output pin = rouge
-            }
-
-            // Remove the cable visually from the container
-            Node cableNode = cable.getNode();
-            if (cableNode != null && cableNode.getParent() != null) {
-                ((Pane) cableNode.getParent()).getChildren().remove(cableNode);
-            }
-
-            // Remove the cable completely from the list
-            connectedCables.remove(cable);
-        }
-    }
-
-    /**
      * Disconnect all cables from this gate, and the gate from every cable
      */
     public void disconnect() {
@@ -147,25 +82,30 @@ public abstract class UIGate extends UIElement {
 
         for (UICable cable : cablesToDisconnect) {
             if (cable != null) {
-                // Déterminer si c'est un cable d'input ou d'output pour ce gate
-                boolean isInputCable = false;
-                for (Pin inputPin : inputPins) {
-                    if (inputPin.equals(cable.getOutputPin())) { // Le pin output du câble se connecte à notre input
-                        isInputCable = true;
-                        break;
-                    }
+                // Obtenir les références des autres portes connectées
+                UIGate otherInputGate = cable.getInputGate();
+                UIGate otherOutputGate = cable.getOutputGate();
+                Pin otherInputPin = cable.getInputPin();
+                Pin otherOutputPin = cable.getOutputPin();
+
+                // Déconnecter le câble complètement
+                cable.disconnect();
+
+                // Réinitialiser les couleurs des pins des autres portes
+                if (otherInputGate != null && !otherInputGate.equals(this) && otherInputPin != null) {
+                    otherInputPin.setColor(Color.BLUE); // Input pin = bleu
+                }
+                if (otherOutputGate != null && !otherOutputGate.equals(this) && otherOutputPin != null) {
+                    otherOutputPin.setColor(Color.RED); // Output pin = rouge
                 }
 
-                if (isInputCable) {
-                    disconnectInput(cable);
-                } else {
-                    disconnectOutput(cable);
+                // Supprimer visuellement le câble
+                Node cableNode = cable.getNode();
+                if (cableNode != null && cableNode.getParent() != null) {
+                    ((Pane) cableNode.getParent()).getChildren().remove(cableNode);
                 }
             }
         }
-
-        // Clear the list to remove any remaining null references
-        connectedCables.clear();
     }
 
     @Override

@@ -235,33 +235,37 @@ public class UICable extends UIElement {
      * Disconnect and remove the cable from the UI
      */
     public void disconnect() {
-        // Nettoyer les références des pins
+        // Déconnecter la logique backend d'abord
+        if (getLogic() != null) {
+            if (inputGate != null && inputGate.getLogic() != null) {
+                inputGate.getLogic().disconnect(getLogic());
+            }
+            if (outputGate != null && outputGate.getLogic() != null) {
+                outputGate.getLogic().disconnect(getLogic());
+            }
+        }
+
+        // Nettoyer les références des pins et remettre les bonnes couleurs
         if (inputPin != null) {
-            inputPin.setColor(Color.BLUE);
+            inputPin.setColor(Color.BLUE); // Input pin = bleu
         }
         if (outputPin != null) {
-            outputPin.setColor(Color.RED);
+            outputPin.setColor(Color.RED); // Output pin = rouge
         }
 
         // Supprimer les références des gates
         if (inputGate != null) {
             inputGate.removeConnectedCable(this);
+            inputGate = null;
         }
         if (outputGate != null) {
             outputGate.removeConnectedCable(this);
+            outputGate = null;
         }
 
-        // Déconnecter la logique
-        if (getLogic() != null) {
-            if (inputGate != null) {
-                inputGate.getLogic().disconnect(getLogic());
-            }
-            if (outputGate != null) {
-                outputGate.getLogic().disconnect(getLogic());
-            }
-        }
-
-        // Le nœud sera supprimé par deleteSelectedElements() dans Editor
+        // Nettoyer les références des pins
+        inputPin = null;
+        outputPin = null;
     }
 
     /**
@@ -289,7 +293,6 @@ public class UICable extends UIElement {
             gate.getLogic().disconnect(getLogic());
             gate.updateVisuals();
         }
-
 
     }
 
