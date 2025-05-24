@@ -528,6 +528,11 @@ public class Editor extends VBox {
         }
     }
 
+    @FXML
+    private void saveEditorWithDefault() {
+        saveEditor(true);
+    }
+
     public void resetEditor() {
         editedCircuit.getAllGates().clear();
         selectAllElements(null);
@@ -912,8 +917,7 @@ public class Editor extends VBox {
         setUnsavedChanges(true);
         System.out.println("Click Schema!");
         try {
-            // Créer un schéma par défaut ou ouvrir un dialogue pour sélectionner un fichier
-            UISchema schemaController = new UISchema(); // Schéma par défaut
+=            UISchema schemaController = new UISchema();
             addGate(schemaController);
         } catch (Exception e) {
             System.err.println("Erreur lors de la création du schéma : " + e.getMessage());

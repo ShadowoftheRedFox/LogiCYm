@@ -58,14 +58,13 @@ public abstract class UIGate extends UIElement {
     }
 
     /**
-     * Trouve le câble connecté à un pin donné
+     * Find a Cable from a Pin Given
      */
     public UICable getCableFromPin(Pin pin) {
         if (pin == null) {
             return null;
         }
         for (UICable cable : connectedCables) {
-            // CORRECTION: Comparer avec inputPin ET outputPin
             if (cable != null && (pin.equals(cable.getInputPin()) || pin.equals(cable.getOutputPin()))) {
                 return cable;
             }
@@ -77,21 +76,17 @@ public abstract class UIGate extends UIElement {
      * Disconnect all cables from this gate, and the gate from every cable
      */
     public void disconnect() {
-        // Créer une copie pour éviter ConcurrentModificationException
         List<UICable> cablesToDisconnect = new ArrayList<>(connectedCables);
 
         for (UICable cable : cablesToDisconnect) {
             if (cable != null) {
-                // Obtenir les références des autres portes connectées
                 UIGate otherInputGate = cable.getInputGate();
                 UIGate otherOutputGate = cable.getOutputGate();
                 Pin otherInputPin = cable.getInputPin();
                 Pin otherOutputPin = cable.getOutputPin();
 
-                // Déconnecter le câble complètement
                 cable.disconnect();
 
-                // Réinitialiser les couleurs des pins des autres portes
                 if (otherInputGate != null && !otherInputGate.equals(this) && otherInputPin != null) {
                     otherInputPin.setColor(Color.BLUE); // Input pin = bleu
                 }
@@ -99,7 +94,6 @@ public abstract class UIGate extends UIElement {
                     otherOutputPin.setColor(Color.RED); // Output pin = rouge
                 }
 
-                // Supprimer visuellement le câble
                 Node cableNode = cable.getNode();
                 if (cableNode != null && cableNode.getParent() != null) {
                     ((Pane) cableNode.getParent()).getChildren().remove(cableNode);

@@ -180,21 +180,17 @@ public class UICable extends UIElement {
             outputPos = outputPin.getCenter();
         }
 
-        // Calculer les coordonnées min pour positionner le container
         double minX = Math.min(inputPos.getX(), outputPos.getX());
         double minY = Math.min(inputPos.getY(), outputPos.getY());
 
-        // Positionner le container
         self.setLayoutX(minX);
         self.setLayoutY(minY);
 
-        // Ajuster les coordonnées de la ligne relativement au container
         cableLine.setStartX(inputPos.getX() - minX);
         cableLine.setStartY(inputPos.getY() - minY);
         cableLine.setEndX(outputPos.getX() - minX);
         cableLine.setEndY(outputPos.getY() - minY);
 
-        // Ajuster la taille du container
         double width = Math.abs(outputPos.getX() - inputPos.getX()) + 10; // +10 pour marge
         double height = Math.abs(outputPos.getY() - inputPos.getY()) + 10;
         self.setPrefWidth(width);
@@ -235,7 +231,6 @@ public class UICable extends UIElement {
      * Disconnect and remove the cable from the UI
      */
     public void disconnect() {
-        // Déconnecter la logique backend d'abord
         if (getLogic() != null) {
             if (inputGate != null && inputGate.getLogic() != null) {
                 inputGate.getLogic().disconnect(getLogic());
@@ -244,16 +239,14 @@ public class UICable extends UIElement {
                 outputGate.getLogic().disconnect(getLogic());
             }
         }
-
-        // Nettoyer les références des pins et remettre les bonnes couleurs
+// depending on the gate, choose a color
         if (inputPin != null) {
-            inputPin.setColor(Color.BLUE); // Input pin = bleu
+            inputPin.setColor(Color.BLUE);
         }
         if (outputPin != null) {
-            outputPin.setColor(Color.RED); // Output pin = rouge
+            outputPin.setColor(Color.RED);
         }
 
-        // Supprimer les références des gates
         if (inputGate != null) {
             inputGate.removeConnectedCable(this);
             inputGate = null;
@@ -263,7 +256,6 @@ public class UICable extends UIElement {
             outputGate = null;
         }
 
-        // Nettoyer les références des pins
         inputPin = null;
         outputPin = null;
     }

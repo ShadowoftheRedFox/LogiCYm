@@ -42,21 +42,17 @@ public class UINodeSplitter extends UIGate {
         catch (Exception e) {
             e.printStackTrace();
         }
-        // Configurer les pins de sortie comme sorties
         output1Controller.setAsInput(false);
         output2Controller.setAsInput(false);
 
-        // Configurer les événements de souris
         body.setOnMousePressed(event -> pressed(event));
         body.setOnMouseReleased(event -> released(event));
         body.setOnMouseDragged(event -> dragged(event));
 
-        // Définir les contrôleurs d'origine pour les pins
         input1Controller.originController = this;
         output1Controller.originController = this;
         output2Controller.originController = this;
 
-        // Ajouter les pins aux listes
         inputPins.add(input1Controller);
         outputPins.add(output1Controller);
         outputPins.add(output2Controller);

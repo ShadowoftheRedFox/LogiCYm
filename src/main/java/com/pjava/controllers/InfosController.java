@@ -4,7 +4,7 @@ import com.pjava.src.UI.Rotation;
 import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.cables.UIMerger;
-import com.pjava.src.UI.components.cables.UINodeSplitter;
+import com.pjava.src.UI.components.gates.UINodeSplitter;
 import com.pjava.src.UI.components.cables.UISplitter;
 import com.pjava.src.UI.components.gates.UIAnd;
 import com.pjava.src.UI.components.gates.UINot;
