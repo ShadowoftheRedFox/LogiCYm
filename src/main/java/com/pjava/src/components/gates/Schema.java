@@ -34,17 +34,17 @@ public class Schema extends Gate {
     /**
      * Name of the schema.
      */
-    private String name;
+    private String name = "";
 
     /**
      * File path to a circuit to create the schema
      */
-    private String filePath = null;
+    private String filePath = "";
 
     /**
      * Gates that are inside the schema.
      */
-    private Circuit innerCircuit;
+    private Circuit innerCircuit = new Circuit();
 
     /*
      * Extend Gate :
@@ -79,8 +79,11 @@ public class Schema extends Gate {
      * @throws Exception json format can't be read
      */
     public Schema(JSONObject selection) throws Exception {
+
         this.loadFromJson(selection);
+
         this.setNameAndSave(String.format("Schema_%d", this.uuid()));
+
     }
 
     /**
@@ -110,7 +113,7 @@ public class Schema extends Gate {
         this.setName(schemaName);
         this.loadFromJson(selection);
 
-        this.filePath = String.format("%sschema/%s.json", UtilsSave.saveFolder.toString(), schemaName);
+        this.filePath = String.format("%s/schema/%s.json", UtilsSave.saveFolder.toString(), schemaName);
         this.saveInnerCircuit();
     }
 
@@ -292,14 +295,14 @@ public class Schema extends Gate {
 
                 ArrayList<Integer> listToInt = new ArrayList<Integer>();
                 JSONArray busSize_JsonArray = gate_Json.getJSONArray("inputBus");
-                for (int j = 0; i < busSize_JsonArray.length(); i++) {
+                for (int j = 0; j < busSize_JsonArray.length(); j++) {
                     listToInt.add(busSize_JsonArray.getInt(j));
                 }
                 int[] sizeBusInput = listToInt.stream().mapToInt(Integer::intValue).toArray();
 
                 listToInt.clear();
                 busSize_JsonArray = gate_Json.getJSONArray("outputBus");
-                for (int j = 0; i < busSize_JsonArray.length(); i++) {
+                for (int j = 0; j < busSize_JsonArray.length(); j++) {
                     listToInt.add(busSize_JsonArray.getInt(j));
                 }
                 int[] sizeBusOutput = listToInt.stream().mapToInt(Integer::intValue).toArray();
@@ -488,7 +491,7 @@ public class Schema extends Gate {
         this.name = name;
 
         try {
-            this.saveInnerCircuit(String.format("%sschema/%s.json", UtilsSave.saveFolder.toString(), this.name));
+            this.saveInnerCircuit(String.format("%s/schema/%s.json", UtilsSave.saveFolder.toString(), this.name));
         } catch (Exception e) {
             System.err.println(e);
         }

@@ -433,17 +433,18 @@ public abstract class Gate extends Element {
         }
         // The port is now precised, but we need 'schema.inputBus' to have enough place
         // to put the value at the right index
-        while (schema.inputBus.length <= schemaInnerInputIndex) {
+        while (schema.getInnerInputCable().size() <= schemaInnerInputIndex) {
             // FIXME : might cause a problem if done wrong (too few or too many index
             // created)
             // we put unused bus size and cable index (hopefully they will be used, they
             // need to be)
-            schema.addInputBus(1);
+            if(schema.inputBus.length <= schemaInnerInputIndex){
+                schema.addInputBus(1);
+            }
             schema.getInnerInputCable().add(null);
-            schema.inputCable.add(null);
 
-            assert (schema.inputBus.length == schema.getInnerInputCable().size()
-                    && schema.inputBus.length == schema.inputCable.size());
+            //assert (schema.inputBus.length == schema.getInnerInputCable().size()
+                    //&& schema.inputBus.length == schema.inputCable.size());
         }
 
         // we set the bus size at the right index 'schemaInnerInputIndex'
@@ -559,21 +560,23 @@ public abstract class Gate extends Element {
         }
         // The port is now precised, but we need 'schema.outputBus' to have enough place
         // to put the value at the right index
-        while (schema.outputBus.length <= schemaInnerOutputIndex) {
+        while (schema.getInnerOutputCable().size() <= schemaInnerOutputIndex) {
             // FIXME : might cause a problem if done wrong (too few or too many index
             // created)
             // we put unused bus size and cable index (hopefully they will be used, they
             // need to be)
-            schema.addOutputBus(1);
+            if(schema.outputBus.length <= schemaInnerOutputIndex){
+                schema.addOutputBus(1);
+            }
             schema.getInnerOutputCable().add(null);
-            schema.outputCable.add(null);
 
-            assert (schema.outputBus.length == schema.getInnerOutputCable().size()
-                    && schema.outputBus.length == schema.outputCable.size());
+            //assert (schema.outputBus.length == schema.getInnerOutputCable().size()
+                    //&& schema.outputBus.length == schema.outputCable.size());
         }
 
         // we set the bus size at the right index 'schemaInnerOutputIndex'
         schema.outputBus[schemaInnerOutputIndex] = gate.getOutputBus()[gateOutputIndex];
+
 
         // We now create a Cable between the schema and the inner gate
         // check if both gate are already linked

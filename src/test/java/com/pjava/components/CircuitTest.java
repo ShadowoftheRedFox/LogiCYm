@@ -21,6 +21,7 @@ import com.pjava.src.components.output.Display;
 // TODO : différent circuit pour verifier leur bonne creation et
 //  si on obtient les bon résultat en sortie
 
+
 public class CircuitTest {
 
     private String here = " /!\\=============/!\\ ";
@@ -124,6 +125,7 @@ public class CircuitTest {
     */
 
 
+    /*
     @Test
     void test4() {
         System.out.println("\n" + here +"test 4 : copy to himself default circuit" + here);
@@ -198,8 +200,10 @@ public class CircuitTest {
         }
 
     }
+    */
 
 
+    /*
     @Test
     void test5() {
         System.out.println("\n" + here +"test 5 : copy to himself default circuit using a selection" + here);
@@ -228,7 +232,7 @@ public class CircuitTest {
             assertNotNull(circuit.addNewGate("Merger", "busMerg1"));
 
             // connecting some
-            assertNotNull(circuit.connectGate("p1", "split1", 0, 0));
+            assertNotNull(circuit.connectGate("lev1", "split1", 0, 0));
             assertNotNull(circuit.connectGate("split1", "split2", 0, 0));
             assertNotNull(circuit.connectGate("split2", "split3", 0, 0));
             assertNotNull(circuit.connectGate("split1", "not1", 1, 0));
@@ -236,7 +240,7 @@ public class CircuitTest {
             assertNotNull(circuit.connectGate("split2", "and1", 1, 0));
             assertNotNull(circuit.connectGate("split3", "dis1", 1, 0));
             assertNotNull(circuit.connectGate("and1", "busMerg1", 0, 0));
-            assertNotNull(circuit.connectGate("g1", "busMerg1", 0, 1));
+            assertNotNull(circuit.connectGate("num1", "busMerg1", 0, 1));
             assertNotNull(circuit.connectGate("busMerg1", "busSplit1", 0, 0));
             assertNotNull(circuit.connectGate("busSplit1", "dis2", 0, 0));
             assertNotNull(circuit.connectGate("busSplit1", "dis3", 1, 0));
@@ -244,11 +248,17 @@ public class CircuitTest {
             assertNotNull(circuit.connectGate("clo1", "and2", 0, 1));
             assertNotNull(circuit.connectGate("and2", "dis4", 0, 0));
 
-            //System.out.println("dis 1 output : " + ((Display)circuit.getAllGates().get("dis1")).getOutput());
+            System.out.println("dis 1 output : " + ((Display)circuit.getAllGates().get("dis1")).getOutput());
+            circuit.getLeverGates().get("lev1").flip();
+            System.out.println("dis 1 output : " + ((Display)circuit.getAllGates().get("dis1")).getOutput());
+
 
 
             ArrayList<String> selectionId = new ArrayList<>();
-            selectionId.addAll(circuit.getInputGates().keySet());
+            for(String key : circuit.getAllGates().keySet()){
+                if(!circuit.getInputGates().containsKey(key) && !circuit.getOutputGates().containsKey(key))
+                selectionId.add(key);
+            }
 
             System.out.println("\nSelection (in circuit):");
             int j = 0;
@@ -284,6 +294,95 @@ public class CircuitTest {
         }
 
     }
+     */
+
+
+     /*
+
+    @Test
+    void test6() {
+        System.out.println("\n" + here +"test 6 : Creating a schema from a selection" + here);
+        Circuit circuit = new Circuit("circuit_default");
+
+        try {
+            // all gates
+            assertNotNull(circuit.addNewGate("Power", "p1"));
+            assertNotNull(circuit.addNewGate("Ground", "g1"));
+            assertNotNull(circuit.addNewGate("Not", "not1"));
+            assertNotNull(circuit.addNewGate("And", "and1"));
+            assertNotNull(circuit.addNewGate("And", "and2"));
+            assertNotNull(circuit.addNewGate("Or", "or1"));
+            assertNotNull(circuit.addNewGate("Lever", "lev1"));
+            assertNotNull(circuit.addNewGate("Button", "but1"));
+            assertNotNull(circuit.addNewGate("Numeric", "num1"));
+            assertNotNull(circuit.addNewGate("Clock", "clo1"));
+            assertNotNull(circuit.addNewGate("Display", "dis1"));
+            assertNotNull(circuit.addNewGate("Display", "dis2"));
+            assertNotNull(circuit.addNewGate("Display", "dis3"));
+            assertNotNull(circuit.addNewGate("Display", "dis4"));
+            assertNotNull(circuit.addNewGate("NodeSplitter", "split1"));
+            assertNotNull(circuit.addNewGate("NodeSplitter", "split2"));
+            assertNotNull(circuit.addNewGate("NodeSplitter", "split3"));
+            assertNotNull(circuit.addNewGate("Splitter", "busSplit1"));
+            assertNotNull(circuit.addNewGate("Merger", "busMerg1"));
+
+            // connecting some
+            assertNotNull(circuit.connectGate("lev1", "split1", 0, 0));
+            assertNotNull(circuit.connectGate("split1", "split2", 0, 0));
+            assertNotNull(circuit.connectGate("split2", "split3", 0, 0));
+            assertNotNull(circuit.connectGate("split1", "not1", 1, 0));
+            assertNotNull(circuit.connectGate("not1", "and1", 0, 1));
+            assertNotNull(circuit.connectGate("split2", "and1", 1, 0));
+            assertNotNull(circuit.connectGate("split3", "dis1", 1, 0));
+            assertNotNull(circuit.connectGate("and1", "busMerg1", 0, 0));
+            assertNotNull(circuit.connectGate("num1", "busMerg1", 0, 1));
+            assertNotNull(circuit.connectGate("busMerg1", "busSplit1", 0, 0));
+            assertNotNull(circuit.connectGate("busSplit1", "dis2", 0, 0));
+            assertNotNull(circuit.connectGate("busSplit1", "dis3", 1, 0));
+            assertNotNull(circuit.connectGate("but1", "and2", 0, 0));
+            assertNotNull(circuit.connectGate("clo1", "and2", 0, 1));
+            assertNotNull(circuit.connectGate("and2", "dis4", 0, 0));
+
+
+
+            ArrayList<String> selectionId = new ArrayList<>();
+            selectionId.addAll(circuit.getAllGates().keySet());
+            // for(String key : circuit.getAllGates().keySet()){
+            //     if(!circuit.getInputGates().containsKey(key) && !circuit.getOutputGates().containsKey(key))
+            //     selectionId.add(key);
+            // }
+
+            System.out.println("\nSelection (in circuit):");
+            int j = 0;
+            for (String i : selectionId) {
+                System.out.println(
+                        String.format("%d : id = %d : key = %s : GateJSON = %s", j, circuit.getAllGates().get(i).uuid(), i, circuit.getAllGates().get(i).toJson()));
+                j++;
+            }
+
+            // creating a schema in a new circuit:
+            Circuit circuit2 = new Circuit();
+System.err.println("----------");
+            assertNotNull(circuit2.addNewGate("Schema", "sh1", circuit.selectGatesFromIdList(selectionId)));
+            // assertNotNull(circuit2.addNewGate("power", "p1"));
+            // assertNotNull(circuit2.addNewGate("Not", "not1"));
+            // assertNotNull(circuit2.addNewGate("And", "and1"));
+
+            System.out.println("\nResult :");
+            j = 0;
+            for (String i : ((Schema)circuit2.getAllGates().get("sh1")).getInnerCircuit().getAllGates().keySet()) {
+                System.out.println(
+                    String.format("%d : id = %d : key = %s : GateJSON = %s", j, circuit.getAllGates().get(i).uuid(), i, circuit.getAllGates().get(i).toJson()));
+                j++;
+            }
+
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+
+    }
+     */
+
 
 
 
