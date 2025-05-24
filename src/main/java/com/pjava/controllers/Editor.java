@@ -18,11 +18,12 @@ import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.UI.components.cables.UIMerger;
-import com.pjava.src.UI.components.cables.UINodeSplitter;
+import com.pjava.src.UI.components.gates.UINodeSplitter;
 import com.pjava.src.UI.components.cables.UISplitter;
 import com.pjava.src.UI.components.gates.UIAnd;
 import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
+import com.pjava.src.UI.components.UISchema;
 import com.pjava.src.UI.components.input.UIButton;
 import com.pjava.src.UI.components.input.UIClock;
 import com.pjava.src.UI.components.input.UIGround;
@@ -32,6 +33,8 @@ import com.pjava.src.UI.components.output.UIDisplay;
 import com.pjava.src.components.Circuit;
 import com.pjava.src.components.Gate;
 import com.pjava.src.components.Synchronizer;
+import com.pjava.src.components.cables.NodeSplitter;
+import com.pjava.src.document.FileReaderSimulation;
 import com.pjava.src.document.SimulationFileLoader;
 import com.pjava.src.utils.SaveData;
 import com.pjava.src.utils.UIUtils;
@@ -65,6 +68,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -399,6 +403,8 @@ public class Editor extends VBox {
 
             button.setOnAction(event -> {
                 System.out.println("Schema " + button.getText());
+                UISchema schemaController = UISchema.create(file);
+                addGate(schemaController);
                 // TODO ui schema and add to container
             });
         }
@@ -801,6 +807,17 @@ public class Editor extends VBox {
     }
 
     @FXML
+    public void clickNodeSplitter(ActionEvent event) {
+        System.out.println("Click NodeSplitter!");
+        UINodeSplitter nodeSplitterController = (UINodeSplitter) UIElement.create("UINodeSplitter");
+        try {
+            addGate(nodeSplitterController);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     public void clickOr(ActionEvent event) {
         System.out.println("Click Or!");
         UIOr orController = (UIOr) UIElement.create("UIOr");
@@ -894,6 +911,14 @@ public class Editor extends VBox {
     public void clickSchema(ActionEvent event) {
         setUnsavedChanges(true);
         System.out.println("Click Schema!");
+        try {
+            // Créer un schéma par défaut ou ouvrir un dialogue pour sélectionner un fichier
+            UISchema schemaController = new UISchema(); // Schéma par défaut
+            addGate(schemaController);
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la création du schéma : " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     // #endregion
 
@@ -1142,31 +1167,43 @@ public class Editor extends VBox {
      * @param event the ActionEvent triggering the deletion
      */
     @FXML
+
     private void deleteSelectedElements(ActionEvent event) {
-        // Use a new list to avoid ConcurrentModificationException
         ArrayList<Node> nodesToRemove = new ArrayList<>(selectedNodes);
 
         for (Node node : nodesToRemove) {
-            // If it's a UIElement, handle disconnections
             if (node.getUserData() instanceof UIElement) {
                 UIElement element = (UIElement) node.getUserData();
 
-                // If the element is a logic gate, manage its connections
                 if (element instanceof UIGate) {
                     UIGate gate = (UIGate) element;
                     gate.disconnect();
+                    container.getChildren().remove(node);
                 } else if (element instanceof UICable) {
                     UICable cable = (UICable) element;
                     cable.disconnect();
+                    container.getChildren().remove(cable.getNode()); // Supprimer le container, pas la ligne
+                }
+            } else {
+                // Pour les lignes sélectionnées directement
+                if (node instanceof Line) {
+                    // Trouver le câble parent
+                    for (Node containerChild : container.getChildren()) {
+                        if (containerChild.getUserData() instanceof UICable) {
+                            UICable cable = (UICable) containerChild.getUserData();
+                            if (cable.getLine() == node) {
+                                cable.disconnect();
+                                container.getChildren().remove(containerChild);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
-
-            // Remove the node from the container
-            container.getChildren().remove(node);
         }
 
-        // Clear the selection
         clearSelection();
+        setUnsavedChanges(true);
     }
 
     /**
@@ -1357,4 +1394,5 @@ public class Editor extends VBox {
         updateSelectionActions();
     }
     // #endregion
+
 }

@@ -34,7 +34,7 @@ public class Schema extends Gate {
     /**
      * Name of the schema.
      */
-    private String name;
+    private String name = "";
 
     /**
      * File path to a circuit to create the schema
@@ -44,7 +44,7 @@ public class Schema extends Gate {
     /**
      * Gates that are inside the schema.
      */
-    private Circuit innerCircuit;
+    private Circuit innerCircuit = new Circuit();
 
     /*
      * Extend Gate :
@@ -93,6 +93,7 @@ public class Schema extends Gate {
      */
     public Schema(String filePath) throws Exception {
         this.loadFromFile(filePath);
+
         this.setName(this.innerCircuit.getName());
     }
 
@@ -243,7 +244,7 @@ public class Schema extends Gate {
         try {
             this.innerCircuit.loadGatesFromFile(filePath, this);
         } catch (Exception e) {
-            System.err.println("Error circuit can't be launch " + e.getMessage());
+            throw new Error("Circuit couldn't be loaded : " + filePath, e);
         }
     }
 

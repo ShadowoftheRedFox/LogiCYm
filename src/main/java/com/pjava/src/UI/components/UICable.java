@@ -9,6 +9,7 @@ import com.pjava.src.utils.UIUtils;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
@@ -171,26 +172,33 @@ public class UICable extends UIElement {
     private void updateCablePosition() {
         Point2D inputPos = new Point2D(0, 0);
         Point2D outputPos = new Point2D(0, 0);
-        // calculating position then update position
+
         if (inputPin != null) {
             inputPos = inputPin.getCenter();
-            cableLine.setStartX(inputPos.getX());
-            cableLine.setStartY(inputPos.getY());
         }
         if (outputPin != null) {
             outputPos = outputPin.getCenter();
-            cableLine.setEndX(outputPos.getX());
-            cableLine.setEndY(outputPos.getY());
         }
-        // stretch the width and heigth
-        // self.setMinWidth(Math.max(inputPos.getX(), outputPos.getX()));
-        // self.setMinHeight(Math.max(inputPos.getY(), outputPos.getY()));
-        self.setPrefWidth(Math.max(inputPos.getX(), outputPos.getX()));
-        self.setPrefHeight(Math.max(inputPos.getY(), outputPos.getY()));
 
-        System.out.println("cabling from "
-                + cableLine.getStartX() + ":" + cableLine.getStartY() + " to "
-                + cableLine.getEndX() + ":" + cableLine.getEndY());
+        // Calculer les coordonnées min pour positionner le container
+        double minX = Math.min(inputPos.getX(), outputPos.getX());
+        double minY = Math.min(inputPos.getY(), outputPos.getY());
+
+        // Positionner le container
+        self.setLayoutX(minX);
+        self.setLayoutY(minY);
+
+        // Ajuster les coordonnées de la ligne relativement au container
+        cableLine.setStartX(inputPos.getX() - minX);
+        cableLine.setStartY(inputPos.getY() - minY);
+        cableLine.setEndX(outputPos.getX() - minX);
+        cableLine.setEndY(outputPos.getY() - minY);
+
+        // Ajuster la taille du container
+        double width = Math.abs(outputPos.getX() - inputPos.getX()) + 10; // +10 pour marge
+        double height = Math.abs(outputPos.getY() - inputPos.getY()) + 10;
+        self.setPrefWidth(width);
+        self.setPrefHeight(height);
     }
 
     /**
@@ -207,9 +215,9 @@ public class UICable extends UIElement {
             if (!getLogic().getPowered()) {
                 color = Color.RED;
             } else if (getLogic().getState(0)) {
-                color = Color.LIGHTGREEN;
-            } else {
                 color = Color.DARKGREEN;
+            } else {
+                color = Color.LIGHTGREEN;
             }
         }
 
@@ -224,13 +232,40 @@ public class UICable extends UIElement {
     }
 
     /**
-     * reset the cable
+     * Disconnect and remove the cable from the UI
      */
     public void disconnect() {
+        // Déconnecter la logique backend d'abord
+        if (getLogic() != null) {
+            if (inputGate != null && inputGate.getLogic() != null) {
+                inputGate.getLogic().disconnect(getLogic());
+            }
+            if (outputGate != null && outputGate.getLogic() != null) {
+                outputGate.getLogic().disconnect(getLogic());
+            }
+        }
+
+        // Nettoyer les références des pins et remettre les bonnes couleurs
+        if (inputPin != null) {
+            inputPin.setColor(Color.BLUE); // Input pin = bleu
+        }
+        if (outputPin != null) {
+            outputPin.setColor(Color.RED); // Output pin = rouge
+        }
+
+        // Supprimer les références des gates
+        if (inputGate != null) {
+            inputGate.removeConnectedCable(this);
+            inputGate = null;
+        }
+        if (outputGate != null) {
+            outputGate.removeConnectedCable(this);
+            outputGate = null;
+        }
+
+        // Nettoyer les références des pins
         inputPin = null;
         outputPin = null;
-        inputGate = null;
-        outputGate = null;
     }
 
     /**
@@ -258,6 +293,7 @@ public class UICable extends UIElement {
             gate.getLogic().disconnect(getLogic());
             gate.updateVisuals();
         }
+
     }
 
     /**
