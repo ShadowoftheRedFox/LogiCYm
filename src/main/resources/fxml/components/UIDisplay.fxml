@@ -10,7 +10,7 @@
       <Rectangle fx:id="body1" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="100.0" layoutX="1.0" layoutY="1.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="100.0" />
       <Text fx:id="display" layoutX="-14.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" text="1" textAlignment="CENTER" wrappingWidth="129.5999755859375">
          <font>
-            <Font size="60.0" />
+            <Font size="100.0" />
          </font>
       </Text>
       <fx:include fx:id="input" layoutX="-32.0" scaleX="0.3" scaleY="0.3" source="Pin.fxml" />
