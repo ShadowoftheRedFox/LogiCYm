@@ -17,9 +17,7 @@ import com.pjava.src.UI.components.Pin;
 import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
-import com.pjava.src.UI.components.cables.UIMerger;
 import com.pjava.src.UI.components.gates.UINodeSplitter;
-import com.pjava.src.UI.components.cables.UISplitter;
 import com.pjava.src.UI.components.gates.UIAnd;
 import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
@@ -33,8 +31,6 @@ import com.pjava.src.UI.components.output.UIDisplay;
 import com.pjava.src.components.Circuit;
 import com.pjava.src.components.Gate;
 import com.pjava.src.components.Synchronizer;
-import com.pjava.src.components.cables.NodeSplitter;
-import com.pjava.src.document.FileReaderSimulation;
 import com.pjava.src.document.SimulationFileLoader;
 import com.pjava.src.utils.SaveData;
 import com.pjava.src.utils.UIUtils;
@@ -901,12 +897,6 @@ public class Editor extends VBox {
     }
 
     @FXML
-    public void clickMerger(ActionEvent event) {
-        setUnsavedChanges(true);
-        System.out.println("Click Merger!");
-    }
-
-    @FXML
     public void clickSplitter(ActionEvent event) {
         setUnsavedChanges(true);
         System.out.println("Click Splitter!");
@@ -917,7 +907,7 @@ public class Editor extends VBox {
         setUnsavedChanges(true);
         System.out.println("Click Schema!");
         try {
-=            UISchema schemaController = new UISchema();
+            UISchema schemaController = new UISchema();
             addGate(schemaController);
         } catch (Exception e) {
             System.err.println("Erreur lors de la création du schéma : " + e.getMessage());

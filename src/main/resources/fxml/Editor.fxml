@@ -162,7 +162,6 @@
                                                                     <children>
                                                                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickCable" text="Cable" />
                                                                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickNodeSplitter" text="Node Splitter" />
-                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickMerger" text="Merger" />
                                                                     </children>
                                                                 </VBox>
                                                             </children>

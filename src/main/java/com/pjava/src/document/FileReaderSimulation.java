@@ -3,14 +3,11 @@ package com.pjava.src.document;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.HashMap;
 
 import com.pjava.src.components.Circuit;
-import com.pjava.src.components.input.Lever;
 
 public class FileReaderSimulation {
 
@@ -29,7 +26,7 @@ public Boolean simulationActivated;
 public Boolean perpetual = false;
 
 
-    
+
 /**
  * Create a 2D array to store the different values ​​of the file
  * @param path of the file
