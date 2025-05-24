@@ -49,7 +49,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<fx:root prefHeight="400.0" prefWidth="640.0" type="VBox" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="400.0" prefWidth="640.0" type="VBox" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <MenuBar VBox.vgrow="NEVER">
             <menus>
@@ -60,7 +60,7 @@
                         <Menu fx:id="openRecentButton" mnemonicParsing="false" text="Open Recent" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="saveButton" disable="true" mnemonicParsing="false" text="Save" />
-                        <MenuItem fx:id="saveAsButton" mnemonicParsing="false" text="Save As…" />
+                        <MenuItem fx:id="saveAsButton" mnemonicParsing="false" onAction="#saveEditorWithDefault" text="Save As…" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="preferencesButton" mnemonicParsing="false" text="Preferences…" />
                         <SeparatorMenuItem mnemonicParsing="false" />
@@ -161,8 +161,7 @@
                                                                 <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                                     <children>
                                                                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickCable" text="Cable" />
-                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickSplitter" text="Splitter" />
-                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickMerger" text="Merger" />
+                                                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clickNodeSplitter" text="Node Splitter" />
                                                                     </children>
                                                                 </VBox>
                                                             </children>

@@ -1,7 +1,6 @@
 package com.pjava.controllers;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -18,12 +17,11 @@ import com.pjava.src.UI.components.Pin;
 import com.pjava.src.UI.components.UICable;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
-import com.pjava.src.UI.components.cables.UIMerger;
-import com.pjava.src.UI.components.cables.UINodeSplitter;
-import com.pjava.src.UI.components.cables.UISplitter;
+import com.pjava.src.UI.components.gates.UINodeSplitter;
 import com.pjava.src.UI.components.gates.UIAnd;
 import com.pjava.src.UI.components.gates.UINot;
 import com.pjava.src.UI.components.gates.UIOr;
+import com.pjava.src.UI.components.UISchema;
 import com.pjava.src.UI.components.input.UIButton;
 import com.pjava.src.UI.components.input.UIClock;
 import com.pjava.src.UI.components.input.UIGround;
@@ -33,12 +31,11 @@ import com.pjava.src.UI.components.output.UIDisplay;
 import com.pjava.src.components.Circuit;
 import com.pjava.src.components.Gate;
 import com.pjava.src.components.Synchronizer;
-import com.pjava.src.document.FileReaderSimulation;
 import com.pjava.src.document.SimulationFileLoader;
+import com.pjava.src.utils.SaveData;
 import com.pjava.src.utils.UIUtils;
 import com.pjava.src.utils.UIUtils.ValidationAnwser;
 import com.pjava.src.utils.UtilsSave;
-import com.pjava.src.utils.SaveData;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -67,6 +64,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -286,7 +284,8 @@ public class Editor extends VBox {
 
                 editedCircuit.loadGatesFromFile(file.getPath());
 
-                addGates((HashMap<String, Gate>) editedCircuit.getAllGates().clone(),(ArrayList<SaveData>) editedCircuit.getAllGatesData().clone());
+                addGates((HashMap<String, Gate>) editedCircuit.getAllGates().clone(),
+                        (ArrayList<SaveData>) editedCircuit.getAllGatesData().clone());
 
             } catch (Exception e) {
                 UIUtils.errorPopup(e.getMessage());
@@ -400,6 +399,8 @@ public class Editor extends VBox {
 
             button.setOnAction(event -> {
                 System.out.println("Schema " + button.getText());
+                UISchema schemaController = UISchema.create(file);
+                addGate(schemaController);
                 // TODO ui schema and add to container
             });
         }
@@ -523,6 +524,11 @@ public class Editor extends VBox {
         }
     }
 
+    @FXML
+    private void saveEditorWithDefault() {
+        saveEditor(true);
+    }
+
     public void resetEditor() {
         editedCircuit.getAllGates().clear();
         selectAllElements(null);
@@ -574,12 +580,7 @@ public class Editor extends VBox {
             case "NodeSplitter":
                 elementController = (UINodeSplitter) UIGate.create("UINodeSplitter");
                 break;
-            case "Splitter":
-                elementController = (UISplitter) UIGate.create("UISplitter");
-                break;
-            case "Merger":
-                elementController = (UIMerger) UIGate.create("UIMerger");
-                break;
+
 
             default:
                 throw new Exception("ElementController of type " + type + " not found");
@@ -622,7 +623,41 @@ public class Editor extends VBox {
                 e.printStackTrace();
             }
         });
+    }
 
+    /**
+     * Used to position the newly added element from the buttons listener are the
+     * center of the user screen, and not at (0,0)
+     *
+     * @param element The element to move.
+     */
+    private void repositionNewElement(UIElement element) {
+        if (element == null) {
+            return;
+        }
+
+        // get the size of the scroll pane (the view)
+        final double viewWidth = viewScroll.getWidth();
+        final double viewHeight = viewScroll.getHeight();
+        // get the amount of scroll
+        final double percentScrollX = viewScroll.getHvalue();
+        final double percentScrollY = viewScroll.getVvalue();
+        // get the size of the grid
+        final double gridWidth = gridPane.getWidth();
+        final double gridHeight = gridPane.getHeight();
+
+        // calculate the position on the grid
+        final double X = gridWidth * percentScrollX + viewWidth / 2;
+        final double Y = gridHeight * percentScrollY - viewHeight / 2;
+
+        Point2D center = new Point2D(Math.floor(X / UIElement.baseSize), Math.floor(Y / UIElement.baseSize));
+        if (center.getY() < 0) {
+            center.add(0, -center.getY());
+        }
+
+        System.out.println("Center position: " + center);
+
+        element.setPosition(center);
     }
 
     public void resizeGrid() {
@@ -705,13 +740,13 @@ public class Editor extends VBox {
         if (filePath != null) {
             System.out.println("Loading simulation data from: " + filePath);
             Circuit circuit = new Circuit();
-            
+
             try {
                 Synchronizer.setInputSimulator(SimulationFileLoader.startSimulation(filePath, circuit));
-                
+
                 if (Synchronizer.getInputSimulator() != null) {
                     System.out.println("Simulation loaded successfully!");
-                    
+
                     disableSimulationButton.setDisable(false);
                     enableSimulationButton.setDisable(true);
                 } else {
@@ -763,8 +798,16 @@ public class Editor extends VBox {
     public void clickAnd(ActionEvent event) {
         System.out.println("Click And!");
         UIAnd andController = (UIAnd) UIElement.create("UIAnd");
+        addGate(andController);
+        repositionNewElement(andController);
+    }
+
+    @FXML
+    public void clickNodeSplitter(ActionEvent event) {
+        System.out.println("Click NodeSplitter!");
+        UINodeSplitter nodeSplitterController = (UINodeSplitter) UIElement.create("UINodeSplitter");
         try {
-            addGate(andController);
+            addGate(nodeSplitterController);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -775,6 +818,7 @@ public class Editor extends VBox {
         System.out.println("Click Or!");
         UIOr orController = (UIOr) UIElement.create("UIOr");
         addGate(orController);
+        repositionNewElement(orController);
     }
 
     @FXML
@@ -782,6 +826,7 @@ public class Editor extends VBox {
         System.out.println("Click Not!");
         UINot notController = (UINot) UIElement.create("UINot");
         addGate(notController);
+        repositionNewElement(notController);
     }
 
     @FXML
@@ -789,6 +834,7 @@ public class Editor extends VBox {
         System.out.println("Click Button!");
         UIButton buttonController = (UIButton) UIElement.create("UIButton");
         addGate(buttonController);
+        repositionNewElement(buttonController);
     }
 
     @FXML
@@ -796,6 +842,7 @@ public class Editor extends VBox {
         System.out.println("Click clock!");
         UIClock clockController = (UIClock) UIElement.create("UIClock");
         addGate(clockController);
+        repositionNewElement(clockController);
     }
 
     @FXML
@@ -803,6 +850,7 @@ public class Editor extends VBox {
         System.out.println("Click lever!");
         UILever leverController = (UILever) UIElement.create("UILever");
         addGate(leverController);
+        repositionNewElement(leverController);
     }
 
     @FXML
@@ -810,6 +858,7 @@ public class Editor extends VBox {
         System.out.println("Click power!");
         UIPower powerController = (UIPower) UIElement.create("UIPower");
         addGate(powerController);
+        repositionNewElement(powerController);
     }
 
     @FXML
@@ -817,6 +866,7 @@ public class Editor extends VBox {
         System.out.println("Click ground!");
         UIGround groundController = (UIGround) UIElement.create("UIGround");
         addGate(groundController);
+        repositionNewElement(groundController);
     }
 
     @FXML
@@ -824,6 +874,7 @@ public class Editor extends VBox {
         System.out.println("Click display!");
         UIDisplay displayController = (UIDisplay) UIElement.create("UIDisplay");
         addGate(displayController);
+        repositionNewElement(displayController);
     }
 
     @FXML
@@ -841,12 +892,6 @@ public class Editor extends VBox {
     }
 
     @FXML
-    public void clickMerger(ActionEvent event) {
-        setUnsavedChanges(true);
-        System.out.println("Click Merger!");
-    }
-
-    @FXML
     public void clickSplitter(ActionEvent event) {
         setUnsavedChanges(true);
         System.out.println("Click Splitter!");
@@ -856,6 +901,13 @@ public class Editor extends VBox {
     public void clickSchema(ActionEvent event) {
         setUnsavedChanges(true);
         System.out.println("Click Schema!");
+        try {
+            UISchema schemaController = new UISchema();
+            addGate(schemaController);
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la création du schéma : " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     // #endregion
 
@@ -1104,31 +1156,43 @@ public class Editor extends VBox {
      * @param event the ActionEvent triggering the deletion
      */
     @FXML
+
     private void deleteSelectedElements(ActionEvent event) {
-        // Use a new list to avoid ConcurrentModificationException
         ArrayList<Node> nodesToRemove = new ArrayList<>(selectedNodes);
 
         for (Node node : nodesToRemove) {
-            // If it's a UIElement, handle disconnections
             if (node.getUserData() instanceof UIElement) {
                 UIElement element = (UIElement) node.getUserData();
 
-                // If the element is a logic gate, manage its connections
                 if (element instanceof UIGate) {
                     UIGate gate = (UIGate) element;
                     gate.disconnect();
+                    container.getChildren().remove(node);
                 } else if (element instanceof UICable) {
                     UICable cable = (UICable) element;
                     cable.disconnect();
+                    container.getChildren().remove(cable.getNode()); // Supprimer le container, pas la ligne
+                }
+            } else {
+                // Pour les lignes sélectionnées directement
+                if (node instanceof Line) {
+                    // Trouver le câble parent
+                    for (Node containerChild : container.getChildren()) {
+                        if (containerChild.getUserData() instanceof UICable) {
+                            UICable cable = (UICable) containerChild.getUserData();
+                            if (cable.getLine() == node) {
+                                cable.disconnect();
+                                container.getChildren().remove(containerChild);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
-
-            // Remove the node from the container
-            container.getChildren().remove(node);
         }
 
-        // Clear the selection
         clearSelection();
+        setUnsavedChanges(true);
     }
 
     /**
@@ -1319,4 +1383,5 @@ public class Editor extends VBox {
         updateSelectionActions();
     }
     // #endregion
+
 }

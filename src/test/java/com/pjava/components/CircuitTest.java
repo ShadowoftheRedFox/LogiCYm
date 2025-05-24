@@ -8,6 +8,7 @@ import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.json.JSONObject;
 
@@ -16,6 +17,7 @@ import com.pjava.src.components.Circuit;
 import com.pjava.src.components.gates.*;
 import com.pjava.src.components.input.*;
 import com.pjava.src.components.output.Display;
+import com.pjava.src.components.output.Display;
 
 
 // TODO : différent circuit pour verifier leur bonne creation et
@@ -23,6 +25,11 @@ import com.pjava.src.components.output.Display;
 
 
 public class CircuitTest {
+
+    private String here = " /!\\=============/!\\ ";
+    // here +
+    // " + here +"
+    // + here
 
     private String here = " /!\\=============/!\\ ";
     // here +
@@ -129,10 +136,30 @@ public class CircuitTest {
     @Test
     void test4() {
         System.out.println("\n" + here +"test 4 : copy to himself default circuit" + here);
+        System.out.println("\n" + here +"test 4 : copy to himself default circuit" + here);
         Circuit circuit = new Circuit("circuit_default");
 
         try {
             // all gates
+            assertNotNull(circuit.addNewGate("Power", "p1"));
+            assertNotNull(circuit.addNewGate("Ground", "g1"));
+            assertNotNull(circuit.addNewGate("Not", "not1"));
+            assertNotNull(circuit.addNewGate("And", "and1"));
+            assertNotNull(circuit.addNewGate("And", "and2"));
+            assertNotNull(circuit.addNewGate("Or", "or1"));
+            assertNotNull(circuit.addNewGate("Lever", "lev1"));
+            assertNotNull(circuit.addNewGate("Button", "but1"));
+            assertNotNull(circuit.addNewGate("Numeric", "num1"));
+            assertNotNull(circuit.addNewGate("Clock", "clo1"));
+            assertNotNull(circuit.addNewGate("Display", "dis1"));
+            assertNotNull(circuit.addNewGate("Display", "dis2"));
+            assertNotNull(circuit.addNewGate("Display", "dis3"));
+            assertNotNull(circuit.addNewGate("Display", "dis4"));
+            assertNotNull(circuit.addNewGate("NodeSplitter", "split1"));
+            assertNotNull(circuit.addNewGate("NodeSplitter", "split2"));
+            assertNotNull(circuit.addNewGate("NodeSplitter", "split3"));
+            assertNotNull(circuit.addNewGate("Splitter", "busSplit1"));
+            assertNotNull(circuit.addNewGate("Merger", "busMerg1"));
             assertNotNull(circuit.addNewGate("Power", "p1"));
             assertNotNull(circuit.addNewGate("Ground", "g1"));
             assertNotNull(circuit.addNewGate("Not", "not1"));
@@ -178,9 +205,11 @@ public class CircuitTest {
             circuit.save("./data/test/circuit_default.json");
 
             System.out.println("\nSelection :");
+            System.out.println("\nSelection :");
             int j = 0;
             for (String i : circuit.getAllGates().keySet()) {
                 System.out.println(
+                        String.format("%d : id = %d : key = %s : GateJSON = %s", j, circuit.getAllGates().get(i).uuid(), i, circuit.getAllGates().get(i).toJson()));
                         String.format("%d : id = %d : key = %s : GateJSON = %s", j, circuit.getAllGates().get(i).uuid(), i, circuit.getAllGates().get(i).toJson()));
                 j++;
             }
@@ -191,6 +220,7 @@ public class CircuitTest {
             j = 0;
             for (String i : circuit.getAllGates().keySet()) {
                 System.out.println(
+                    String.format("%d : id = %d : key = %s : GateJSON = %s", j, circuit.getAllGates().get(i).uuid(), i, circuit.getAllGates().get(i).toJson()));
                     String.format("%d : id = %d : key = %s : GateJSON = %s", j, circuit.getAllGates().get(i).uuid(), i, circuit.getAllGates().get(i).toJson()));
                 j++;
             }
@@ -376,9 +406,9 @@ System.err.println("----------");
                 j++;
             }
 
-        } catch (Exception e) {
-            System.err.println(e);
-        }
+    //     } catch (Exception e) {
+    //         System.err.println(e);
+    //     }
 
     }
      */

@@ -7,6 +7,8 @@ import com.pjava.src.components.Cable;
 import com.pjava.src.components.Gate;
 
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 
 public abstract class UIGate extends UIElement {
@@ -56,46 +58,48 @@ public abstract class UIGate extends UIElement {
     }
 
     /**
-     * disconnect the cable from this gate, and the gate from the cable.
-     *
-     * @param cable the cable to disconnect from.
+     * Find a Cable from a Pin Given
      */
-    public void disconnect(UICable cable) {
-        if (cable == null) {
-            return;
-        }
-        cable.disconnect(this);
-        if (connectedCables.indexOf(cable) >= 0) {
-            // recolor pin
-            if (cable.getInputPin() != null) {
-                cable.getInputPin().setColor(Color.BLUE);
-            }
-            if (cable.getOutputPin() != null) {
-                cable.getOutputPin().setColor(Color.RED);
-            }
-            connectedCables.set(connectedCables.indexOf(cable), null);
-        }
-    }
-
-    /**
-     * disconnect all cables from this gate, and the gate from every cable
-     */
-    public void disconnect() {
-        for (UICable connectedCables : connectedCables) {
-            disconnect(connectedCables);
-        }
-    }
-
     public UICable getCableFromPin(Pin pin) {
         if (pin == null) {
             return null;
         }
         for (UICable cable : connectedCables) {
-            if (cable != null && (pin.equals(cable.getInputPin()) || pin.equals(cable.getInputPin()))) {
+            if (cable != null && (pin.equals(cable.getInputPin()) || pin.equals(cable.getOutputPin()))) {
                 return cable;
             }
         }
         return null;
+    }
+
+    /**
+     * Disconnect all cables from this gate, and the gate from every cable
+     */
+    public void disconnect() {
+        List<UICable> cablesToDisconnect = new ArrayList<>(connectedCables);
+
+        for (UICable cable : cablesToDisconnect) {
+            if (cable != null) {
+                UIGate otherInputGate = cable.getInputGate();
+                UIGate otherOutputGate = cable.getOutputGate();
+                Pin otherInputPin = cable.getInputPin();
+                Pin otherOutputPin = cable.getOutputPin();
+
+                cable.disconnect();
+
+                if (otherInputGate != null && !otherInputGate.equals(this) && otherInputPin != null) {
+                    otherInputPin.setColor(Color.BLUE); // Input pin = bleu
+                }
+                if (otherOutputGate != null && !otherOutputGate.equals(this) && otherOutputPin != null) {
+                    otherOutputPin.setColor(Color.RED); // Output pin = rouge
+                }
+
+                Node cableNode = cable.getNode();
+                if (cableNode != null && cableNode.getParent() != null) {
+                    ((Pane) cableNode.getParent()).getChildren().remove(cableNode);
+                }
+            }
+        }
     }
 
     @Override
@@ -129,8 +133,6 @@ public abstract class UIGate extends UIElement {
     public List<Pin> getInputPins() {
         return inputPins;
     }
-
-
 
     /**
      * used to get all the cable connecte to the gate sended

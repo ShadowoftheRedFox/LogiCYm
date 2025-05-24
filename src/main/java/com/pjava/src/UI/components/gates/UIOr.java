@@ -3,6 +3,8 @@ package com.pjava.src.UI.components.gates;
 import com.pjava.src.UI.components.Pin;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
+import com.pjava.src.components.Element;
+import com.pjava.src.components.Element.ElementEvent;
 import com.pjava.src.components.gates.Or;
 
 import javafx.fxml.FXML;
@@ -52,6 +54,17 @@ public class UIOr extends UIGate {
         inputPins.add(input1Controller);
         inputPins.add(input2Controller);
         outputPins.add(output1Controller);
+
+
+        getLogic().getUpdateEvents().add(new ElementEvent() {
+            public void updateState(Element element) {
+                updateVisuals();
+            };
+
+            public void updatePower(Element element) {
+                updateVisuals();
+            };
+        });
     }
 
     @Override
@@ -60,7 +73,7 @@ public class UIOr extends UIGate {
     }
 
     /**
-     * set the logic of a Or Gate
+     * set the Logic of a Or Gate
      *
      * @param or a Or gate
      */

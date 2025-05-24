@@ -96,6 +96,7 @@ public class Schema extends Gate {
      */
     public Schema(String filePath) throws Exception {
         this.loadFromFile(filePath);
+
         this.setName(this.innerCircuit.getName());
     }
 
@@ -246,7 +247,7 @@ public class Schema extends Gate {
         try {
             this.innerCircuit.loadGatesFromFile(filePath, this);
         } catch (Exception e) {
-            System.err.println("Error circuit can't be launch " + e.getMessage());
+            throw new Error("Circuit couldn't be loaded : " + filePath, e);
         }
     }
 

@@ -338,7 +338,7 @@ public class Circuit {
         int assignedPort = this.inputGates.get(inputGateLabel).getSchemaInputPort();
 
         if (assignedPort != targetPort) {
-            // check if targetPort is allready taken
+            // check if targetPort is already taken
             for (String label : this.inputGates.keySet()) {
                 if (this.inputGates.get(label).getSchemaInputPort() == targetPort) {
                     // TODO : popup message ?
@@ -389,7 +389,7 @@ public class Circuit {
         int assignedPort = this.outputGates.get(outputGateLabel).getSchemaOutputPort();
 
         if (assignedPort != targetPort) {
-            // check if targetPort is allready taken
+            // check if targetPort is already taken
             for (String label : this.outputGates.keySet()) {
                 if (this.outputGates.get(label).getSchemaOutputPort() == targetPort) {
                     // TODO : popup message ?
@@ -1179,7 +1179,7 @@ public class Circuit {
 
 
             // output
-            for (String key : tempCircuit.getOutputGates().keySet()) {
+            for (String key : ((HashMap<String,Output>)tempCircuit.getOutputGates().clone()).keySet()) {
 
                 // We only want to make schema port from thoses output gates
                 /*

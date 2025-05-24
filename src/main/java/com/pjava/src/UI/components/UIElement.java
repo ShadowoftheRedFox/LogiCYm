@@ -9,10 +9,10 @@ import com.pjava.src.components.Element;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.Node;
 
 public abstract class UIElement {
     /**
@@ -47,7 +47,7 @@ public abstract class UIElement {
     /**
      * info of the Controller
      */
-    private InfosController infos = null;
+    protected InfosController infos = null;
 
     /**
      * create a Gate with all the infos, gate will be stocked in the pc
@@ -224,8 +224,8 @@ public abstract class UIElement {
         // and to prevent creating meaningless methods
         if (infos.setPosition(position, true)) {
             this.position = position;
-            self.setLayoutX(position.getX()*baseSize);
-            self.setLayoutY(position.getY()*baseSize);
+            self.setLayoutX(position.getX() * baseSize);
+            self.setLayoutY(position.getY() * baseSize);
         }
     }
 

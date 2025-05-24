@@ -4,6 +4,7 @@ import com.pjava.src.UI.components.Pin;
 import com.pjava.src.UI.components.UIElement;
 import com.pjava.src.UI.components.UIGate;
 import com.pjava.src.components.Element;
+import com.pjava.src.components.Element.ElementEvent;
 import com.pjava.src.components.gates.And;
 
 import javafx.fxml.FXML;
@@ -64,11 +65,15 @@ public class UIAnd extends UIGate {
         inputPins.add(input2Controller);
         outputPins.add(output1Controller);
 
-        // getLogic().getUpdateEvents().add(new ElementEvent() {
-        //     void updateState(Element element) {
-        //     }
-        // });
-        // TODO Listen to updateEvent in Element and call updateVisuals for both
+        getLogic().getUpdateEvents().add(new ElementEvent() {
+            public void updateState(Element element) {
+                updateVisuals();
+            };
+
+            public void updatePower(Element element) {
+                updateVisuals();
+            };
+        });
     }
 
     @Override

@@ -57,9 +57,8 @@ public class Cable extends Element {
 
     /**
      * This function is called when inputs state changes.
-     *
-     * @param propagate Whether or not to propagate the changes to the outputs.
      */
+
     @Override
     public void updateState() {
         // early returns
